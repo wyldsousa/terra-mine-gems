@@ -6,9 +6,9 @@ export interface Mine {
   id: string;
   type: MineType;
   level: number;
-  name?: string;
-  externalId?: string;
-  note?: string;
+  name?: string | undefined;
+  externalId?: string | undefined;
+  note?: string | undefined;
   createdAt: number;
 }
 
