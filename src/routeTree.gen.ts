@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CalculadoraRouteImport } from './routes/calculadora'
+import { Route as EstatisticasRouteImport } from './routes/estatisticas'
 import { Route as MinasRouteImport } from './routes/minas'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +24,11 @@ const CalculadoraRoute = CalculadoraRouteImport.update({
   path: '/calculadora',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EstatisticasRoute = EstatisticasRouteImport.update({
+  id: '/estatisticas',
+  path: '/estatisticas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MinasRoute = MinasRouteImport.update({
   id: '/minas',
   path: '/minas',
@@ -32,30 +38,34 @@ const MinasRoute = MinasRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/calculadora': typeof CalculadoraRoute
+  '/estatisticas': typeof EstatisticasRoute
   '/minas': typeof MinasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/calculadora': typeof CalculadoraRoute
+  '/estatisticas': typeof EstatisticasRoute
   '/minas': typeof MinasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/calculadora': typeof CalculadoraRoute
+  '/estatisticas': typeof EstatisticasRoute
   '/minas': typeof MinasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/calculadora' | '/minas'
+  fullPaths: '/' | '/calculadora' | '/estatisticas' | '/minas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/calculadora' | '/minas'
-  id: '__root__' | '/' | '/calculadora' | '/minas'
+  to: '/' | '/calculadora' | '/estatisticas' | '/minas'
+  id: '__root__' | '/' | '/calculadora' | '/estatisticas' | '/minas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CalculadoraRoute: typeof CalculadoraRoute
+  EstatisticasRoute: typeof EstatisticasRoute
   MinasRoute: typeof MinasRoute
 }
 
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalculadoraRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/estatisticas': {
+      id: '/estatisticas'
+      path: '/estatisticas'
+      fullPath: '/estatisticas'
+      preLoaderRoute: typeof EstatisticasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/minas': {
       id: '/minas'
       path: '/minas'
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CalculadoraRoute: CalculadoraRoute,
+  EstatisticasRoute: EstatisticasRoute,
   MinasRoute: MinasRoute,
 }
 export const routeTree = rootRouteImport
