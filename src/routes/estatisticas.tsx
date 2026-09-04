@@ -66,7 +66,7 @@ function StatsPage() {
       <h1 className="font-display text-2xl font-bold">{t.stats.title}</h1>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label={t.dashboard.totalMines ?? "Minas"} value={formatNumber(income.totalMines, 0)} />
+        <StatCard label={t.dashboard.totalMines} value={formatNumber(income.totalMines, 0)} />
         <StatCard label={t.common.average + " · " + t.common.level} value={formatNumber(income.averageLevel, 2)} />
         <StatCard
           label={t.stats.avgPerMine}
