@@ -181,6 +181,7 @@ export const translations = {
       averages: "Média da carteira",
       avgPerMine: "Rendimento médio por mina",
       avgLevelByType: "Nível médio por tipo",
+      ranking: "Minhas minas mais lucrativas",
       empty: "Sem dados — cadastre minas primeiro.",
     },
     settings: {
@@ -419,6 +420,7 @@ export const translations = {
       averages: "Portfolio averages",
       avgPerMine: "Average income per mine",
       avgLevelByType: "Average level by type",
+      ranking: "My most profitable mines",
       empty: "No data — add mines first.",
     },
     settings: {
