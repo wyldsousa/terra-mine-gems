@@ -143,12 +143,12 @@ function SettingsPage() {
         <SectionTitle>{t.settings.boost}</SectionTitle>
         <div className="grid gap-3 sm:grid-cols-3">
           <NumberField
-            label={`${t.calculator.boostMultiplier}`}
+            label={t.boost.multiplier}
             value={params.boostMultiplier}
             onChange={(v) => setParams({ boostMultiplier: v })}
           />
           <NumberField
-            label={t.calculator.boostHours}
+            label={t.boost.hoursPerDay}
             value={params.boostHoursPerDay}
             onChange={(v) => setParams({ boostHoursPerDay: Math.min(24, Math.max(0, v)) })}
           />
