@@ -147,6 +147,7 @@ function WithdrawSection({ balance, onBalance }: { balance: number; onBalance: (
           label={tx(t.withdraw.fee, { value: formatPercent(params.withdrawalFee * 100) })}
           value={`−${formatMoney(result.platformFee)}`}
         />
+        <Row label={t.withdraw.afterFee} value={formatMoney(result.afterFee)} />
         <Row
           label={tx(t.withdraw.tax, { value: formatPercent(params.additionalTax * 100) })}
           value={`−${formatMoney(result.additionalTax)}`}
