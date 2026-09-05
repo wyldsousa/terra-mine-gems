@@ -197,7 +197,7 @@ export function MineDialog({
               <span className="num font-semibold">
                 {formatMoney(calculateMineMonthlyIncome({ type: draft.type, level: previewLevel }, params))}
               </span>
-              /{t.periods.month}
+              /{t.common.month}
             </p>
           </div>
           <DialogFooter>
