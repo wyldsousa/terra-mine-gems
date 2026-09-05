@@ -162,16 +162,23 @@ export function calculatePortfolioIncome(
 export interface WithdrawalResult {
   gross: number;
   platformFee: number;
+  /** Amount left after the platform fee, before the additional tax. */
+  afterFee: number;
   additionalTax: number;
   net: number;
 }
 
-/** Fee and tax are always computed separately, both on the gross amount. */
+/**
+ * Deductions are sequential and always shown separately:
+ *   1. platform fee on the gross amount
+ *   2. additional tax on what is left after the fee
+ */
 export function calculateWithdrawal(gross: number, params: Params): WithdrawalResult {
   const g = Math.max(gross || 0, 0);
   const platformFee = g * params.withdrawalFee;
-  const additionalTax = g * params.additionalTax;
-  return { gross: g, platformFee, additionalTax, net: g - platformFee - additionalTax };
+  const afterFee = g - platformFee;
+  const additionalTax = afterFee * params.additionalTax;
+  return { gross: g, platformFee, afterFee, additionalTax, net: afterFee - additionalTax };
 }
 
 export function calculateNetWithdrawal(gross: number, params: Params): number {
@@ -180,7 +187,7 @@ export function calculateNetWithdrawal(gross: number, params: Params): number {
 
 /** Gross balance required to receive `net` after fee + tax. */
 export function calculateGrossForNet(net: number, params: Params): number {
-  const retained = 1 - params.withdrawalFee - params.additionalTax;
+  const retained = (1 - params.withdrawalFee) * (1 - params.additionalTax);
   if (retained <= 0) return Infinity;
   return net / retained;
 }
