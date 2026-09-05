@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Copy, Pencil, Plus, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { MineDialog, MineTypePicker } from "@/components/mines/MineDialog";
 import { SectionTitle } from "@/components/common/StatCard";
@@ -218,6 +218,22 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
   const [type, setType] = useState<MineType>("rock");
   const [quantity, setQuantity] = useState(1);
   const [level, setLevel] = useState(1);
+  const [confirming, setConfirming] = useState(false);
+  const savingRef = useRef(false);
+
+  const qty = Math.max(1, Math.floor(quantity) || 1);
+  const lvl = Math.min(Math.max(Math.floor(level) || 1, 1), params.maxLevel);
+  const unitMonthly = calculateMineMonthlyIncome({ type, level: lvl }, params);
+
+  const confirm = () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    onAdd(type, qty, lvl);
+    setConfirming(false);
+    window.setTimeout(() => {
+      savingRef.current = false;
+    }, 400);
+  };
 
   return (
     <section className="panel p-4">
