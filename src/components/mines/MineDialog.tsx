@@ -204,7 +204,7 @@ export function MineDialog({
             <Button variant="outline" onClick={() => setConfirming(false)}>
               {t.common.cancel}
             </Button>
-            <Button onClick={confirmAdd}>{t.common.confirm ?? t.common.save}</Button>
+            <Button onClick={confirmAdd}>{t.common.confirm}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

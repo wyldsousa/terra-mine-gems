@@ -350,6 +350,8 @@ export const translations = {
       ranking: "My most profitable mines",
       newMine: "New mine",
       editMine: "Edit mine",
+      confirmTitle: "Confirm new mine?",
+      confirmIncome: "Estimated income",
       addedQuick: "{count} mines added",
     },
     boost: {
