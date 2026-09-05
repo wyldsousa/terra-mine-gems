@@ -8,7 +8,7 @@ export const DEFAULT_PARAMS: Params = {
   baseMonthly: {
     rock: 0.002851,
     coal: 0.004147,
-    gold: 0.00507,
+    gold: 0.005702,
     diamond: 0.011405,
   },
   typeMultiplier: {
@@ -21,7 +21,7 @@ export const DEFAULT_PARAMS: Params = {
   boostMultiplier: 20,
   boostHoursPerDay: 0,
   withdrawalFee: 0.17,
-  additionalTax: 0,
+  additionalTax: 0.101,
   maxLevel: 100,
   daysPerMonth: 30,
   daysPerYear: 365,

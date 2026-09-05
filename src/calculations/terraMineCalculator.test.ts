@@ -57,12 +57,13 @@ describe("boost", () => {
 });
 
 describe("withdrawal", () => {
-  it("keeps fee and tax separate", () => {
-    const p = { ...params, withdrawalFee: 0.17, additionalTax: 0.1 };
+  it("applies fee first, then tax on the remainder", () => {
+    const p = { ...params, withdrawalFee: 0.17, additionalTax: 0.101 };
     const r = calculateWithdrawal(100, p);
     expect(r.platformFee).toBeCloseTo(17, 10);
-    expect(r.additionalTax).toBeCloseTo(10, 10);
-    expect(r.net).toBeCloseTo(73, 10);
+    expect(r.afterFee).toBeCloseTo(83, 10);
+    expect(r.additionalTax).toBeCloseTo(8.383, 10);
+    expect(r.net).toBeCloseTo(74.617, 10);
   });
   it("gross for net round-trips", () => {
     const gross = calculateGrossForNet(83, params);
@@ -99,17 +100,29 @@ describe("goals and projections", () => {
     expect(goal.days).toBeCloseTo(5, 10);
   });
   it("projection grows linearly", () => {
-    const points = calculateProjection(1, 0, 3, params);
-    expect(points[points.length - 1]!.total).toBeCloseTo(3, 10);
+    const points = calculateProjection(1, 0, 3);
+    expect(points[points.length - 1]!.balance).toBeCloseTo(3, 10);
   });
   it("time to earn is infinite without income", () => {
     expect(calculateTimeToEarn(5, 0).days).toBe(Infinity);
   });
 });
 
+describe("base rates", () => {
+  it("gold base monthly is 0.005702", () => {
+    expect(params.baseMonthly.gold).toBeCloseTo(0.005702, 12);
+  });
+  it("level 10 is 9% above level 1", () => {
+    expect(calculateMineMonthlyIncome({ type: "gold", level: 10 }, params)).toBeCloseTo(
+      0.005702 * 1.09,
+      12,
+    );
+  });
+});
+
 describe("upgrade", () => {
   it("increases income when leveling up", () => {
     const impact = calculateUpgradeImpact({ type: "gold", level: 1 }, 51, params);
-    expect(impact.newMonthly).toBeGreaterThan(impact.currentMonthly);
+    expect(impact.newDaily).toBeGreaterThan(impact.currentDaily);
   });
 });
