@@ -357,6 +357,10 @@ export const translations = {
       confirmTitle: "Confirm new mine?",
       confirmIncome: "Estimated income",
       addedQuick: "{count} mines added",
+      confirmQuickTitle: "Confirm addition",
+      confirmAbout: "You are about to add:",
+      confirmQuestion: "Do you really want to add these mines?",
+      confirmTotalIncome: "Total estimated income",
     },
     boost: {
       title: "Income Boost",
