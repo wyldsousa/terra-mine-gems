@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { calculateMineMonthlyIncome } from "@/calculations/terraMineCalculator";
 import { MINE_META } from "@/data/defaults";
+import { formatMoney } from "@/lib/format";
 import { useAppState } from "@/hooks/useAppState";
 import { cn } from "@/lib/utils";
 import { MINE_TYPES, type Mine, type MineType } from "@/types";
@@ -65,6 +67,8 @@ export function MineDialog({
 }) {
   const { t, params, addMine, updateMine } = useAppState();
   const [draft, setDraft] = useState<MineDraft>(EMPTY);
+  const [confirming, setConfirming] = useState(false);
+  const savingRef = useRef(false);
 
   useEffect(() => {
     if (!open) return;
@@ -110,8 +114,11 @@ export function MineDialog({
   };
 
 
+  const previewLevel = Math.min(Math.max(Math.floor(draft.level) || 1, 1), params.maxLevel);
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>{editing ? t.mines.editMine : t.mines.newMine}</DialogTitle>
@@ -172,6 +179,35 @@ export function MineDialog({
           <Button onClick={submit}>{t.common.save}</Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog>
+      </Dialog>
+      <Dialog open={confirming} onOpenChange={setConfirming}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t.mines.confirmTitle}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-1 text-sm">
+            <p>
+              {t.common.type}: <span className="font-semibold">{MINE_META[draft.type].emoji} {t.mineTypes[draft.type]}</span>
+            </p>
+            <p>
+              {t.common.level}: <span className="font-semibold">{previewLevel}</span>
+            </p>
+            <p>
+              {t.mines.confirmIncome}:{" "}
+              <span className="num font-semibold">
+                {formatMoney(calculateMineMonthlyIncome({ type: draft.type, level: previewLevel }, params))}
+              </span>
+              /{t.periods.month}
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirming(false)}>
+              {t.common.cancel}
+            </Button>
+            <Button onClick={confirmAdd}>{t.common.confirm ?? t.common.save}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
