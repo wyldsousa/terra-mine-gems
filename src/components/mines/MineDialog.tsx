@@ -81,18 +81,34 @@ export function MineDialog({
     );
   }, [open, editing]);
 
+  const buildPayload = () => ({
+    type: draft.type,
+    level: Math.min(Math.max(Math.floor(draft.level) || 1, 1), params.maxLevel),
+    name: draft.name.trim() || undefined,
+    externalId: draft.externalId.trim() || undefined,
+    note: draft.note.trim() || undefined,
+  });
+
   const submit = () => {
-    const payload = {
-      type: draft.type,
-      level: Math.min(Math.max(Math.floor(draft.level) || 1, 1), params.maxLevel),
-      name: draft.name.trim() || undefined,
-      externalId: draft.externalId.trim() || undefined,
-      note: draft.note.trim() || undefined,
-    };
-    if (editing) updateMine(editing.id, payload);
-    else addMine(payload);
-    onOpenChange(false);
+    if (editing) {
+      updateMine(editing.id, buildPayload());
+      onOpenChange(false);
+      return;
+    }
+    setConfirming(true);
   };
+
+  const confirmAdd = () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    addMine(buildPayload());
+    setConfirming(false);
+    onOpenChange(false);
+    window.setTimeout(() => {
+      savingRef.current = false;
+    }, 400);
+  };
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
