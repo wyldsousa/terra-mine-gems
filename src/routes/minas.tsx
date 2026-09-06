@@ -5,6 +5,13 @@ import { toast } from "sonner";
 import { MineDialog, MineTypePicker } from "@/components/mines/MineDialog";
 import { SectionTitle } from "@/components/common/StatCard";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -224,6 +231,7 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
   const qty = Math.max(1, Math.floor(quantity) || 1);
   const lvl = Math.min(Math.max(Math.floor(level) || 1, 1), params.maxLevel);
   const unitMonthly = calculateMineMonthlyIncome({ type, level: lvl }, params);
+  const totalMonthly = unitMonthly * qty;
 
   const confirm = () => {
     if (savingRef.current) return;
@@ -265,18 +273,44 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
           />
         </div>
         <div className="flex items-end">
-          <Button
-            className="w-full"
-            onClick={() => {
-              const qty = Math.max(1, Math.floor(quantity) || 1);
-              const lvl = Math.min(Math.max(Math.floor(level) || 1, 1), params.maxLevel);
-              onAdd(type, qty, lvl);
-            }}
-          >
+          <Button className="w-full" onClick={() => setConfirming(true)}>
             {t.common.add}
           </Button>
         </div>
       </div>
+
+      <Dialog open={confirming} onOpenChange={setConfirming}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t.mines.confirmQuickTitle}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <p>{t.mines.confirmAbout}</p>
+            <div className="space-y-1 rounded-lg border border-border/70 bg-background/40 p-3">
+              <p>
+                {MINE_META[type].emoji} <span className="font-semibold">{t.mineTypes[type]}</span>
+              </p>
+              <p>
+                {t.common.quantity}: <span className="font-semibold">{qty}</span>
+              </p>
+              <p>
+                {t.common.level}: <span className="font-semibold">{lvl}</span>
+              </p>
+            </div>
+            <p>
+              {t.mines.confirmTotalIncome}:{" "}
+              <span className="num font-semibold">{formatMoney(totalMonthly)}</span>/{t.common.month}
+            </p>
+            <p className="text-muted-foreground">{t.mines.confirmQuestion}</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirming(false)}>
+              {t.common.cancel}
+            </Button>
+            <Button onClick={confirm}>{t.common.confirm}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 }
