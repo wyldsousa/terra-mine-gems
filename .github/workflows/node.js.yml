@@ -34,6 +34,17 @@ jobs:
       - name: Criar aplicativo
         run: npm run build
 
+      - name: Ver arquivos gerados
+        run: |
+          echo "=== CONTEÚDO DA RAIZ ==="
+          ls -la
+          echo ""
+          echo "=== PASTAS GERADAS ==="
+          find . -maxdepth 4 -type d | sort
+          echo ""
+          echo "=== ARQUIVOS GERADOS ==="
+          find . -maxdepth 4 -type f | sort | head -300
+
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
 
