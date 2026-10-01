@@ -57,6 +57,8 @@ interface AppContextValue {
   addMines: (mines: Omit<Mine, "id" | "createdAt">[]) => void;
   updateMine: (id: string, patch: Partial<Mine>) => void;
   removeMine: (id: string) => void;
+  removeMines: (ids: string[]) => void;
+  setMinesLevel: (ids: string[], level: number) => void;
   duplicateMine: (id: string) => void;
   setParams: (patch: Partial<Params>) => void;
   resetParams: () => void;
@@ -123,6 +125,19 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
           mines: prev.mines.map((m) => (m.id === id ? { ...m, ...patch, id: m.id } : m)),
         })),
       removeMine: (id) => setState((prev) => ({ ...prev, mines: prev.mines.filter((m) => m.id !== id) })),
+      removeMines: (ids) => {
+        const set = new Set(ids);
+        setState((prev) => ({ ...prev, mines: prev.mines.filter((m) => !set.has(m.id)) }));
+      },
+      setMinesLevel: (ids, level) => {
+        const set = new Set(ids);
+        setState((prev) => ({
+          ...prev,
+          mines: prev.mines.map((m) =>
+            set.has(m.id) ? { ...m, level: Math.min(Math.max(Math.floor(level) || 1, 1), prev.params.maxLevel) } : m,
+          ),
+        }));
+      },
       duplicateMine: (id) =>
         setState((prev) => {
           const found = prev.mines.find((m) => m.id === id);
