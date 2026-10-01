@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { NumericInput } from "@/components/common/NumericInput";
 import { useMemo, useState } from "react";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { SectionTitle, StatCard } from "@/components/common/StatCard";
@@ -131,9 +132,8 @@ function WithdrawSection({ balance, onBalance }: { balance: number; onBalance: (
       <SectionTitle>{t.withdraw.title}</SectionTitle>
       <div className="space-y-2">
         <Label htmlFor="balance">{t.withdraw.balance}</Label>
-        <Input
+        <NumericInput
           id="balance"
-          type="number"
           min={0}
           step="0.00000001"
           inputMode="decimal"
@@ -162,9 +162,8 @@ function WithdrawSection({ balance, onBalance }: { balance: number; onBalance: (
         <div className="mt-2 flex flex-wrap items-end gap-3">
           <div className="w-40 space-y-1">
             <Label htmlFor="net">{t.withdraw.customNet}</Label>
-            <Input
+            <NumericInput
               id="net"
-              type="number"
               min={0}
               step="0.01"
               inputMode="decimal"
@@ -218,9 +217,8 @@ function GoalsSection({ daily, onGoals }: { daily: number; onGoals: (g: number[]
       <div className="mt-4 flex items-end gap-2">
         <div className="w-40 space-y-1">
           <Label htmlFor="goal">{t.goals.addGoal}</Label>
-          <Input
+          <NumericInput
             id="goal"
-            type="number"
             min={0}
             step="0.01"
             inputMode="decimal"
@@ -253,9 +251,8 @@ function TimeToEarn({ daily }: { daily: number }) {
       <div className="flex flex-wrap items-end gap-3">
         <div className="w-40 space-y-1">
           <Label htmlFor="amount">{t.timeCalc.amount}</Label>
-          <Input
+          <NumericInput
             id="amount"
-            type="number"
             min={0}
             step="0.01"
             inputMode="decimal"
@@ -375,9 +372,8 @@ function ExpansionSection({ boostHours }: { boostHours: number }) {
             <Label htmlFor={`exp-${type}`}>
               {MINE_META[type].emoji} {t.mineTypes[type]}
             </Label>
-            <Input
+            <NumericInput
               id={`exp-${type}`}
-              type="number"
               min={0}
               inputMode="numeric"
               value={quantities[type]}
@@ -390,9 +386,8 @@ function ExpansionSection({ boostHours }: { boostHours: number }) {
       </div>
       <div className="mt-3 w-40 space-y-1">
         <Label htmlFor="exp-level">{t.expansion.newLevel}</Label>
-        <Input
+        <NumericInput
           id="exp-level"
-          type="number"
           min={1}
           max={params.maxLevel}
           inputMode="numeric"
@@ -454,9 +449,8 @@ function UpgradeSection({ boostHours }: { boostHours: number }) {
         </div>
         <div className="space-y-1">
           <Label htmlFor="target-level">{t.upgrade.targetLevel}</Label>
-          <Input
+          <NumericInput
             id="target-level"
-            type="number"
             min={1}
             max={params.maxLevel}
             inputMode="numeric"

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { NumericInput } from "@/components/common/NumericInput";
 import { Copy, Pencil, Plus, Trash2 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -251,9 +252,8 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div className="space-y-1">
           <Label htmlFor="qa-qty">{t.common.quantity}</Label>
-          <Input
+          <NumericInput
             id="qa-qty"
-            type="number"
             min={1}
             inputMode="numeric"
             value={quantity}
@@ -262,9 +262,8 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
         </div>
         <div className="space-y-1">
           <Label htmlFor="qa-level">{t.mines.avgLevel}</Label>
-          <Input
+          <NumericInput
             id="qa-level"
-            type="number"
             min={1}
             max={params.maxLevel}
             inputMode="numeric"
