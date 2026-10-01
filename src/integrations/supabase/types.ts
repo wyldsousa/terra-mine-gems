@@ -14,7 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          calculators: string[]
+          created_at: string
+          display_name: string
+          id: string
+          ranking_opt_in: boolean
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          calculators?: string[]
+          created_at?: string
+          display_name?: string
+          id: string
+          ranking_opt_in?: boolean
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          calculators?: string[]
+          created_at?: string
+          display_name?: string
+          id?: string
+          ranking_opt_in?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      public_stats: {
+        Row: {
+          game: string
+          monthly_income: number
+          units_count: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          game: string
+          monthly_income?: number
+          units_count?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          game?: string
+          monthly_income?: number
+          units_count?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_stats_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
