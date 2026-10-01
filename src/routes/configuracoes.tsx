@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { NumericInput } from "@/components/common/NumericInput";
 import { useRef } from "react";
 import { toast } from "sonner";
 import { SectionTitle } from "@/components/common/StatCard";
@@ -46,8 +47,8 @@ function NumberField({
   return (
     <div className="space-y-1.5">
       <Label className="text-xs text-muted-foreground">{label}</Label>
-      <Input
-        type="number"
+      <NumericInput
+
         step={step}
         value={Number.isFinite(value) ? value : 0}
         onChange={(e) => {

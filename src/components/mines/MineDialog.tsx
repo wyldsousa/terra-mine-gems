@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { NumericInput } from "@/components/common/NumericInput";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -132,9 +133,8 @@ export function MineDialog({
             <Label htmlFor="level">
               {t.common.level} (1–{params.maxLevel})
             </Label>
-            <Input
+            <NumericInput
               id="level"
-              type="number"
               min={1}
               max={params.maxLevel}
               inputMode="numeric"

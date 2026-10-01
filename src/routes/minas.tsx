@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Copy, Pencil, Plus, Trash2 } from "lucide-react";
+import { NumericInput } from "@/components/common/NumericInput";
+import { CheckSquare, Copy, Pencil, Plus, RotateCcw, Trash2, Zap } from "lucide-react";
+import { ConfirmDialog, LevelManager } from "@/components/mines/MineBulkTools";
 import { useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { MineDialog, MineTypePicker } from "@/components/mines/MineDialog";
@@ -47,7 +49,20 @@ export const Route = createFileRoute("/minas")({
 type SortKey = "incomeDesc" | "incomeAsc" | "levelDesc" | "levelAsc" | "type";
 
 function MinesPage() {
-  const { t, tx, mines, params, removeMine, duplicateMine, addMines } = useAppState();
+  const { t, tx, mines, params, state, removeMine, removeMines, duplicateMine, addMines } = useAppState();
+  const pt = state.language === "pt";
+  const [selectMode, setSelectMode] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [levelsOpen, setLevelsOpen] = useState(false);
+  const toggle = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Mine | null>(null);
   const [filter, setFilter] = useState<MineType | "all">("all");
@@ -94,6 +109,40 @@ function MinesPage() {
         }}
       />
 
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" variant="outline" onClick={() => setLevelsOpen(true)} disabled={mines.length === 0}>
+          <Zap className="mr-1 h-4 w-4" />
+          {pt ? "Gerenciar níveis" : "Manage levels"}
+        </Button>
+        <Button
+          size="sm"
+          variant={selectMode ? "default" : "outline"}
+          disabled={mines.length === 0}
+          onClick={() => {
+            setSelectMode((v) => !v);
+            setSelected(new Set());
+          }}
+        >
+          <CheckSquare className="mr-1 h-4 w-4" />
+          {selectMode ? (pt ? "Concluir seleção" : "Done selecting") : pt ? "Selecionar" : "Select"}
+        </Button>
+        {selectMode && (
+          <>
+            <Button size="sm" variant="outline" onClick={() => setSelected(new Set(list.map((m) => m.id)))}>
+              {pt ? "Selecionar todas" : "Select all"} ({list.length})
+            </Button>
+            <Button size="sm" variant="destructive" disabled={selected.size === 0} onClick={() => setConfirmDelete(true)}>
+              <Trash2 className="mr-1 h-4 w-4" />
+              {pt ? "Excluir selecionadas" : "Delete selected"} ({selected.size})
+            </Button>
+          </>
+        )}
+        <Button size="sm" variant="outline" className="ml-auto" disabled={mines.length === 0} onClick={() => setConfirmReset(true)}>
+          <RotateCcw className="mr-1 h-4 w-4" />
+          {pt ? "Resetar carteira" : "Reset wallet"}
+        </Button>
+      </div>
+
       <div className="flex flex-wrap items-center gap-2">
         <button
           onClick={() => setFilter("all")}
@@ -137,8 +186,22 @@ function MinesPage() {
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
           {list.map((mine) => (
-            <article key={mine.id} className="panel p-4">
+            <article
+              key={mine.id}
+              className={cn("panel p-4", selectMode && selected.has(mine.id) && "ring-2 ring-primary")}
+              onClick={selectMode ? () => toggle(mine.id) : undefined}
+            >
               <div className="flex items-start gap-3">
+                {selectMode && (
+                  <input
+                    type="checkbox"
+                    aria-label={mine.name || t.mineTypes[mine.type]}
+                    className="mt-1 h-5 w-5 accent-[var(--primary)]"
+                    checked={selected.has(mine.id)}
+                    onChange={() => toggle(mine.id)}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )}
                 <span className="text-2xl">{MINE_META[mine.type].emoji}</span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-display font-semibold">
@@ -149,7 +212,7 @@ function MinesPage() {
                     {mine.externalId ? ` · #${mine.externalId}` : ""}
                   </p>
                 </div>
-                <div className="flex gap-1">
+                <div className={cn("flex gap-1", selectMode && "hidden")}>
                   <IconBtn
                     label={t.common.edit}
                     onClick={() => {
@@ -187,6 +250,43 @@ function MinesPage() {
       )}
 
       <MineDialog open={open} onOpenChange={setOpen} editing={editing} />
+      <LevelManager open={levelsOpen} onOpenChange={setLevelsOpen} />
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title={pt ? "Excluir minas selecionadas?" : "Delete selected mines?"}
+        description={
+          pt
+            ? `${selected.size} mina(s) serão excluídas. Essa ação não poderá ser desfeita.`
+            : `${selected.size} mine(s) will be deleted. This cannot be undone.`
+        }
+        confirmLabel={t.common.delete}
+        destructive
+        onConfirm={() => {
+          removeMines([...selected]);
+          toast.success(pt ? `${selected.size} mina(s) excluída(s)` : `${selected.size} mine(s) deleted`);
+          setSelected(new Set());
+          setSelectMode(false);
+        }}
+      />
+      <ConfirmDialog
+        open={confirmReset}
+        onOpenChange={setConfirmReset}
+        title={pt ? "Resetar carteira?" : "Reset wallet?"}
+        description={
+          pt
+            ? "Essa ação irá excluir todas as suas minas e não poderá ser desfeita."
+            : "This will delete all your mines and cannot be undone."
+        }
+        confirmLabel={pt ? "Resetar" : "Reset"}
+        destructive
+        onConfirm={() => {
+          removeMines(mines.map((m) => m.id));
+          setSelected(new Set());
+          setSelectMode(false);
+          toast.success(pt ? "Carteira resetada" : "Wallet reset");
+        }}
+      />
     </div>
   );
 }
@@ -251,9 +351,8 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <div className="space-y-1">
           <Label htmlFor="qa-qty">{t.common.quantity}</Label>
-          <Input
+          <NumericInput
             id="qa-qty"
-            type="number"
             min={1}
             inputMode="numeric"
             value={quantity}
@@ -262,9 +361,8 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
         </div>
         <div className="space-y-1">
           <Label htmlFor="qa-level">{t.mines.avgLevel}</Label>
-          <Input
+          <NumericInput
             id="qa-level"
-            type="number"
             min={1}
             max={params.maxLevel}
             inputMode="numeric"
