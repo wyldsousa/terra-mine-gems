@@ -61,12 +61,12 @@ function RankingPage() {
         <Button size="sm" variant={by === "units" ? "secondary" : "ghost"} onClick={() => setBy("units")}>Maior quantidade de {unit}</Button>
       </div>
 
-      {myIdx >= 0 && (
+      {myIdx >= 0 && sorted[myIdx] && (
         <section className="panel-glow space-y-1 p-4 text-sm">
           <p className="text-lg font-semibold">Você está em #{myIdx + 1}</p>
-          <p>{sorted[myIdx].units_count} {unit} · {formatMoney(Number(sorted[myIdx].monthly_income))}/mês</p>
-          {myIdx > 0 && <p className="text-muted-foreground">Faltam {diff(sorted[myIdx - 1], sorted[myIdx])} para #{myIdx}</p>}
-          {myIdx < sorted.length - 1 && <p className="text-muted-foreground">Vantagem de {diff(sorted[myIdx], sorted[myIdx + 1])} sobre #{myIdx + 2}</p>}
+          <p>{sorted[myIdx]!.units_count} {unit} · {formatMoney(Number(sorted[myIdx]!.monthly_income))}/mês</p>
+          {myIdx > 0 && <p className="text-muted-foreground">Faltam {diff(sorted[myIdx - 1]!, sorted[myIdx]!)} para #{myIdx}</p>}
+          {myIdx < sorted.length - 1 && <p className="text-muted-foreground">Vantagem de {diff(sorted[myIdx]!, sorted[myIdx + 1]!)} sobre #{myIdx + 2}</p>}
         </section>
       )}
       {!user && <p className="text-sm"><Link to="/perfil" className="text-primary">Entre no perfil</Link> para participar.</p>}
