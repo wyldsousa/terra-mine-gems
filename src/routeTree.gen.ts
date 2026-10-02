@@ -16,6 +16,8 @@ import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as EstatisticasRouteImport } from './routes/estatisticas'
 import { Route as FortuneRouteImport } from './routes/fortune'
 import { Route as MinasRouteImport } from './routes/minas'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as RankingRouteImport } from './routes/ranking'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +54,16 @@ const MinasRoute = MinasRouteImport.update({
   path: '/minas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingRoute = RankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +73,8 @@ export interface FileRoutesByFullPath {
   '/estatisticas': typeof EstatisticasRoute
   '/fortune': typeof FortuneRoute
   '/minas': typeof MinasRoute
+  '/perfil': typeof PerfilRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +84,8 @@ export interface FileRoutesByTo {
   '/estatisticas': typeof EstatisticasRoute
   '/fortune': typeof FortuneRoute
   '/minas': typeof MinasRoute
+  '/perfil': typeof PerfilRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +96,8 @@ export interface FileRoutesById {
   '/estatisticas': typeof EstatisticasRoute
   '/fortune': typeof FortuneRoute
   '/minas': typeof MinasRoute
+  '/perfil': typeof PerfilRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +109,8 @@ export interface FileRouteTypes {
     | '/estatisticas'
     | '/fortune'
     | '/minas'
+    | '/perfil'
+    | '/ranking'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +120,8 @@ export interface FileRouteTypes {
     | '/estatisticas'
     | '/fortune'
     | '/minas'
+    | '/perfil'
+    | '/ranking'
   id:
     | '__root__'
     | '/'
@@ -109,6 +131,8 @@ export interface FileRouteTypes {
     | '/estatisticas'
     | '/fortune'
     | '/minas'
+    | '/perfil'
+    | '/ranking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +143,8 @@ export interface RootRouteChildren {
   EstatisticasRoute: typeof EstatisticasRoute
   FortuneRoute: typeof FortuneRoute
   MinasRoute: typeof MinasRoute
+  PerfilRoute: typeof PerfilRoute
+  RankingRoute: typeof RankingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +198,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MinasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ranking': {
+      id: '/ranking'
+      path: '/ranking'
+      fullPath: '/ranking'
+      preLoaderRoute: typeof RankingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +223,8 @@ const rootRouteChildren: RootRouteChildren = {
   EstatisticasRoute: EstatisticasRoute,
   FortuneRoute: FortuneRoute,
   MinasRoute: MinasRoute,
+  PerfilRoute: PerfilRoute,
+  RankingRoute: RankingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
