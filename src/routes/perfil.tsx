@@ -52,7 +52,7 @@ function ProfilePage() {
       if (data) {
         setName(data.display_name); setAvatar(data.avatar_url); setOptIn(data.ranking_opt_in); setCalcs(data.calculators);
       } else {
-        const display = (user.user_metadata?.full_name as string | undefined)?.slice(0, 40) || "Jogador";
+        const display = (user.user_metadata?.["full_name"] as string | undefined)?.slice(0, 40) || "Jogador";
         await supabase.from("profiles").insert({ id: user.id, display_name: display });
         setName(display);
       }
