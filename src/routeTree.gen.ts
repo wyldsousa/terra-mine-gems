@@ -10,14 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AtlasRouteImport } from './routes/atlas'
 import { Route as CalculadoraRouteImport } from './routes/calculadora'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as EstatisticasRouteImport } from './routes/estatisticas'
+import { Route as FortuneRouteImport } from './routes/fortune'
 import { Route as MinasRouteImport } from './routes/minas'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as RankingRouteImport } from './routes/ranking'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtlasRoute = AtlasRouteImport.update({
+  id: '/atlas',
+  path: '/atlas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalculadoraRoute = CalculadoraRouteImport.update({
@@ -35,55 +44,107 @@ const EstatisticasRoute = EstatisticasRouteImport.update({
   path: '/estatisticas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FortuneRoute = FortuneRouteImport.update({
+  id: '/fortune',
+  path: '/fortune',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MinasRoute = MinasRouteImport.update({
   id: '/minas',
   path: '/minas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RankingRoute = RankingRouteImport.update({
+  id: '/ranking',
+  path: '/ranking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/atlas': typeof AtlasRoute
   '/calculadora': typeof CalculadoraRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
+  '/fortune': typeof FortuneRoute
   '/minas': typeof MinasRoute
+  '/perfil': typeof PerfilRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/atlas': typeof AtlasRoute
   '/calculadora': typeof CalculadoraRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
+  '/fortune': typeof FortuneRoute
   '/minas': typeof MinasRoute
+  '/perfil': typeof PerfilRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/atlas': typeof AtlasRoute
   '/calculadora': typeof CalculadoraRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
+  '/fortune': typeof FortuneRoute
   '/minas': typeof MinasRoute
+  '/perfil': typeof PerfilRoute
+  '/ranking': typeof RankingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/calculadora' | '/configuracoes' | '/estatisticas' | '/minas'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/calculadora' | '/configuracoes' | '/estatisticas' | '/minas'
-  id:
-    | '__root__'
     | '/'
+    | '/atlas'
     | '/calculadora'
     | '/configuracoes'
     | '/estatisticas'
+    | '/fortune'
     | '/minas'
+    | '/perfil'
+    | '/ranking'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/atlas'
+    | '/calculadora'
+    | '/configuracoes'
+    | '/estatisticas'
+    | '/fortune'
+    | '/minas'
+    | '/perfil'
+    | '/ranking'
+  id:
+    | '__root__'
+    | '/'
+    | '/atlas'
+    | '/calculadora'
+    | '/configuracoes'
+    | '/estatisticas'
+    | '/fortune'
+    | '/minas'
+    | '/perfil'
+    | '/ranking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AtlasRoute: typeof AtlasRoute
   CalculadoraRoute: typeof CalculadoraRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   EstatisticasRoute: typeof EstatisticasRoute
+  FortuneRoute: typeof FortuneRoute
   MinasRoute: typeof MinasRoute
+  PerfilRoute: typeof PerfilRoute
+  RankingRoute: typeof RankingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -93,6 +154,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atlas': {
+      id: '/atlas'
+      path: '/atlas'
+      fullPath: '/atlas'
+      preLoaderRoute: typeof AtlasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calculadora': {
@@ -116,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EstatisticasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/fortune': {
+      id: '/fortune'
+      path: '/fortune'
+      fullPath: '/fortune'
+      preLoaderRoute: typeof FortuneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/minas': {
       id: '/minas'
       path: '/minas'
@@ -123,15 +198,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MinasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ranking': {
+      id: '/ranking'
+      path: '/ranking'
+      fullPath: '/ranking'
+      preLoaderRoute: typeof RankingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AtlasRoute: AtlasRoute,
   CalculadoraRoute: CalculadoraRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   EstatisticasRoute: EstatisticasRoute,
+  FortuneRoute: FortuneRoute,
   MinasRoute: MinasRoute,
+  PerfilRoute: PerfilRoute,
+  RankingRoute: RankingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
