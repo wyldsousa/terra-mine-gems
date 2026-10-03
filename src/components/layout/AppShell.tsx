@@ -1,10 +1,10 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BarChart3, Calculator, Gauge, Pickaxe, Settings } from "lucide-react";
+import { BarChart3, Calculator, Gauge, Pickaxe, Settings, User } from "lucide-react";
 import type { ReactNode } from "react";
 import { useAppState } from "@/hooks/useAppState";
 import { cn } from "@/lib/utils";
 
-const ICONS = { dashboard: Gauge, mines: Pickaxe, calculator: Calculator, stats: BarChart3, settings: Settings };
+const ICONS = { dashboard: Gauge, mines: Pickaxe, calculator: Calculator, stats: BarChart3, settings: Settings, profile: User };
 
 export const NAV = [
   { to: "/", key: "dashboard" as const },
@@ -12,7 +12,9 @@ export const NAV = [
   { to: "/calculadora", key: "calculator" as const },
   { to: "/estatisticas", key: "stats" as const },
   { to: "/configuracoes", key: "settings" as const },
-];
+  { to: "/perfil", key: "profile" as const },
+] as const;
+const label = (t: { nav: Record<string, string> }, k: string, pt: boolean) => (k === "profile" ? (pt ? "Perfil" : "Profile") : t.nav[k]);
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { t, state, setLanguage } = useAppState();
@@ -44,7 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   )}
                 >
                   <Icon className="h-4 w-4" />
-                  {t.nav[item.key]}
+                  {label(t as never, item.key, state.language === "pt")}
                 </Link>
               );
             })}
@@ -77,7 +79,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 )}
               >
                 <Icon className="h-5 w-5" />
-                <span className="truncate">{t.nav[item.key]}</span>
+                <span className="truncate">{label(t as never, item.key, state.language === "pt")}</span>
               </Link>
             );
           })}

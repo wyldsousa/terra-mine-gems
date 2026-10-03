@@ -40,7 +40,7 @@ function ProfilePage() {
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [optIn, setOptIn] = useState(false);
-  const [calcs, setCalcs] = useState<string[]>(["terramine"]);
+  const [calcs, setCalcs] = useState<string[]>(["atlas", "fortune", "terramine"]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => setInc(localIncomes(mines, params)), [mines, params]);

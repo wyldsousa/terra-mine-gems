@@ -140,6 +140,12 @@ function Dashboard() {
         </div>
       </section>
 
+      <section className="grid gap-3 sm:grid-cols-3">
+        <Link to="/ranking" className="panel p-4 font-semibold hover:bg-secondary">🏆 Ranking TerraMine</Link>
+        <Link to="/atlas" className="panel p-4 font-semibold hover:bg-secondary">🌎 Atlas Earth</Link>
+        <Link to="/fortune" className="panel p-4 font-semibold hover:bg-secondary">🍀 Fortune World</Link>
+      </section>
+
       <HowWeCalculate />
     </div>
   );
