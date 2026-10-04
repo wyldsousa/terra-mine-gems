@@ -1,4 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useGameMode } from "@/hooks/useGameMode";
+import { NumericInput, parseDecimal } from "@/components/common/NumericInput";
+import { fmtCur } from "@/components/land/LandPages";
 import { useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { toast } from "sonner";
@@ -25,7 +28,7 @@ export const Route = createFileRoute("/perfil")({
   component: ProfilePage,
 });
 
-const CALCS: { id: RankGame; label: string; to: "/calculadora" | "/atlas" | "/fortune" }[] = [
+const CALCS: { id: RankGame; label: string; to: string }[] = [
   { id: "atlas", label: "🌎 Atlas Earth", to: "/atlas" },
   { id: "fortune", label: "🍀 Fortune World", to: "/fortune" },
   { id: "terramine", label: "⛏️ TerraMine", to: "/calculadora" },
@@ -43,7 +46,13 @@ function ProfilePage() {
   const [calcs, setCalcs] = useState<string[]>(["atlas", "fortune", "terramine"]);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => setInc(localIncomes(mines, params)), [mines, params]);
+  const { land, mode, setMode } = useGameMode();
+  const navigate = useNavigate();
+  const [eurUsd, setEurUsd] = useState<string>("");
+  useEffect(() => setEurUsd(localStorage.getItem("eur-usd-rate") ?? ""), []);
+  useEffect(() => setInc(localIncomes(mines, params, land)), [mines, params, land]);
+  const usd = (id: RankGame, v: number | null) => (v === null ? null : id === "fortune" ? (eurUsd ? v * parseDecimal(eurUsd) : null) : v);
+  const show = (id: RankGame, v: number) => fmtCur(v, id === "fortune" ? "EUR" : "USD");
 
   useEffect(() => {
     if (!user) return;
@@ -61,9 +70,9 @@ function ProfilePage() {
 
   const total = useMemo(() => {
     if (!inc) return null;
-    const vals = CALCS.filter((c) => calcs.includes(c.id)).map((c) => inc[c.id].monthly).filter((v): v is number => v !== null);
+    const vals = CALCS.filter((c) => calcs.includes(c.id)).map((c) => usd(c.id, inc[c.id].monthly)).filter((v): v is number => v !== null);
     return vals.length ? vals.reduce((a, b) => a + b, 0) : null;
-  }, [inc, calcs]);
+  }, [inc, calcs, eurUsd]);
 
   const save = async () => {
     if (!user || !inc) return;
@@ -81,7 +90,7 @@ function ProfilePage() {
       {!loading && !user && (
         <section className="panel space-y-3 p-5">
           <p className="text-sm text-muted-foreground">As calculadoras funcionam sem conta. Entre apenas para criar seu perfil público e participar do ranking — sua carteira continua só neste dispositivo.</p>
-          <Button onClick={async () => { const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/perfil" }); if (r.error) toast.error("Não foi possível entrar"); }}>
+          <Button onClick={async () => { const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin }); if (r.error) toast.error("Não foi possível entrar: " + (r.error.message ?? "tente novamente")); }}>
             Entrar com Google
           </Button>
         </section>
@@ -116,7 +125,7 @@ function ProfilePage() {
                     <input type="checkbox" checked={calcs.includes(c.id)} onChange={(e) => setCalcs((p) => (e.target.checked ? [...p, c.id] : p.filter((x) => x !== c.id)))} />
                     {c.label}
                   </label>
-                  <Link to={c.to} className="text-xs text-primary">Abrir</Link>
+                  <button type="button" className="text-xs text-primary" onClick={() => { setMode(c.id); navigate({ to: "/" }); }}>{mode === c.id ? "Ativa" : "Usar"}</button>
                 </div>
               ))}
             </div>
@@ -135,9 +144,13 @@ function ProfilePage() {
           {CALCS.map((c) => (
             <div key={c.id} className="flex justify-between text-sm">
               <span>{c.label}</span>
-              <span className="num">{inc[c.id].monthly === null ? "Não configurada" : `${formatMoney(inc[c.id].monthly!)}/mês`}</span>
+              <span className="num">{inc[c.id].monthly === null ? "Não configurada" : `${show(c.id, inc[c.id].monthly!)}/mês`}</span>
             </div>
           ))}
+          <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
+            <Label htmlFor="eurusd">Cotação 1 € = US$ (para somar o Fortune World no total)</Label>
+            <NumericInput id="eurusd" className="w-28" value={eurUsd} onChange={(e) => { setEurUsd(e.target.value); localStorage.setItem("eur-usd-rate", e.target.value); }} />
+          </div>
           <div className="flex justify-between border-t border-border pt-2 font-semibold">
             <span>Total estimado</span><span className="num">{total === null ? "Não configurada" : `${formatMoney(total)}/mês`}</span>
           </div>
@@ -152,7 +165,7 @@ function ProfilePage() {
           </div>
           <div className="h-56">
             <ResponsiveContainer>
-              <BarChart data={CALCS.map((c) => ({ name: c.label, v: inc[c.id].monthly ?? 0 }))}>
+              <BarChart data={CALCS.map((c) => ({ name: c.label, v: usd(c.id, inc[c.id].monthly) ?? 0 }))}>
                 <XAxis dataKey="name" fontSize={11} stroke="currentColor" />
                 <YAxis fontSize={11} stroke="currentColor" width={60} />
                 <Tooltip formatter={(v: number) => formatMoney(v)} />
