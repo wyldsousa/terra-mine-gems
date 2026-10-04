@@ -96,6 +96,19 @@
   --shadow-deep: 0 18px 40px -18px oklch(0.05 0.02 264 / 0.9);
 }
 
+[data-game="atlas"] {
+  --primary: oklch(0.74 0.14 230);
+  --primary-foreground: oklch(0.18 0.03 240);
+  --ring: oklch(0.74 0.14 230);
+  --gradient-ember: linear-gradient(135deg, oklch(0.78 0.13 210) 0%, oklch(0.7 0.15 160) 100%);
+}
+[data-game="fortune"] {
+  --primary: oklch(0.76 0.17 150);
+  --primary-foreground: oklch(0.18 0.04 150);
+  --ring: oklch(0.76 0.17 150);
+  --gradient-ember: linear-gradient(135deg, oklch(0.8 0.17 140) 0%, oklch(0.82 0.15 90) 100%);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);
