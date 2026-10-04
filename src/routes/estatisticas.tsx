@@ -1,3 +1,4 @@
+import { ModeSwitch } from "@/components/land/ModeSwitch";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import {
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/estatisticas")({
       },
     ],
   }),
-  component: StatsPage,
+  component: () => <ModeSwitch page="stats" terramine={StatsPage} />,
 });
 
 function StatsPage() {

@@ -1,14 +1,25 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { GameCalculator } from "@/components/games/GameCalculator";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useGameMode } from "@/hooks/useGameMode";
 
 export const Route = createFileRoute("/atlas")({
   head: () => ({
     meta: [
       { title: "Atlas Earth — Calculadora de renda" },
-      { name: "description", content: "Calcule a renda estimada dos seus terrenos no Atlas Earth." },
+      { name: "description", content: "Abra o modo Atlas Earth: terrenos, boost, eventos e metas." },
       { property: "og:title", content: "Atlas Earth — Calculadora de renda" },
-      { property: "og:description", content: "Calcule a renda estimada dos seus terrenos no Atlas Earth." },
+      { property: "og:description", content: "Abra o modo Atlas Earth: terrenos, boost, eventos e metas." },
     ],
   }),
-  component: () => <GameCalculator game="atlas" />,
+  component: OpenMode,
 });
+
+function OpenMode() {
+  const { setMode } = useGameMode();
+  const navigate = useNavigate();
+  useEffect(() => {
+    setMode("atlas");
+    navigate({ to: "/", replace: true });
+  }, [setMode, navigate]);
+  return null;
+}

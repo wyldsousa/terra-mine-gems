@@ -1,3 +1,4 @@
+import { ModeSwitch } from "@/components/land/ModeSwitch";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { SectionTitle, StatCard } from "@/components/common/StatCard";
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  component: Dashboard,
+  component: () => <ModeSwitch page="dashboard" terramine={Dashboard} />,
 });
 
 function Dashboard() {
@@ -140,10 +141,9 @@ function Dashboard() {
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-3">
+      <section className="grid gap-3 sm:grid-cols-2">
         <Link to="/ranking" className="panel p-4 font-semibold hover:bg-secondary">🏆 Ranking TerraMine</Link>
-        <Link to="/atlas" className="panel p-4 font-semibold hover:bg-secondary">🌎 Atlas Earth</Link>
-        <Link to="/fortune" className="panel p-4 font-semibold hover:bg-secondary">🍀 Fortune World</Link>
+        <Link to="/perfil" className="panel p-4 font-semibold hover:bg-secondary">👤 Meu Perfil</Link>
       </section>
 
       <HowWeCalculate />
