@@ -1,14 +1,25 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { GameCalculator } from "@/components/games/GameCalculator";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { useGameMode } from "@/hooks/useGameMode";
 
 export const Route = createFileRoute("/fortune")({
   head: () => ({
     meta: [
       { title: "Fortune World — Calculadora de renda" },
-      { name: "description", content: "Calcule a renda estimada das suas propriedades no Fortune World." },
+      { name: "description", content: "Abra o modo Fortune World: terrenos, boost, eventos e metas." },
       { property: "og:title", content: "Fortune World — Calculadora de renda" },
-      { property: "og:description", content: "Calcule a renda estimada das suas propriedades no Fortune World." },
+      { property: "og:description", content: "Abra o modo Fortune World: terrenos, boost, eventos e metas." },
     ],
   }),
-  component: () => <GameCalculator game="fortune" />,
+  component: OpenMode,
 });
+
+function OpenMode() {
+  const { setMode } = useGameMode();
+  const navigate = useNavigate();
+  useEffect(() => {
+    setMode("fortune");
+    navigate({ to: "/", replace: true });
+  }, [setMode, navigate]);
+  return null;
+}

@@ -1,3 +1,4 @@
+import { ModeSwitch } from "@/components/land/ModeSwitch";
 import { createFileRoute } from "@tanstack/react-router";
 import { NumericInput } from "@/components/common/NumericInput";
 import { useRef } from "react";
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/configuracoes")({
       },
     ],
   }),
-  component: SettingsPage,
+  component: () => <ModeSwitch page="settings" terramine={SettingsPage} />,
 });
 
 function NumberField({

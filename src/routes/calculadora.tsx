@@ -1,3 +1,4 @@
+import { ModeSwitch } from "@/components/land/ModeSwitch";
 import { createFileRoute } from "@tanstack/react-router";
 import { NumericInput } from "@/components/common/NumericInput";
 import { useMemo, useState } from "react";
@@ -43,7 +44,7 @@ export const Route = createFileRoute("/calculadora")({
       { property: "og:description", content: "Boost, saque líquido, metas, projeções, upgrades e expansão." },
     ],
   }),
-  component: CalculatorPage,
+  component: () => <ModeSwitch page="calculator" terramine={CalculatorPage} />,
 });
 
 function CalculatorPage() {

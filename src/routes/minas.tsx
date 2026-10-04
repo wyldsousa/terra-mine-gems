@@ -1,3 +1,4 @@
+import { ModeSwitch } from "@/components/land/ModeSwitch";
 import { createFileRoute } from "@tanstack/react-router";
 import { NumericInput } from "@/components/common/NumericInput";
 import { CheckSquare, Copy, Pencil, Plus, RotateCcw, Trash2, Zap } from "lucide-react";
@@ -43,7 +44,7 @@ export const Route = createFileRoute("/minas")({
       { property: "og:description", content: "Gerencie suas minas e acompanhe o rendimento de cada uma." },
     ],
   }),
-  component: MinesPage,
+  component: () => <ModeSwitch page="units" terramine={MinesPage} />,
 });
 
 type SortKey = "incomeDesc" | "incomeAsc" | "levelDesc" | "levelAsc" | "type";

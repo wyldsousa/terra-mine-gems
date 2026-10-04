@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useGameMode } from "@/hooks/useGameMode";
+import { fmtCur } from "@/components/land/LandPages";
 import { supabase } from "@/integrations/supabase/client";
 import { formatMoney } from "@/lib/format";
 import type { RankGame } from "@/lib/profile";
@@ -23,13 +25,16 @@ interface Row { user_id: string; units_count: number; monthly_income: number; pr
 const GAMES: { id: RankGame; label: string; unit: string }[] = [
   { id: "terramine", label: "⛏️ TerraMine", unit: "minas" },
   { id: "atlas", label: "🌎 Atlas Earth", unit: "terrenos" },
-  { id: "fortune", label: "🍀 Fortune World", unit: "propriedades" },
+  { id: "fortune", label: "🍀 Fortune World", unit: "parcelas" },
 ];
 const MEDAL = ["🥇", "🥈", "🥉"];
 
 function RankingPage() {
   const { user } = useAuth();
-  const [game, setGame] = useState<RankGame>("terramine");
+  const { mode } = useGameMode();
+  const [game, setGame] = useState<RankGame>(mode);
+  useEffect(() => setGame(mode), [mode]);
+  const money = (v: number) => fmtCur(v, game === "fortune" ? "EUR" : "USD");
   const [by, setBy] = useState<"units" | "income">("income");
   const [rows, setRows] = useState<Row[] | null>(null);
   const unit = GAMES.find((g) => g.id === game)!.unit;
@@ -46,8 +51,8 @@ function RankingPage() {
   const val = (r: Row) => (by === "units" ? r.units_count : Number(r.monthly_income));
   const sorted = [...(rows ?? [])].sort((a, b) => val(b) - val(a));
   const myIdx = user ? sorted.findIndex((r) => r.user_id === user.id) : -1;
-  const fmt = (r: Row) => (by === "units" ? `${r.units_count} ${unit}` : `${formatMoney(Number(r.monthly_income))}/mês`);
-  const diff = (a: Row, b: Row) => (by === "units" ? `${Math.abs(a.units_count - b.units_count)} ${unit}` : formatMoney(Math.abs(Number(a.monthly_income) - Number(b.monthly_income))));
+  const fmt = (r: Row) => (by === "units" ? `${r.units_count} ${unit}` : `${money(Number(r.monthly_income))}/mês`);
+  const diff = (a: Row, b: Row) => (by === "units" ? `${Math.abs(a.units_count - b.units_count)} ${unit}` : money(Math.abs(Number(a.monthly_income) - Number(b.monthly_income))));
 
   return (
     <div className="space-y-5">
@@ -64,7 +69,7 @@ function RankingPage() {
       {myIdx >= 0 && sorted[myIdx] && (
         <section className="panel-glow space-y-1 p-4 text-sm">
           <p className="text-lg font-semibold">Você está em #{myIdx + 1}</p>
-          <p>{sorted[myIdx]!.units_count} {unit} · {formatMoney(Number(sorted[myIdx]!.monthly_income))}/mês</p>
+          <p>{sorted[myIdx]!.units_count} {unit} · {money(Number(sorted[myIdx]!.monthly_income))}/mês</p>
           {myIdx > 0 && <p className="text-muted-foreground">Faltam {diff(sorted[myIdx - 1]!, sorted[myIdx]!)} para #{myIdx}</p>}
           {myIdx < sorted.length - 1 && <p className="text-muted-foreground">Vantagem de {diff(sorted[myIdx]!, sorted[myIdx + 1]!)} sobre #{myIdx + 2}</p>}
         </section>
