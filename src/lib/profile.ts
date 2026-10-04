@@ -1,20 +1,23 @@
 import { supabase } from "@/integrations/supabase/client";
 import { calculatePortfolioIncome } from "@/calculations/terraMineCalculator";
-import { gameMonthly, gameUnits, loadGame } from "@/lib/games";
+import { calculateLandIncome } from "@/calculations/landGameCalculator";
+import type { LandGameId, LandState } from "@/data/landGames";
 import type { Mine, Params } from "@/types";
 
 export type RankGame = "terramine" | "atlas" | "fortune";
 
-export function localIncomes(mines: Mine[], params: Params) {
-  const atlas = loadGame("atlas");
-  const fortune = loadGame("fortune");
+export function localIncomes(mines: Mine[], params: Params, land: Record<LandGameId, LandState>) {
+  const li = (g: LandGameId) => {
+    const r = calculateLandIncome(land[g]);
+    return { monthly: r.units > 0 ? r.monthly : null, units: r.units };
+  };
   return {
     terramine: {
       monthly: mines.length ? calculatePortfolioIncome(mines, params, params.boostHoursPerDay).withBoost.perMonth : null,
       units: mines.length,
     },
-    atlas: { monthly: gameMonthly(atlas), units: gameUnits(atlas) },
-    fortune: { monthly: gameMonthly(fortune), units: gameUnits(fortune) },
+    atlas: li("atlas"),
+    fortune: li("fortune"),
   };
 }
 
