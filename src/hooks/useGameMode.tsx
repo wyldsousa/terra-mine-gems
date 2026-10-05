@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { defaultLandState, type GameMode, type LandGameId, type LandState } from "@/data/landGames";
+import { PARAMS_VERSION, defaultLandState, type GameMode, type LandGameId, type LandState } from "@/data/landGames";
 
 const MODE_KEY = "active-game-mode";
 const landKey = (g: LandGameId) => `land-game-${g}-v2`;
@@ -10,7 +10,15 @@ function loadLand(g: LandGameId): LandState {
     const raw = localStorage.getItem(landKey(g));
     if (!raw) return def;
     const d = JSON.parse(raw) as Partial<LandState>;
-    return { ...def, ...d, params: { ...def.params, ...(d.params ?? {}) } };
+    const params = { ...def.params, ...(d.params ?? {}) };
+    if ((d.params?.version ?? 0) < PARAMS_VERSION) {
+      // Migration: official per-second rates and badge-based bonus for both games.
+      params.rarities = def.params.rarities;
+      params.bonusSource = "badges";
+      params.bonusTiers = def.params.bonusTiers;
+      params.version = PARAMS_VERSION;
+    }
+    return { ...def, ...d, params };
   } catch {
     return def;
   }

@@ -10,7 +10,20 @@ describe("land games", () => {
     expect(tierValue(t, 150)).toBe(8);
     expect(tierValue(t, 401)).toBe(2);
   });
-  it("fortune boost + qty bonus", () => {
+  it("fortune bonus comes from badges, not parcels", () => {
+    const s = defaultLandState("fortune");
+    s.counts = { common: 200 };
+    s.badges = 0;
+    expect(calculateLandIncome(s).bonusPercent).toBe(0);
+    s.badges = 15;
+    expect(calculateLandIncome(s).bonusPercent).toBe(10);
+    expect(calculateLandIncome(s).multiplier).toBe(10);
+  });
+  it("atlas official per-second rates", () => {
+    const r = Object.fromEntries(DEFAULT_LAND_PARAMS.atlas.rarities.map((x) => [x.id, x.perSecond]));
+    expect(r).toEqual({ common: 0.000000011, rare: 0.000000016, epic: 0.000000022, legendary: 0.000000044 });
+  });
+  it("fortune boost + badge tiers", () => {
     const p = DEFAULT_LAND_PARAMS.fortune;
     expect(tierValue(p.boostTiers, 50)).toBe(20);
     expect(tierValue(p.boostTiers, 751)).toBe(2);

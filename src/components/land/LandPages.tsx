@@ -12,7 +12,14 @@ import { DEFAULT_LAND_PARAMS, GAME_INFO, type LandGameId, type LandState, type T
 import { useGameMode } from "@/hooks/useGameMode";
 import { formatMoney, formatNumber } from "@/lib/format";
 
+/** Currency format that keeps tiny per-second values exact (e.g. $0.000000011). */
 export function fmtCur(v: number, cur: "USD" | "EUR") {
+  const sym = cur === "EUR" ? "€" : "$";
+  const abs = Math.abs(v);
+  if (abs > 0 && abs < 0.0001) {
+    const str = abs.toLocaleString("en-US", { maximumSignificantDigits: 4, maximumFractionDigits: 20 });
+    return `${v < 0 ? "-" : ""}${sym}${str}`;
+  }
   const s = formatMoney(v);
   return cur === "EUR" ? s.replace("$", "€") : s;
 }
@@ -72,7 +79,7 @@ export function LandDashboard({ game }: { game: LandGameId }) {
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <Card label={info.units} value={formatNumber(inc.units, 0)} />
         <Card label="Boost atual" value={`${inc.multiplier}×`} sub={`${s.boostHoursPerDay}h/dia`} />
-        <Card label={s.params.bonusSource === "badges" ? `Emblemas (${s.badges})` : "Bônus por quantidade"} value={`+${inc.bonusPercent}%`} />
+        <Card label={`Emblemas (${s.badges})`} value={`+${inc.bonusPercent}%`} />
         <Card label={s.params.eventName} value={nextEvents[0] ? fmtDate(nextEvents[0]) : "Data não definida"} sub={`${s.params.eventMultiplier}× · ${s.events.length} por mês`} />
       </section>
       <section className="panel p-5">
@@ -178,7 +185,7 @@ export function LandCalculator({ game }: { game: LandGameId }) {
           <Label htmlFor="bh">Horas de boost por dia{game === "atlas" ? " (1 anúncio = 1h, acumula até " + p.maxBoostHours + "h)" : ""}</Label>
           <NumericInput id="bh" value={s.boostHoursPerDay} onChange={(e) => update((x) => ({ ...x, boostHoursPerDay: Math.min(24, Math.max(0, parseDecimal(e.target.value))) }))} />
         </div>
-        {p.bonusSource === "badges" ? (
+        {true ? (
           <div className="space-y-1">
             <Label htmlFor="badges">Emblemas</Label>
             <NumericInput id="badges" inputMode="numeric" value={s.badges} onChange={(e) => update((x) => ({ ...x, badges: Math.max(0, Math.floor(parseDecimal(e.target.value))) }))} />
@@ -332,7 +339,7 @@ export function LandSettings({ game }: { game: LandGameId }) {
       </section>
       <section className="panel grid gap-6 p-4 md:grid-cols-2">
         <TierEditor title="Boost por quantidade" suffix="×" tiers={p.boostTiers} onChange={(t) => setP({ boostTiers: t })} />
-        <TierEditor title={p.bonusSource === "badges" ? "Bônus por emblemas" : "Bônus por quantidade"} suffix="%" tiers={p.bonusTiers} onChange={(t) => setP({ bonusTiers: t })} />
+        <TierEditor title="Bônus por emblemas" suffix="%" tiers={p.bonusTiers} onChange={(t) => setP({ bonusTiers: t })} />
       </section>
       <section className="panel grid gap-3 p-4 sm:grid-cols-3">
         <div className="space-y-1"><Label htmlFor="evm">Multiplicador do evento</Label><NumericInput id="evm" value={p.eventMultiplier} onChange={(e) => setP({ eventMultiplier: parseDecimal(e.target.value) })} /></div>
