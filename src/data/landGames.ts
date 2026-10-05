@@ -26,11 +26,13 @@ export interface LandEvent {
   durationHours: number;
 }
 export interface LandParams {
+  /** Schema version of the params; older stored params get migrated. */
+  version?: number;
   currency: "USD" | "EUR";
   rarities: Rarity[];
   boostTiers: Tier[];
   bonusTiers: Tier[];
-  /** Atlas: bonus by badges. Fortune: bonus by total parcels. */
+  /** Both games: permanent bonus by badges (emblemas). Unit count only drives the boost multiplier. */
   bonusSource: "badges" | "units";
   eventMultiplier: number;
   eventName: string;
@@ -54,6 +56,7 @@ export const GAME_INFO: Record<GameMode, { emoji: string; name: string; unit: st
   fortune: { emoji: "🍀", name: "Fortune World", unit: "parcela", units: "parcelas", unitsTitle: "Minhas Parcelas" },
 };
 
+export const PARAMS_VERSION = 2;
 const BADGE_OR_QTY_BONUS: Tier[] = [
   { min: 1, value: 5 },
   { min: 11, value: 10 },
@@ -64,6 +67,7 @@ const BADGE_OR_QTY_BONUS: Tier[] = [
 
 export const DEFAULT_LAND_PARAMS: Record<LandGameId, LandParams> = {
   atlas: {
+    version: 2,
     currency: "USD",
     rarities: [
       { id: "common", label: "Common", emoji: "🟩", perSecond: 0.000000011, probability: 49.5 },
@@ -92,6 +96,7 @@ export const DEFAULT_LAND_PARAMS: Record<LandGameId, LandParams> = {
     daysPerYear: 365,
   },
   fortune: {
+    version: 2,
     currency: "EUR",
     rarities: [
       { id: "common", label: "Common", emoji: "⚪", perSecond: 0.000000001, probability: null },
@@ -110,7 +115,7 @@ export const DEFAULT_LAND_PARAMS: Record<LandGameId, LandParams> = {
       { min: 751, value: 2 },
     ],
     bonusTiers: BADGE_OR_QTY_BONUS,
-    bonusSource: "units",
+    bonusSource: "badges",
     eventMultiplier: 50,
     eventName: "Evento 50×",
     maxBoostHours: 24,
