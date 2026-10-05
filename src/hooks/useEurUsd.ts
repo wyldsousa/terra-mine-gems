@@ -12,9 +12,10 @@ export function useEurUsd() {
       const raw = localStorage.getItem(KEY);
       if (raw) setData(JSON.parse(raw));
     } catch { /* ignore */ }
-    fetch("https://api.frankfurter.app/latest?from=EUR&to=USD")
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j: { rates?: { USD?: number } }) => {
+    const get = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : Promise.reject(new Error("http")))) as Promise<{ rates?: { USD?: number } }>;
+    get("https://api.frankfurter.dev/v1/latest?base=EUR&symbols=USD")
+      .catch(() => get("https://open.er-api.com/v6/latest/EUR"))
+      .then((j) => {
         const rate = j.rates?.USD;
         if (!rate || !Number.isFinite(rate)) throw new Error("bad");
         const next = { rate, at: Date.now() };
