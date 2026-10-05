@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useGameMode } from "@/hooks/useGameMode";
-import { NumericInput, parseDecimal } from "@/components/common/NumericInput";
+import { useEurUsd } from "@/hooks/useEurUsd";
 import { fmtCur } from "@/components/land/LandPages";
 import { useEffect, useMemo, useState } from "react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
@@ -48,10 +48,10 @@ function ProfilePage() {
 
   const { land, mode, setMode } = useGameMode();
   const navigate = useNavigate();
-  const [eurUsd, setEurUsd] = useState<string>("");
-  useEffect(() => setEurUsd(localStorage.getItem("eur-usd-rate") ?? ""), []);
+  const fx = useEurUsd();
+  const eurUsd = fx.rate;
   useEffect(() => setInc(localIncomes(mines, params, land)), [mines, params, land]);
-  const usd = (id: RankGame, v: number | null) => (v === null ? null : id === "fortune" ? (eurUsd ? v * parseDecimal(eurUsd) : null) : v);
+  const usd = (id: RankGame, v: number | null) => (v === null ? null : id === "fortune" ? (eurUsd ? v * eurUsd : null) : v);
   const show = (id: RankGame, v: number) => fmtCur(v, id === "fortune" ? "EUR" : "USD");
 
   useEffect(() => {
@@ -147,10 +147,11 @@ function ProfilePage() {
               <span className="num">{inc[c.id].monthly === null ? "Não configurada" : `${show(c.id, inc[c.id].monthly!)}/mês`}</span>
             </div>
           ))}
-          <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-            <Label htmlFor="eurusd">Cotação 1 € = US$ (para somar o Fortune World no total)</Label>
-            <NumericInput id="eurusd" className="w-28" value={eurUsd} onChange={(e) => { setEurUsd(e.target.value); localStorage.setItem("eur-usd-rate", e.target.value); }} />
-          </div>
+          <p className="text-xs text-muted-foreground" data-testid="fx">
+            {eurUsd ? `Cotação automática: 1 € = US$ ${eurUsd.toFixed(4)} · atualizada em ${new Date(fx.updatedAt!).toLocaleString("pt-BR")}` : "Buscando cotação EUR→USD…"}
+            {fx.stale && eurUsd && " · dados temporariamente desatualizados (usando a última cotação válida)"}
+            {fx.stale && !eurUsd && " Não foi possível obter a cotação agora; o Fortune World fica fora do total."}
+          </p>
           <div className="flex justify-between border-t border-border pt-2 font-semibold">
             <span>Total estimado</span><span className="num">{total === null ? "Não configurada" : `${formatMoney(total)}/mês`}</span>
           </div>

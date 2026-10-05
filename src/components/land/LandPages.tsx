@@ -185,15 +185,11 @@ export function LandCalculator({ game }: { game: LandGameId }) {
           <Label htmlFor="bh">Horas de boost por dia{game === "atlas" ? " (1 anúncio = 1h, acumula até " + p.maxBoostHours + "h)" : ""}</Label>
           <NumericInput id="bh" value={s.boostHoursPerDay} onChange={(e) => update((x) => ({ ...x, boostHoursPerDay: Math.min(24, Math.max(0, parseDecimal(e.target.value))) }))} />
         </div>
-        {true ? (
           <div className="space-y-1">
             <Label htmlFor="badges">Emblemas</Label>
             <NumericInput id="badges" inputMode="numeric" value={s.badges} onChange={(e) => update((x) => ({ ...x, badges: Math.max(0, Math.floor(parseDecimal(e.target.value))) }))} />
-            <p className="text-xs text-muted-foreground">Bônus permanente: +{inc.bonusPercent}%</p>
+            <p className="text-xs text-muted-foreground" data-testid="badge-bonus">Bônus por emblemas: +{inc.bonusPercent}%</p>
           </div>
-        ) : (
-          <div className="space-y-1"><Label>Bônus por quantidade</Label><p className="num text-lg font-semibold">+{inc.bonusPercent}%</p><p className="text-xs text-muted-foreground">{inc.units} {info.units}</p></div>
-        )}
         <div className="space-y-1">
           <Label htmlFor="bal">Saldo atual</Label>
           <NumericInput id="bal" value={s.balance} onChange={(e) => update((x) => ({ ...x, balance: Math.max(0, parseDecimal(e.target.value)) }))} />
