@@ -52,3 +52,35 @@ describe("land games", () => {
     expect(h).toBe(24);
   });
 });
+
+describe("atlas audit", () => {
+  const mk = (counts: Record<string, number>, badges: number, hours: number, evH: number) => {
+    const s = defaultLandState("atlas");
+    s.counts = counts; s.badges = badges; s.boostHoursPerDay = hours;
+    s.events = s.events.map((e) => ({ ...e, durationHours: evH }));
+    return calculateLandIncome(s);
+  };
+  it("492 lands mixed: sum, boost 2x, SRB replaces boost, breakdown sums", () => {
+    const c = { common: 250, rare: 150, epic: 70, legendary: 22 };
+    const base = 250 * 0.000000011 + 150 * 0.000000016 + 70 * 0.000000022 + 22 * 0.000000044;
+    const r = mk(c, 40, 6, 32);
+    expect(r.units).toBe(492);
+    expect(r.multiplier).toBe(2);
+    expect(r.bonusPercent).toBe(15);
+    expect(r.perSecond.noBoost).toBeCloseTo(base * 1.15, 18);
+    expect(r.perSecond.boost).toBeCloseTo(base * 1.15 * 2, 18);
+    expect(r.perSecond.event).toBeCloseTo(base * 1.15 * 50, 18);
+    const evH = 64, rest = 720 - evH;
+    const expected = 3600 * base * 1.15 * (rest * 18 / 24 + rest * 6 / 24 * 2 + evH * 50);
+    expect(r.monthly).toBeCloseTo(expected, 10);
+    const b = r.breakdown;
+    expect(b.plain.income + b.boost.income + b.event.income).toBeCloseTo(r.monthly, 10);
+    expect(r.monthly).toBeLessThan(20);
+  });
+  it("50 commons no badges, boost 20x 2h", () => {
+    const r = mk({ common: 50 }, 0, 2, 0);
+    const ps = 50 * 0.000000011;
+    expect(r.monthly).toBeCloseTo(3600 * ps * 30 * (22 + 2 * 20), 12);
+    expect(r.yearly).toBeCloseTo(3600 * ps * 365 * (22 + 40), 10);
+  });
+});

@@ -77,7 +77,19 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
   const yearly = windowIncome(p.daysPerYear);
   const avgDaily = monthly / p.daysPerMonth;
   const bonusGainMonthly = monthly - monthly / f;
+  // Explicit monthly breakdown: hours in each regime and their income (sums exactly to `monthly`).
+  const evH = eventHoursInWindow(s.events, now, now + p.daysPerMonth * DAY_MS, p.daysPerMonth);
+  const restH = p.daysPerMonth * 24 - evH;
+  const boostH = (restH * h) / 24;
+  const plainH = restH - boostH;
+  const breakdown = {
+    plain: { hours: plainH, income: noBoostPS * H * plainH },
+    boost: { hours: boostH, income: boostPS * H * boostH },
+    event: { hours: evH, income: eventPS * H * evH },
+  };
   return {
+    breakdown,
+    basePerSecond: basePS,
     units,
     multiplier,
     bonusPercent,

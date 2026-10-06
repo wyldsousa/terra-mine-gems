@@ -82,6 +82,15 @@ export function LandDashboard({ game }: { game: LandGameId }) {
         <Card label={`Emblemas (${s.badges})`} value={`+${inc.bonusPercent}%`} />
         <Card label={s.params.eventName} value={nextEvents[0] ? fmtDate(nextEvents[0]) : "Data não definida"} sub={`${s.params.eventMultiplier}× · ${s.events.length} por mês`} />
       </section>
+      <section className="panel space-y-2 p-5 text-sm">
+        <p className="font-semibold">🧮 Como chegamos ao valor mensal</p>
+        <div className="flex justify-between"><span>Base (soma dos {info.units}, por segundo)</span><span className="num">{m(inc.basePerSecond)}</span></div>
+        <div className="flex justify-between"><span>+ Emblemas (+{inc.bonusPercent}%) = sem boost/s</span><span className="num">{m(inc.perSecond.noBoost)}</span></div>
+        <div className="flex justify-between"><span>Sem boost: {formatNumber(inc.breakdown.plain.hours, 1)}h × 1×</span><span className="num">{m(inc.breakdown.plain.income)}</span></div>
+        <div className="flex justify-between"><span>Boost: {formatNumber(inc.breakdown.boost.hours, 1)}h × {inc.multiplier}×</span><span className="num">{m(inc.breakdown.boost.income)}</span></div>
+        <div className="flex justify-between"><span>{s.params.eventName}: {formatNumber(inc.breakdown.event.hours, 1)}h × {s.params.eventMultiplier}× (substitui o boost)</span><span className="num">{m(inc.breakdown.event.income)}</span></div>
+        <div className="flex justify-between border-t border-border pt-2 font-semibold"><span>Total do mês</span><span className="num">{m(inc.monthly)}</span></div>
+      </section>
       <section className="panel p-5">
         <p className="font-semibold">🎯 Próxima meta: {m(nextGoal)}</p>
         <Progress className="mt-3" value={Math.min(100, (s.balance / nextGoal) * 100)} />
