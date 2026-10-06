@@ -18,7 +18,7 @@ function loadLand(g: LandGameId): LandState {
     // Sanitize counts (old saves could store strings) and boost hours (cannot exceed the game's max).
     const counts: Record<string, number> = {};
     for (const [k, v] of Object.entries(d.counts ?? {})) counts[k] = Math.max(0, Math.floor(Number(v) || 0));
-    const boostHoursPerDay = Math.min(Math.max(Number(d.boostHoursPerDay) || 0, 0), params.maxBoostHours);
+    const boostHoursPerDay = Math.min(Math.max(Number(d.boostHoursPerDay) || 0, 0), 24);
     return { ...def, ...d, counts, badges: Math.max(0, Number(d.badges) || 0), boostHoursPerDay, params };
   } catch {
     return def;
