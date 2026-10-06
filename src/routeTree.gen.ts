@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AtlasRouteImport } from './routes/atlas'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CalculadoraRouteImport } from './routes/calculadora'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as EstatisticasRouteImport } from './routes/estatisticas'
@@ -18,6 +19,7 @@ import { Route as FortuneRouteImport } from './routes/fortune'
 import { Route as MinasRouteImport } from './routes/minas'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as RankingRouteImport } from './routes/ranking'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -27,6 +29,11 @@ const IndexRoute = IndexRouteImport.update({
 const AtlasRoute = AtlasRouteImport.update({
   id: '/atlas',
   path: '/atlas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CalculadoraRoute = CalculadoraRouteImport.update({
@@ -64,10 +71,16 @@ const RankingRoute = RankingRouteImport.update({
   path: '/ranking',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/atlas': typeof AtlasRoute
+  '/auth': typeof AuthRoute
   '/calculadora': typeof CalculadoraRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
@@ -75,10 +88,12 @@ export interface FileRoutesByFullPath {
   '/minas': typeof MinasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
+  '/reset-password': typeof ResetPasswordRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/atlas': typeof AtlasRoute
+  '/auth': typeof AuthRoute
   '/calculadora': typeof CalculadoraRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
@@ -86,11 +101,13 @@ export interface FileRoutesByTo {
   '/minas': typeof MinasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
+  '/reset-password': typeof ResetPasswordRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/atlas': typeof AtlasRoute
+  '/auth': typeof AuthRoute
   '/calculadora': typeof CalculadoraRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
@@ -98,12 +115,14 @@ export interface FileRoutesById {
   '/minas': typeof MinasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
+  '/reset-password': typeof ResetPasswordRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/atlas'
+    | '/auth'
     | '/calculadora'
     | '/configuracoes'
     | '/estatisticas'
@@ -111,10 +130,12 @@ export interface FileRouteTypes {
     | '/minas'
     | '/perfil'
     | '/ranking'
+    | '/reset-password'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/atlas'
+    | '/auth'
     | '/calculadora'
     | '/configuracoes'
     | '/estatisticas'
@@ -122,10 +143,12 @@ export interface FileRouteTypes {
     | '/minas'
     | '/perfil'
     | '/ranking'
+    | '/reset-password'
   id:
     | '__root__'
     | '/'
     | '/atlas'
+    | '/auth'
     | '/calculadora'
     | '/configuracoes'
     | '/estatisticas'
@@ -133,11 +156,13 @@ export interface FileRouteTypes {
     | '/minas'
     | '/perfil'
     | '/ranking'
+    | '/reset-password'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AtlasRoute: typeof AtlasRoute
+  AuthRoute: typeof AuthRoute
   CalculadoraRoute: typeof CalculadoraRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   EstatisticasRoute: typeof EstatisticasRoute
@@ -145,6 +170,7 @@ export interface RootRouteChildren {
   MinasRoute: typeof MinasRoute
   PerfilRoute: typeof PerfilRoute
   RankingRoute: typeof RankingRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -161,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/atlas'
       fullPath: '/atlas'
       preLoaderRoute: typeof AtlasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/calculadora': {
@@ -212,12 +245,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RankingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AtlasRoute: AtlasRoute,
+  AuthRoute: AuthRoute,
   CalculadoraRoute: CalculadoraRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   EstatisticasRoute: EstatisticasRoute,
@@ -225,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   MinasRoute: MinasRoute,
   PerfilRoute: PerfilRoute,
   RankingRoute: RankingRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
