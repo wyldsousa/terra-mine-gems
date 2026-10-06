@@ -56,7 +56,7 @@ export const GAME_INFO: Record<GameMode, { emoji: string; name: string; unit: st
   fortune: { emoji: "🍀", name: "Fortune World", unit: "parcela", units: "parcelas", unitsTitle: "Minhas Parcelas" },
 };
 
-export const PARAMS_VERSION = 2;
+export const PARAMS_VERSION = 3;
 const BADGE_OR_QTY_BONUS: Tier[] = [
   { min: 1, value: 5 },
   { min: 11, value: 10 },
