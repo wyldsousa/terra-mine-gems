@@ -53,7 +53,7 @@ function AuthPage() {
     e.preventDefault();
     setInfo(null);
     const em = email.trim();
-    if (!EMAIL_RE.test(em)) return toast.error("E-mail inválido.");
+    if (!EMAIL_RE.test(em)) { toast.error("E-mail inválido."); return; }
     setBusy(true);
     try {
       if (tab === "login") {
@@ -61,9 +61,9 @@ function AuthPage() {
         if (error) toast.error(translate(error.message));
         else { toast.success("Bem-vindo!"); navigate({ to: "/perfil" }); }
       } else if (tab === "signup") {
-        if (!name.trim()) return toast.error("Informe o nome do jogador.");
-        if (pass.length < 6) return toast.error("A senha precisa ter pelo menos 6 caracteres.");
-        if (pass !== pass2) return toast.error("As senhas não coincidem.");
+        if (!name.trim()) { toast.error("Informe o nome do jogador."); return; }
+        if (pass.length < 6) { toast.error("A senha precisa ter pelo menos 6 caracteres."); return; }
+        if (pass !== pass2) { toast.error("As senhas não coincidem."); return; }
         const { data, error } = await supabase.auth.signUp({
           email: em, password: pass,
           options: { emailRedirectTo: window.location.origin + "/perfil", data: { full_name: name.trim().slice(0, 40) } },
