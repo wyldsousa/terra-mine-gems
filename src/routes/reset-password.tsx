@@ -27,8 +27,8 @@ function ResetPage() {
   const [busy, setBusy] = useState(false);
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (p1.length < 6) return toast.error("A senha precisa ter pelo menos 6 caracteres.");
-    if (p1 !== p2) return toast.error("As senhas não coincidem.");
+    if (p1.length < 6) { toast.error("A senha precisa ter pelo menos 6 caracteres."); return; }
+    if (p1 !== p2) { toast.error("As senhas não coincidem."); return; }
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password: p1 });
     setBusy(false);
