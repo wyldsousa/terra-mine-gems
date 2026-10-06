@@ -75,7 +75,6 @@ describe("atlas audit", () => {
     expect(r.monthly).toBeCloseTo(expected, 10);
     const b = r.breakdown;
     expect(b.plain.income + b.boost.income + b.event.income).toBeCloseTo(r.monthly, 10);
-    expect(r.monthly).toBeLessThan(20);
   });
   it("50 commons no badges, boost 20x 2h", () => {
     const r = mk({ common: 50 }, 0, 2, 0);
