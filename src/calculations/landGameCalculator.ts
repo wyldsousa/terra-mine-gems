@@ -67,7 +67,7 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
   const noBoostPS = basePS * f;
   const boostPS = basePS * multiplier * f;
   const eventPS = basePS * p.eventMultiplier * f;
-  const h = Math.min(Math.max(s.boostHoursPerDay || 0, 0), 24);
+  const h = Math.min(Math.max(Number(s.boostHoursPerDay) || 0, 0), 24);
   const normalDaily = H * (noBoostPS * (24 - h) + boostPS * h);
   const windowIncome = (days: number) => {
     const ev = eventHoursInWindow(s.events, now, now + days * DAY_MS, p.daysPerMonth);
@@ -77,7 +77,19 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
   const yearly = windowIncome(p.daysPerYear);
   const avgDaily = monthly / p.daysPerMonth;
   const bonusGainMonthly = monthly - monthly / f;
+  // Explicit monthly breakdown: hours in each regime and their income (sums exactly to `monthly`).
+  const evH = eventHoursInWindow(s.events, now, now + p.daysPerMonth * DAY_MS, p.daysPerMonth);
+  const restH = p.daysPerMonth * 24 - evH;
+  const boostH = (restH * h) / 24;
+  const plainH = restH - boostH;
+  const breakdown = {
+    plain: { hours: plainH, income: noBoostPS * H * plainH },
+    boost: { hours: boostH, income: boostPS * H * boostH },
+    event: { hours: evH, income: eventPS * H * evH },
+  };
   return {
+    breakdown,
+    basePerSecond: basePS,
     units,
     multiplier,
     bonusPercent,
@@ -99,7 +111,7 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
 export function rarityShares(s: LandState) {
   const inc = calculateLandIncome(s);
   const f = 1 + inc.bonusPercent / 100;
-  const h = Math.min(Math.max(s.boostHoursPerDay || 0, 0), 24);
+  const h = Math.min(Math.max(Number(s.boostHoursPerDay) || 0, 0), 24);
   const factor = f * H * ((24 - h) + inc.multiplier * h) * s.params.daysPerMonth;
   return s.params.rarities.map((r) => ({ ...r, count: Number(s.counts[r.id]) || 0, monthly: (Number(s.counts[r.id]) || 0) * r.perSecond * factor }));
 }

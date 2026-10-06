@@ -10,15 +10,16 @@ function loadLand(g: LandGameId): LandState {
     const raw = localStorage.getItem(landKey(g));
     if (!raw) return def;
     const d = JSON.parse(raw) as Partial<LandState>;
-    const params = { ...def.params, ...(d.params ?? {}) };
+    let params = { ...def.params, ...(d.params ?? {}) };
     if ((d.params?.version ?? 0) < PARAMS_VERSION) {
-      // Migration: official per-second rates and badge-based bonus for both games.
-      params.rarities = def.params.rarities;
-      params.bonusSource = "badges";
-      params.bonusTiers = def.params.bonusTiers;
-      params.version = PARAMS_VERSION;
+      // Migration: reset every official value (rates, boost tiers, badge tiers, event multiplier, limits).
+      params = { ...def.params, currency: def.params.currency };
     }
-    return { ...def, ...d, params };
+    // Sanitize counts (old saves could store strings) and boost hours (cannot exceed the game's max).
+    const counts: Record<string, number> = {};
+    for (const [k, v] of Object.entries(d.counts ?? {})) counts[k] = Math.max(0, Math.floor(Number(v) || 0));
+    const boostHoursPerDay = Math.min(Math.max(Number(d.boostHoursPerDay) || 0, 0), 24);
+    return { ...def, ...d, counts, badges: Math.max(0, Number(d.badges) || 0), boostHoursPerDay, params };
   } catch {
     return def;
   }
