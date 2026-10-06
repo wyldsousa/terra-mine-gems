@@ -90,9 +90,7 @@ function ProfilePage() {
       {!loading && !user && (
         <section className="panel space-y-3 p-5">
           <p className="text-sm text-muted-foreground">As calculadoras funcionam sem conta. Entre apenas para criar seu perfil público e participar do ranking — sua carteira continua só neste dispositivo.</p>
-          <Button onClick={async () => { const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin }); if (r.error) toast.error("Não foi possível entrar: " + (r.error.message ?? "tente novamente")); }}>
-            Entrar com Google
-          </Button>
+          <Button asChild><Link to="/auth">Entrar ou criar conta</Link></Button>
         </section>
       )}
 
