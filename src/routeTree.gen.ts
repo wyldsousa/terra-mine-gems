@@ -16,6 +16,7 @@ import { Route as CalculadoraRouteImport } from './routes/calculadora'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as EstatisticasRouteImport } from './routes/estatisticas'
 import { Route as FortuneRouteImport } from './routes/fortune'
+import { Route as LandRentsRouteImport } from './routes/land-rents'
 import { Route as MinasRouteImport } from './routes/minas'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as RankingRouteImport } from './routes/ranking'
@@ -56,6 +57,11 @@ const FortuneRoute = FortuneRouteImport.update({
   path: '/fortune',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LandRentsRoute = LandRentsRouteImport.update({
+  id: '/land-rents',
+  path: '/land-rents',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MinasRoute = MinasRouteImport.update({
   id: '/minas',
   path: '/minas',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
   '/fortune': typeof FortuneRoute
+  '/land-rents': typeof LandRentsRoute
   '/minas': typeof MinasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
   '/fortune': typeof FortuneRoute
+  '/land-rents': typeof LandRentsRoute
   '/minas': typeof MinasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/configuracoes': typeof ConfiguracoesRoute
   '/estatisticas': typeof EstatisticasRoute
   '/fortune': typeof FortuneRoute
+  '/land-rents': typeof LandRentsRoute
   '/minas': typeof MinasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/estatisticas'
     | '/fortune'
+    | '/land-rents'
     | '/minas'
     | '/perfil'
     | '/ranking'
@@ -140,6 +150,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/estatisticas'
     | '/fortune'
+    | '/land-rents'
     | '/minas'
     | '/perfil'
     | '/ranking'
@@ -153,6 +164,7 @@ export interface FileRouteTypes {
     | '/configuracoes'
     | '/estatisticas'
     | '/fortune'
+    | '/land-rents'
     | '/minas'
     | '/perfil'
     | '/ranking'
@@ -167,6 +179,7 @@ export interface RootRouteChildren {
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   EstatisticasRoute: typeof EstatisticasRoute
   FortuneRoute: typeof FortuneRoute
+  LandRentsRoute: typeof LandRentsRoute
   MinasRoute: typeof MinasRoute
   PerfilRoute: typeof PerfilRoute
   RankingRoute: typeof RankingRoute
@@ -224,6 +237,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FortuneRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/land-rents': {
+      id: '/land-rents'
+      path: '/land-rents'
+      fullPath: '/land-rents'
+      preLoaderRoute: typeof LandRentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/minas': {
       id: '/minas'
       path: '/minas'
@@ -263,6 +283,7 @@ const rootRouteChildren: RootRouteChildren = {
   ConfiguracoesRoute: ConfiguracoesRoute,
   EstatisticasRoute: EstatisticasRoute,
   FortuneRoute: FortuneRoute,
+  LandRentsRoute: LandRentsRoute,
   MinasRoute: MinasRoute,
   PerfilRoute: PerfilRoute,
   RankingRoute: RankingRoute,
