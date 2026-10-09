@@ -10,7 +10,7 @@ export function migrateAtlasParams(params: LandParams): LandParams {
   return {
     ...params,
     gameId: "atlas",
-    version: official.version,
+    version: official.version ?? 4,
     rarities: official.rarities.map((rarity) => ({
       ...rarity,
       ...params.rarities.find((r) => r.id === rarity.id),
@@ -25,9 +25,11 @@ export function atlasEventHours(events: LandEvent[], from: number, to: number, p
   if (to <= from) return credited;
   const intervals: { from: number; to: number; index: number }[] = [];
   events.forEach((event, index) => {
+    const credit = credited[index];
+    if (!credit) return;
     const start = new Date(event.start).getTime();
     if (!Number.isFinite(start)) return;
-    credited[index].estimated = false;
+    credit.estimated = false;
     const base = new Date(start);
     const first = new Date(from - Math.max(0, event.durationHours) * HOUR_MS);
     const last = new Date(to);
@@ -49,7 +51,8 @@ export function atlasEventHours(events: LandEvent[], from: number, to: number, p
   let coveredUntil = from;
   for (const interval of intervals) {
     const start = Math.max(coveredUntil, interval.from);
-    if (interval.to > start) credited[interval.index].hours += (interval.to - start) / HOUR_MS;
+    const credit = credited[interval.index];
+    if (credit && interval.to > start) credit.hours += (interval.to - start) / HOUR_MS;
     coveredUntil = Math.max(coveredUntil, interval.to);
   }
   // Dates missing: explicitly estimated, 12 monthly occurrences per configured year.
@@ -59,9 +62,10 @@ export function atlasEventHours(events: LandEvent[], from: number, to: number, p
   const months = years * 12 + Math.min(12, (days - years * params.daysPerYear) / params.daysPerMonth);
   let remaining = (to - from) / HOUR_MS - credited.reduce((sum, e) => sum + e.hours, 0);
   events.forEach((event, index) => {
-    if (!credited[index].estimated) return;
+    const credit = credited[index];
+    if (!credit?.estimated) return;
     const hours = Math.min(remaining, Math.max(0, event.durationHours) * months);
-    credited[index].hours = hours;
+    credit.hours = hours;
     remaining -= hours;
   });
   return credited;
