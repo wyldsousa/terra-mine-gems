@@ -12,7 +12,6 @@ import { Switch } from "@/components/ui/switch";
 import { useAppState } from "@/hooks/useAppState";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { formatMoney } from "@/lib/format";
 import { localIncomes, resizeImage, syncPublicStats, type RankGame } from "@/lib/profile";
 
@@ -47,6 +46,10 @@ function ProfilePage() {
   const [optIn, setOptIn] = useState(false);
   const [calcs, setCalcs] = useState<string[]>(["atlas", "fortune", "terramine"]);
   const [saving, setSaving] = useState(false);
+  const [incomeGames, setIncomeGames] = useState<string[]>([]);
+  const [unitsGames, setUnitsGames] = useState<string[]>([]);
+  const [publicAvatar, setPublicAvatar] = useState(true);
+  const [profileReady, setProfileReady] = useState(false);
 
   const { land, mode, setMode } = useGameMode();
   const navigate = useNavigate();
@@ -57,17 +60,26 @@ function ProfilePage() {
   const show = (id: RankGame, v: number) => fmtCur(v, id === "fortune" ? "EUR" : "USD");
 
   useEffect(() => {
+    setProfileReady(false);
     if (!user) return;
+    let active = true;
     (async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+      if (!active) return;
+      if (error) { toast.error("Não foi possível carregar seu perfil. Tente novamente ao reconectar."); return; }
       if (data) {
         setName(data.display_name); setAvatar(data.avatar_url); setOptIn(data.ranking_opt_in); setCalcs(data.calculators);
+        setIncomeGames(data.public_income_games); setUnitsGames(data.public_units_games); setPublicAvatar(data.public_avatar);
       } else {
         const display = (user.user_metadata?.["full_name"] as string | undefined)?.slice(0, 40) || "Jogador";
-        await supabase.from("profiles").insert({ id: user.id, display_name: display });
+        const { error: insertError } = await supabase.from("profiles").insert({ id: user.id, display_name: display, public_income_games: [], public_units_games: [] });
+        if (insertError) { toast.error("Não foi possível criar seu perfil."); return; }
         setName(display);
+        setIncomeGames([]); setUnitsGames([]); setOptIn(false);
       }
+      setProfileReady(true);
     })();
+    return () => { active = false; };
   }, [user]);
 
   const total = useMemo(() => {
@@ -77,12 +89,20 @@ function ProfilePage() {
   }, [inc, calcs, eurUsd]);
 
   const save = async () => {
-    if (!user || !inc) return;
+    if (!user || !inc || !profileReady || saving) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({ display_name: name.trim().slice(0, 40) || "Jogador", avatar_url: avatar, ranking_opt_in: optIn, calculators: calcs }).eq("id", user.id);
-    if (!error) await syncPublicStats(user.id, inc);
-    setSaving(false);
-    error ? toast.error("Erro ao salvar") : toast.success("Perfil salvo");
+    try {
+      const { error } = await supabase.from("profiles").update({ display_name: name.trim().slice(0, 40) || "Jogador", avatar_url: avatar, ranking_opt_in: optIn, calculators: calcs, public_income_games: incomeGames, public_units_games: unitsGames, public_avatar: publicAvatar }).eq("id", user.id);
+      if (error) throw error;
+      if (optIn) {
+        const games = CALCS.filter((c) => inc[c.id].units > 0 || localStorage.getItem(`ranking-owned-${user.id}-${c.id}`) === "yes").map((c) => c.id);
+        await syncPublicStats(user.id, inc, games);
+        for (const game of games) localStorage.setItem(`ranking-owned-${user.id}-${game}`, "yes");
+      }
+      window.dispatchEvent(new Event("profile-sharing-changed"));
+      toast.success("Perfil e privacidade salvos");
+    } catch { toast.error("Não foi possível salvar tudo. Seus dados locais foram preservados; tente novamente."); }
+    finally { setSaving(false); }
   };
 
   return (
@@ -112,9 +132,19 @@ function ProfilePage() {
           <div className="flex items-center justify-between rounded-lg border border-border/70 p-3">
             <div>
               <p className="font-medium">Participar do ranking</p>
-              <p className="text-xs text-muted-foreground">Mostra só nome, foto, quantidade e renda estimada mensal.</p>
+              <p className="text-xs text-muted-foreground">Seu nome e somente as informações autorizadas abaixo.</p>
             </div>
             <Switch checked={optIn} onCheckedChange={setOptIn} />
+          </div>
+          <div className="space-y-3 border-t border-border pt-4">
+            <h2 className="font-semibold">Privacidade do perfil público</h2>
+            <div className="flex items-center justify-between gap-3"><Label htmlFor="public-photo">Compartilhar foto</Label><Switch id="public-photo" checked={publicAvatar} onCheckedChange={setPublicAvatar} /></div>
+            {CALCS.map((c) => <div key={c.id} className="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-border py-2">
+              <span className="text-sm">{c.label}</span>
+              <label className="flex flex-col items-center gap-1 text-xs text-muted-foreground">Quantidade<Switch aria-label={`Compartilhar quantidade ${c.id}`} checked={unitsGames.includes(c.id)} onCheckedChange={(value) => setUnitsGames((prev) => value ? [...new Set([...prev, c.id])] : prev.filter((id) => id !== c.id))} /></label>
+              <label className="flex flex-col items-center gap-1 text-xs text-muted-foreground">Rendimentos<Switch aria-label={`Compartilhar rendimentos ${c.id}`} checked={incomeGames.includes(c.id)} onCheckedChange={(value) => setIncomeGames((prev) => value ? [...new Set([...prev, c.id])] : prev.filter((id) => id !== c.id))} /></label>
+            </div>)}
+            <p className="text-xs text-muted-foreground">E-mail, saldo, minas individuais e detalhes da carteira nunca são divulgados. Valores ocultos aparecem como “Não disponibilizado”.</p>
           </div>
           <div>
             <p className="mb-2 font-medium">Minhas Calculadoras</p>
@@ -131,7 +161,7 @@ function ProfilePage() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button disabled={saving} onClick={save}>{saving ? "Salvando..." : "Salvar e publicar estatísticas"}</Button>
+            <Button disabled={saving || !profileReady} onClick={save}>{saving ? "Salvando..." : "Salvar perfil e privacidade"}</Button>
             <Button variant="outline" asChild><Link to="/ranking">🏆 Analisar Ranking</Link></Button>
             <Button variant="ghost" onClick={() => supabase.auth.signOut()}>Sair</Button>
           </div>
@@ -144,11 +174,11 @@ function ProfilePage() {
           {CALCS.map((c) => (
             <div key={c.id} className="flex justify-between text-sm">
               <span>{c.label}</span>
-              <span className="num">{inc[c.id].monthly === null ? "Não configurada" : `${show(c.id, inc[c.id].monthly!)}/mês`}</span>
+              <span className="num">{inc[c.id].monthly === null ? "Não configurada" : `${show(c.id, inc[c.id].monthly ?? 0)}/mês`}</span>
             </div>
           ))}
           <p className="text-xs text-muted-foreground" data-testid="fx">
-            {eurUsd ? `Cotação automática: 1 € = US$ ${eurUsd.toFixed(4)} · atualizada em ${new Date(fx.updatedAt!).toLocaleString("pt-BR")}` : "Buscando cotação EUR→USD…"}
+            {eurUsd ? `Cotação automática: 1 € = US$ ${eurUsd.toFixed(4)} · atualizada em ${fx.updatedAt ? new Date(fx.updatedAt).toLocaleString("pt-BR") : "—"}` : "Buscando cotação EUR→USD…"}
             {fx.stale && eurUsd && " · dados temporariamente desatualizados (usando a última cotação válida)"}
             {fx.stale && !eurUsd && " Não foi possível obter a cotação agora; o Fortune World fica fora do total."}
           </p>

@@ -9,12 +9,16 @@ export type RankGame = "terramine" | "atlas" | "fortune";
 export function localIncomes(mines: Mine[], params: Params, land: Record<LandGameId, LandState>) {
   const li = (g: LandGameId) => {
     const r = calculateLandIncome(land[g]);
-    return { monthly: r.units > 0 ? r.monthly : null, units: r.units };
+    return { monthly: r.units > 0 ? r.monthly : null, units: r.units, daily: r.avgDaily, weekly: r.weekly, yearly: r.yearly, currency: land[g].params.currency };
   };
   return {
     terramine: {
       monthly: mines.length ? calculatePortfolioIncome(mines, params, params.boostHoursPerDay).withBoost.perMonth : null,
       units: mines.length,
+      daily: calculatePortfolioIncome(mines, params).withBoost.perDay,
+      weekly: calculatePortfolioIncome(mines, params).withBoost.perWeek,
+      yearly: calculatePortfolioIncome(mines, params).withBoost.perYear,
+      currency: "USD" as const,
     },
     atlas: li("atlas"),
     fortune: li("fortune"),
@@ -22,14 +26,21 @@ export function localIncomes(mines: Mine[], params: Params, land: Record<LandGam
 }
 
 /** Publishes only the authorized public stats (unit count + estimated monthly income). */
-export async function syncPublicStats(userId: string, inc: ReturnType<typeof localIncomes>) {
-  const rows = (Object.keys(inc) as RankGame[]).map((game) => ({
+export async function syncPublicStats(userId: string, inc: ReturnType<typeof localIncomes>, games: RankGame[] = ["terramine", "fortune", "atlas"]) {
+  const rows = games.map((game) => ({
     user_id: userId,
     game,
     units_count: inc[game].units,
     monthly_income: inc[game].monthly ?? 0,
+    configured: inc[game].monthly !== null,
+    daily_income: inc[game].daily,
+    weekly_income: inc[game].weekly,
+    yearly_income: inc[game].yearly,
+    currency: inc[game].currency,
   }));
-  await supabase.from("public_stats").upsert(rows, { onConflict: "user_id,game" });
+  if (!rows.length) return;
+  const { error } = await supabase.from("public_stats").upsert(rows, { onConflict: "user_id,game" });
+  if (error) throw error;
 }
 
 export async function resizeImage(file: File, size = 160): Promise<string> {
@@ -39,7 +50,9 @@ export async function resizeImage(file: File, size = 160): Promise<string> {
   const c = document.createElement("canvas");
   c.width = c.height = size;
   const s = Math.min(img.width, img.height);
-  c.getContext("2d")!.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+  const context = c.getContext("2d");
+  if (!context) { URL.revokeObjectURL(url); throw new Error("Não foi possível processar a foto."); }
+  context.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
   URL.revokeObjectURL(url);
   return c.toDataURL("image/jpeg", 0.8);
 }

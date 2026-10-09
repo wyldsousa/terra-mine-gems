@@ -109,6 +109,12 @@
   --gradient-ember: linear-gradient(135deg, oklch(0.8 0.17 140) 0%, oklch(0.82 0.15 90) 100%);
 }
 
+[data-game="land-rents"] {
+  --primary: oklch(0.78 0.13 180);
+  --primary-foreground: oklch(0.18 0.03 180);
+  --ring: oklch(0.78 0.13 180);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

@@ -44,7 +44,7 @@ export function GameModeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const m = localStorage.getItem(MODE_KEY);
-    if (m === "atlas" || m === "fortune" || m === "terramine") setModeState(m);
+    if (m === "atlas" || m === "fortune" || m === "terramine" || m === "land-rents") setModeState(m);
     setLandAll({ atlas: loadLand("atlas"), fortune: loadLand("fortune") });
     setHydrated(true);
   }, []);

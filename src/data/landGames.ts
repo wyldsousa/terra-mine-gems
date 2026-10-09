@@ -3,7 +3,7 @@
  * Every value that may change lives here as a DEFAULT and is editable in each game's Settings.
  */
 export type LandGameId = "atlas" | "fortune";
-export type GameMode = "terramine" | LandGameId;
+export type GameMode = "terramine" | LandGameId | "land-rents";
 
 export interface Tier {
   /** Applies from this unit/badge count upward (until the next tier). */
@@ -55,6 +55,7 @@ export const GAME_INFO: Record<GameMode, { emoji: string; name: string; unit: st
   terramine: { emoji: "⛏️", name: "TerraMine", unit: "mina", units: "minas", unitsTitle: "Minhas Minas" },
   atlas: { emoji: "🌎", name: "Atlas Earth", unit: "terreno", units: "terrenos", unitsTitle: "Meus Terrenos" },
   fortune: { emoji: "🍀", name: "Fortune World", unit: "parcela", units: "parcelas", unitsTitle: "Minhas Parcelas" },
+  "land-rents": { emoji: "🏡", name: "Land Rents", unit: "", units: "", unitsTitle: "Land Rents" },
 };
 
 export const PARAMS_VERSION = 3;
