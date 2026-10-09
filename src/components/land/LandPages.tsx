@@ -254,7 +254,7 @@ export function LandCalculator({ game }: { game: LandGameId }) {
             </div>
           </div>
         ))}
-        <p className="text-xs text-muted-foreground">{game === "atlas" ? "Eventos com data: horas reais dentro da projeção, sem contar sobreposições duas vezes. Sem data: estimativa de 1 ocorrência mensal por evento, 12 por ano. A referência de $13.38/mês considera 24h diárias de boost normal e dois SRBs de 32h." : "Os eventos se repetem mensalmente a partir da data escolhida. Sem data, contam como 1 ocorrência por mês (estimativa)."}</p>
+        <p className="text-xs text-muted-foreground">{game === "atlas" ? "Eventos com data: horas reais dentro da projeção, sem contar sobreposições duas vezes. Sem data: estimativa de 1 ocorrência mensal por evento, 12 por ano. A referência considera boost normal ativo 24h por dia; menos horas reduzem a renda fora do SRB." : "Os eventos se repetem mensalmente a partir da data escolhida. Sem data, contam como 1 ocorrência por mês (estimativa)."}</p>
       </section>
 
       <section className="panel space-y-2 p-4">

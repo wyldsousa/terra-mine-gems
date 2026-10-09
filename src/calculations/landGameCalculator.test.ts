@@ -126,7 +126,7 @@ describe("Atlas actual 481-land reference", () => {
   it("365-day projection has 24 SRBs, not 365/30 fractional months", () => {
     const r = calculateLandIncome(reference());
     expect(r.yearly).toBeCloseTo(0.000000749 * 1.1 * 3600 * ((8760 - 768) * 2 + 768 * 50), 10);
-    expect(r.yearly).toBeCloseTo(161.30445216, 8);
+    expect(r.yearly).toBeCloseTo(161.30511936, 8);
   });
   it.each([[60,20],[61,15],[75,15],[76,12],[100,12],[101,10],[120,10],[121,8],[150,8],[151,6],[200,6],[201,5],[250,5],[251,4],[300,4],[301,3],[400,3],[401,2],[481,2]])("%i lands gets %ix", (n, expected) => {
     expect(tierValue(DEFAULT_LAND_PARAMS.atlas.boostTiers, n)).toBe(expected);
@@ -148,7 +148,7 @@ describe("Atlas actual 481-land reference", () => {
     s.events = [{ id: "one", start: "2026-01-05T00:00", durationHours: 32 }, { id: "two", start: "2026-01-20T00:00", durationHours: 32 }];
     const r = calculateLandIncome(s, new Date("2026-01-01T00:00").getTime());
     expect(r.monthly).toBeCloseTo(13.38277248, 10);
-    expect(r.yearly).toBeCloseTo(161.30445216, 8);
+    expect(r.yearly).toBeCloseTo(161.30511936, 8);
   });
   it("migrates only Atlas rates and preserves player settings and future custom rates", () => {
     const old = structuredClone(DEFAULT_LAND_PARAMS.atlas);
