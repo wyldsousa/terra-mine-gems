@@ -16,6 +16,8 @@ import { MINE_TYPES, type MineType } from "@/types";
 export const Route = createFileRoute("/configuracoes")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Configurações e parâmetros — TerraMine Calculator" },
       {
         name: "description",

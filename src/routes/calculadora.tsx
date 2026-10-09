@@ -35,6 +35,8 @@ import { MINE_TYPES, type MineType } from "@/types";
 export const Route = createFileRoute("/calculadora")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Calculadora — Boost, saque, metas e simulações | TerraMine" },
       {
         name: "description",
