@@ -9,6 +9,7 @@ export function migrateAtlasParams(params: LandParams): LandParams {
   const official = DEFAULT_LAND_PARAMS.atlas;
   return {
     ...params,
+    gameId: "atlas",
     version: official.version,
     rarities: official.rarities.map((rarity) => ({
       ...rarity,

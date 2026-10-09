@@ -26,6 +26,7 @@ export interface LandEvent {
   durationHours: number;
 }
 export interface LandParams {
+  gameId?: LandGameId;
   /** Schema version of the params; older stored params get migrated. */
   version?: number;
   currency: "USD" | "EUR";
@@ -67,6 +68,7 @@ const BADGE_OR_QTY_BONUS: Tier[] = [
 
 export const DEFAULT_LAND_PARAMS: Record<LandGameId, LandParams> = {
   atlas: {
+    gameId: "atlas",
     version: 4,
     currency: "USD",
     rarities: [

@@ -21,7 +21,7 @@ describe("land games", () => {
   });
   it("atlas official per-second rates", () => {
     const r = Object.fromEntries(DEFAULT_LAND_PARAMS.atlas.rarities.map((x) => [x.id, x.perSecond]));
-    expect(r).toEqual({ common: 0.000000011, rare: 0.000000016, epic: 0.000000022, legendary: 0.000000044 });
+    expect(r).toEqual({ common: 0.0000000011, rare: 0.0000000016, epic: 0.0000000022, legendary: 0.0000000044 });
   });
   it("fortune boost + badge tiers", () => {
     const p = DEFAULT_LAND_PARAMS.fortune;
@@ -35,15 +35,15 @@ describe("land games", () => {
     s.counts = { common: 10 };
     s.events = s.events.map((e) => ({ ...e, durationHours: 0 }));
     const r = calculateLandIncome(s);
-    expect(r.perSecond.noBoost).toBeCloseTo(0.00000011, 15);
-    expect(r.monthly).toBeCloseTo(0.00000011 * 86400 * 30, 12);
+    expect(r.perSecond.noBoost).toBeCloseTo(0.000000011, 15);
+    expect(r.monthly).toBeCloseTo(0.000000011 * 86400 * 30, 12);
   });
   it("SRB 50x replaces multiplier during event hours", () => {
     const s = defaultLandState("atlas");
     s.counts = { common: 1 };
     s.events = [{ id: "a", start: "", durationHours: 32 }];
     const r = calculateLandIncome(s);
-    const ps = 0.000000011;
+    const ps = 0.0000000011;
     expect(r.monthly).toBeCloseTo(ps * 3600 * (720 - 32) + ps * 50 * 3600 * 32, 12);
   });
   it("dated events overlap window", () => {
@@ -62,7 +62,7 @@ describe("atlas audit", () => {
   };
   it("492 lands mixed: sum, boost 2x, SRB replaces boost, breakdown sums", () => {
     const c = { common: 250, rare: 150, epic: 70, legendary: 22 };
-    const base = 250 * 0.000000011 + 150 * 0.000000016 + 70 * 0.000000022 + 22 * 0.000000044;
+    const base = 250 * 0.0000000011 + 150 * 0.0000000016 + 70 * 0.0000000022 + 22 * 0.0000000044;
     const r = mk(c, 40, 6, 32);
     expect(r.units).toBe(492);
     expect(r.multiplier).toBe(2);
@@ -78,7 +78,7 @@ describe("atlas audit", () => {
   });
   it("50 commons no badges, boost 20x 2h", () => {
     const r = mk({ common: 50 }, 0, 2, 0);
-    const ps = 50 * 0.000000011;
+    const ps = 50 * 0.0000000011;
     expect(r.monthly).toBeCloseTo(3600 * ps * 30 * (22 + 2 * 20), 12);
     expect(r.yearly).toBeCloseTo(3600 * ps * 365 * (22 + 40), 10);
   });

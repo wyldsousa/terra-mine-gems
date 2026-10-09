@@ -70,7 +70,7 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
   const eventPS = basePS * p.eventMultiplier * f;
   const h = Math.min(Math.max(Number(s.boostHoursPerDay) || 0, 0), 24);
   const normalDaily = H * (noBoostPS * (24 - h) + boostPS * h);
-  const isAtlas = p.eventName === "SRB (Super Rent Boost)";
+  const isAtlas = p.gameId === "atlas";
   const eventPeriods = (days: number) => isAtlas
     ? atlasEventHours(s.events, now, now + days * DAY_MS, p)
     : null;
