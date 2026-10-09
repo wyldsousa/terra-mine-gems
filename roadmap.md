@@ -1,4 +1,8 @@
 # Roadmap
+- [ ] Automatic cross-device ranking with consent-safe publication, polling/retry and last update.
+- [ ] In-ranking public profiles with per-game visibility and accurate income summaries.
+- [ ] Land Rents fourth selector and EM BREVE page; preserve existing modes.
+- [ ] Test ranking reorder/privacy/profile/selectors and existing formulas.
 - [x] Correct Atlas rates, migrate saved Atlas rates only, validate 481 actual lands and non-overlapping monthly/yearly SRB projections (66 tests and browser reference/reload checks passed).
 - [ ] Number inputs accept 10,50 / 10.50, empty stays empty
 - [ ] Mines: multi-select delete + reset wallet (confirm)
