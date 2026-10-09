@@ -67,13 +67,13 @@ const BADGE_OR_QTY_BONUS: Tier[] = [
 
 export const DEFAULT_LAND_PARAMS: Record<LandGameId, LandParams> = {
   atlas: {
-    version: 2,
+    version: 4,
     currency: "USD",
     rarities: [
-      { id: "common", label: "Common", emoji: "🟩", perSecond: 0.000000011, probability: 49.5 },
-      { id: "rare", label: "Rare", emoji: "🟦", perSecond: 0.000000016, probability: 32.4 },
-      { id: "epic", label: "Epic", emoji: "🟪", perSecond: 0.000000022, probability: 13.7 },
-      { id: "legendary", label: "Legendary", emoji: "🟨", perSecond: 0.000000044, probability: 4.4 },
+      { id: "common", label: "Common", emoji: "🟩", perSecond: 0.0000000011, probability: 49.5 },
+      { id: "rare", label: "Rare", emoji: "🟦", perSecond: 0.0000000016, probability: 32.4 },
+      { id: "epic", label: "Epic", emoji: "🟪", perSecond: 0.0000000022, probability: 13.7 },
+      { id: "legendary", label: "Legendary", emoji: "🟨", perSecond: 0.0000000044, probability: 4.4 },
     ],
     boostTiers: [
       { min: 0, value: 20 },
