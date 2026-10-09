@@ -5,6 +5,8 @@ import { useGameMode } from "@/hooks/useGameMode";
 export const Route = createFileRoute("/atlas")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Atlas Earth — Calculadora de renda" },
       { name: "description", content: "Abra o modo Atlas Earth: terrenos, boost, eventos e metas." },
       { property: "og:title", content: "Atlas Earth — Calculadora de renda" },

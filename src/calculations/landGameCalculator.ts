@@ -1,4 +1,5 @@
 import type { LandEvent, LandState, Tier } from "@/data/landGames";
+import { atlasEventHours } from "./atlasEvents";
 
 /** Formulas for Atlas Earth / Fortune World. No internal rounding. */
 const H = 3600;
@@ -69,8 +70,14 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
   const eventPS = basePS * p.eventMultiplier * f;
   const h = Math.min(Math.max(Number(s.boostHoursPerDay) || 0, 0), 24);
   const normalDaily = H * (noBoostPS * (24 - h) + boostPS * h);
+  const isAtlas = p.gameId === "atlas";
+  const eventPeriods = (days: number) => isAtlas
+    ? atlasEventHours(s.events, now, now + days * DAY_MS, p)
+    : null;
+  const eventHours = (days: number) => eventPeriods(days)?.reduce((sum, e) => sum + e.hours, 0)
+    ?? eventHoursInWindow(s.events, now, now + days * DAY_MS, p.daysPerMonth);
   const windowIncome = (days: number) => {
-    const ev = eventHoursInWindow(s.events, now, now + days * DAY_MS, p.daysPerMonth);
+    const ev = eventHours(days);
     return (normalDaily / 24) * (days * 24 - ev) + eventPS * H * ev;
   };
   const monthly = windowIncome(p.daysPerMonth);
@@ -78,7 +85,7 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
   const avgDaily = monthly / p.daysPerMonth;
   const bonusGainMonthly = monthly - monthly / f;
   // Explicit monthly breakdown: hours in each regime and their income (sums exactly to `monthly`).
-  const evH = eventHoursInWindow(s.events, now, now + p.daysPerMonth * DAY_MS, p.daysPerMonth);
+  const evH = eventHours(p.daysPerMonth);
   const restH = p.daysPerMonth * 24 - evH;
   const boostH = (restH * h) / 24;
   const plainH = restH - boostH;
@@ -86,10 +93,12 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
     plain: { hours: plainH, income: noBoostPS * H * plainH },
     boost: { hours: boostH, income: boostPS * H * boostH },
     event: { hours: evH, income: eventPS * H * evH },
+    events: eventPeriods(p.daysPerMonth)?.map((e) => ({ ...e, income: eventPS * H * e.hours })) ?? [],
   };
   return {
     breakdown,
     basePerSecond: basePS,
+    baseMonthly: basePS * H * 24 * p.daysPerMonth,
     units,
     multiplier,
     bonusPercent,
@@ -102,7 +111,7 @@ export function calculateLandIncome(s: LandState, now = Date.now()) {
     monthly,
     yearly,
     bonusGainMonthly,
-    eventHoursMonth: eventHoursInWindow(s.events, now, now + p.daysPerMonth * DAY_MS, p.daysPerMonth),
+    eventHoursMonth: evH,
     windowIncome,
   };
 }

@@ -11,6 +11,8 @@ import type { RankGame } from "@/lib/profile";
 export const Route = createFileRoute("/ranking")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "🏆 Ranking — TerraMine Calculator" },
       { name: "description", content: "Ranking dos jogadores que escolheram participar: mais minas e maior renda mensal." },
       { property: "og:title", content: "Ranking — TerraMine Calculator" },

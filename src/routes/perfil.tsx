@@ -19,6 +19,8 @@ import { localIncomes, resizeImage, syncPublicStats, type RankGame } from "@/lib
 export const Route = createFileRoute("/perfil")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Meu Perfil — TerraMine Calculator" },
       { name: "description", content: "Seu perfil, calculadoras, renda estimada total e participação no ranking." },
       { property: "og:title", content: "Meu Perfil — TerraMine Calculator" },

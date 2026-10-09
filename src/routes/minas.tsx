@@ -38,6 +38,8 @@ import { MINE_TYPES, type Mine, type MineType } from "@/types";
 export const Route = createFileRoute("/minas")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Minhas Minas — TerraMine Calculator" },
       { name: "description", content: "Cadastre cada mina, informe o nível e veja o rendimento individual." },
       { property: "og:title", content: "Minhas Minas — TerraMine Calculator" },

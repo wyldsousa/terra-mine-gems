@@ -1,4 +1,5 @@
 # Roadmap
+- [x] Correct Atlas rates, migrate saved Atlas rates only, validate 481 actual lands and non-overlapping monthly/yearly SRB projections (66 tests and browser reference/reload checks passed).
 - [ ] Number inputs accept 10,50 / 10.50, empty stays empty
 - [ ] Mines: multi-select delete + reset wallet (confirm)
 - [ ] Bulk level manager (group by level, partial/all, summary)

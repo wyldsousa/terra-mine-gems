@@ -12,12 +12,12 @@ import { DEFAULT_LAND_PARAMS, GAME_INFO, type LandGameId, type LandState, type T
 import { useGameMode } from "@/hooks/useGameMode";
 import { formatMoney, formatNumber } from "@/lib/format";
 
-/** Currency format that keeps tiny per-second values exact (e.g. $0.000000011). */
+/** Currency format that preserves meaningful tiny per-second values. */
 export function fmtCur(v: number, cur: "USD" | "EUR") {
   const sym = cur === "EUR" ? "€" : "$";
   const abs = Math.abs(v);
   if (abs > 0 && abs < 0.0001) {
-    const str = abs.toLocaleString("en-US", { maximumSignificantDigits: 4, maximumFractionDigits: 20 });
+    const str = abs.toLocaleString("en-US", { maximumSignificantDigits: 10, maximumFractionDigits: 20 });
     return `${v < 0 ? "-" : ""}${sym}${str}`;
   }
   const s = formatMoney(v);
@@ -85,10 +85,11 @@ export function LandDashboard({ game }: { game: LandGameId }) {
       <section className="panel space-y-2 p-5 text-sm">
         <p className="font-semibold">🧮 Como chegamos ao valor mensal</p>
         <div className="flex justify-between"><span>Base (soma dos {info.units}, por segundo)</span><span className="num">{m(inc.basePerSecond)}</span></div>
+        {game === "atlas" && <div className="flex justify-between"><span>Base mensal (sem emblemas, boost ou SRB)</span><span className="num">{m(inc.baseMonthly)}</span></div>}
         <div className="flex justify-between"><span>+ Emblemas (+{inc.bonusPercent}%) = sem boost/s</span><span className="num">{m(inc.perSecond.noBoost)}</span></div>
         <div className="flex justify-between"><span>Sem boost: {formatNumber(inc.breakdown.plain.hours, 1)}h × 1×</span><span className="num">{m(inc.breakdown.plain.income)}</span></div>
         <div className="flex justify-between"><span>Boost: {formatNumber(inc.breakdown.boost.hours, 1)}h × {inc.multiplier}×</span><span className="num">{m(inc.breakdown.boost.income)}</span></div>
-        <div className="flex justify-between"><span>{s.params.eventName}: {formatNumber(inc.breakdown.event.hours, 1)}h × {s.params.eventMultiplier}× (substitui o boost)</span><span className="num">{m(inc.breakdown.event.income)}</span></div>
+        {game === "atlas" ? inc.breakdown.events.map((e, i) => <div key={e.id} className="flex justify-between gap-3"><span>SRB {i + 1}: {formatNumber(e.hours, 1)}h × {s.params.eventMultiplier}×{e.estimated ? " (estimativa sem data)" : ""}</span><span className="num">{m(e.income)}</span></div>) : <div className="flex justify-between"><span>{s.params.eventName}: {formatNumber(inc.breakdown.event.hours, 1)}h × {s.params.eventMultiplier}× (substitui o boost)</span><span className="num">{m(inc.breakdown.event.income)}</span></div>}
         <div className="flex justify-between border-t border-border pt-2 font-semibold"><span>Total do mês</span><span className="num">{m(inc.monthly)}</span></div>
       </section>
       <section className="panel p-5">
@@ -189,6 +190,16 @@ export function LandCalculator({ game }: { game: LandGameId }) {
   return (
     <div className="space-y-5">
       <Header game={game} title="Calculadora" />
+      {game === "atlas" && <section className="panel space-y-3 p-4">
+        <p className="font-semibold">Distribuição real dos terrenos</p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {p.rarities.map((r) => <div key={r.id} className="space-y-1">
+            <Label htmlFor={`actual-${r.id}`}>{r.emoji} {r.label}</Label>
+            <NumericInput id={`actual-${r.id}`} inputMode="numeric" value={s.counts[r.id] ?? 0} onChange={(e) => update((x) => ({ ...x, counts: { ...x.counts, [r.id]: Math.max(0, Math.floor(parseDecimal(e.target.value))) } }))} />
+          </div>)}
+        </div>
+        <p className="text-sm">Total: <span className="num font-semibold">{inc.units}</span> terrenos · Base: <span className="num">{m(inc.basePerSecond)}/s</span> · <span className="num">{m(inc.baseMonthly)}/mês</span> antes dos emblemas</p>
+      </section>}
       <section className="panel grid gap-3 p-4 sm:grid-cols-3">
         <div className="space-y-1">
           <Label htmlFor="bh">Horas de boost por dia{game === "atlas" ? " (1 anúncio = 1h, acumula até " + p.maxBoostHours + "h)" : ""}</Label>
@@ -243,7 +254,7 @@ export function LandCalculator({ game }: { game: LandGameId }) {
             </div>
           </div>
         ))}
-        <p className="text-xs text-muted-foreground">Os eventos se repetem mensalmente a partir da data escolhida. Sem data, contam como 1 ocorrência por mês (estimativa).</p>
+        <p className="text-xs text-muted-foreground">{game === "atlas" ? "Eventos com data: horas reais dentro da projeção, sem contar sobreposições duas vezes. Sem data: estimativa de 1 ocorrência mensal por evento, 12 por ano. A referência considera boost normal ativo 24h por dia; menos horas reduzem a renda fora do SRB." : "Os eventos se repetem mensalmente a partir da data escolhida. Sem data, contam como 1 ocorrência por mês (estimativa)."}</p>
       </section>
 
       <section className="panel space-y-2 p-4">

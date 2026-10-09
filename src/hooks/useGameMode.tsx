@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { PARAMS_VERSION, defaultLandState, type GameMode, type LandGameId, type LandState } from "@/data/landGames";
+import { migrateAtlasParams } from "@/calculations/atlasEvents";
 
 const MODE_KEY = "active-game-mode";
 const landKey = (g: LandGameId) => `land-game-${g}-v2`;
@@ -11,7 +12,9 @@ function loadLand(g: LandGameId): LandState {
     if (!raw) return def;
     const d = JSON.parse(raw) as Partial<LandState>;
     let params = { ...def.params, ...(d.params ?? {}) };
-    if ((d.params?.version ?? 0) < PARAMS_VERSION) {
+    if (g === "atlas") {
+      params = migrateAtlasParams(params);
+    } else if ((d.params?.version ?? 0) < PARAMS_VERSION) {
       // Migration: reset every official value (rates, boost tiers, badge tiers, event multiplier, limits).
       params = { ...def.params, currency: def.params.currency };
     }

@@ -25,6 +25,8 @@ import { formatMoney, formatNumber, formatPercent } from "@/lib/format";
 export const Route = createFileRoute("/estatisticas")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Estatísticas das minas — TerraMine Calculator" },
       {
         name: "description",
