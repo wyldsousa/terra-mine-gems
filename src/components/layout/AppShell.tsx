@@ -1,10 +1,11 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { BarChart3, Calculator, Gauge, Pickaxe, Settings, Trophy, User } from "lucide-react";
 import { GAME_INFO, type GameMode } from "@/data/landGames";
 import { useGameMode } from "@/hooks/useGameMode";
 import type { ReactNode } from "react";
 import { useAppState } from "@/hooks/useAppState";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 const ICONS = { dashboard: Gauge, mines: Pickaxe, calculator: Calculator, stats: BarChart3, settings: Settings, profile: User, ranking: Trophy };
 
@@ -24,11 +25,17 @@ export function AppShell({ children }: { children: ReactNode }) {
   const { t, state, setLanguage } = useAppState();
   const { mode, setMode } = useGameMode();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const selectGame = (g: GameMode) => {
+    setMode(g);
+    if (g === "land-rents") navigate({ to: "/land-rents" });
+    else if (pathname === "/land-rents") navigate({ to: "/" });
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24 md:pb-0">
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
             <span className="ember-bg flex h-9 w-9 items-center justify-center rounded-xl text-lg">{GAME_INFO[mode].emoji}</span>
             <span className="hidden flex-col leading-tight sm:flex">
@@ -38,20 +45,23 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
 
           <div className="flex rounded-xl border border-border p-0.5" role="group" aria-label="Jogo">
-            {(["terramine", "fortune", "atlas"] as GameMode[]).map((g) => (
-              <button
+            {(["terramine", "fortune", "atlas", "land-rents"] as GameMode[]).map((g) => (
+              <Button
                 key={g}
-                onClick={() => setMode(g)}
+                size="sm"
+                variant="ghost"
+                onClick={() => selectGame(g)}
                 aria-pressed={mode === g}
                 aria-label={GAME_INFO[g].name}
-                className={cn("rounded-lg px-2 py-1 text-xs font-semibold transition-colors", mode === g ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+                title={GAME_INFO[g].name}
+                className={cn("h-auto rounded-lg px-2 py-1 text-xs font-semibold transition-colors", mode === g ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
               >
                 {GAME_INFO[g].emoji}<span className="ml-1 hidden lg:inline">{GAME_INFO[g].name}</span>
-              </button>
+              </Button>
             ))}
           </div>
 
-          <nav className="ml-auto hidden items-center gap-1 md:flex">
+          <nav className="ml-auto hidden items-center gap-1 md:flex md:flex-wrap">
             {NAV.map((item) => {
               const Icon = ICONS[item.key];
               const active = pathname === item.to;

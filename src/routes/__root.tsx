@@ -14,6 +14,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { Toaster } from "@/components/ui/sonner";
 import { AppStateProvider } from "@/hooks/useAppState";
 import { GameModeProvider } from "@/hooks/useGameMode";
+import { RankingSync } from "@/components/ranking/RankingSync";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -138,6 +139,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AppStateProvider>
         <GameModeProvider>
+          <RankingSync />
           <AppShell>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
