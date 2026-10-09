@@ -21,6 +21,9 @@ export type Database = {
           created_at: string
           display_name: string
           id: string
+          public_avatar: boolean
+          public_income_games: string[]
+          public_units_games: string[]
           ranking_opt_in: boolean
           updated_at: string
         }
@@ -30,6 +33,9 @@ export type Database = {
           created_at?: string
           display_name?: string
           id: string
+          public_avatar?: boolean
+          public_income_games?: string[]
+          public_units_games?: string[]
           ranking_opt_in?: boolean
           updated_at?: string
         }
@@ -39,6 +45,9 @@ export type Database = {
           created_at?: string
           display_name?: string
           id?: string
+          public_avatar?: boolean
+          public_income_games?: string[]
+          public_units_games?: string[]
           ranking_opt_in?: boolean
           updated_at?: string
         }
@@ -46,25 +55,40 @@ export type Database = {
       }
       public_stats: {
         Row: {
+          configured: boolean
+          currency: string
+          daily_income: number | null
           game: string
           monthly_income: number
           units_count: number
           updated_at: string
           user_id: string
+          weekly_income: number | null
+          yearly_income: number | null
         }
         Insert: {
+          configured?: boolean
+          currency?: string
+          daily_income?: number | null
           game: string
           monthly_income?: number
           units_count?: number
           updated_at?: string
           user_id: string
+          weekly_income?: number | null
+          yearly_income?: number | null
         }
         Update: {
+          configured?: boolean
+          currency?: string
+          daily_income?: number | null
           game?: string
           monthly_income?: number
           units_count?: number
           updated_at?: string
           user_id?: string
+          weekly_income?: number | null
+          yearly_income?: number | null
         }
         Relationships: [
           {
@@ -81,7 +105,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      public_ranking_snapshot: {
+        Args: never
+        Returns: {
+          avatar_url: string
+          currency: string
+          daily_income: number
+          display_name: string
+          game: string
+          monthly_income: number
+          profile_updated_at: string
+          stats_updated_at: string
+          units_count: number
+          user_id: string
+          weekly_income: number
+          yearly_income: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
