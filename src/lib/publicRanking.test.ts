@@ -26,7 +26,10 @@ describe("public ranking consent and summaries", () => {
   });
   it("converts authorized Fortune EUR and adds three public calculators only", () => {
     const rows = [row("a", "atlas", 13.38), row("a", "fortune", 10, "EUR"), row("a", "terramine", 2), row("b", "atlas", 999)];
-    expect(publicTotal(rows, "a", "monthly_income", 1.1)).toEqual({ value: 26.38, available: 3, conversionMissing: false });
+    const total = publicTotal(rows, "a", "monthly_income", 1.1);
+    expect(total.value).toBeCloseTo(26.38, 12);
+    expect(total.available).toBe(3);
+    expect(total.conversionMissing).toBe(false);
   });
   it("marks incomplete totals when conversion is missing", () => {
     const rows = [row("a", "atlas", 13.38), row("a", "fortune", 10, "EUR")];
