@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Diagnose and fix ranking connection; verify real public reads, privacy, retry recovery and multi-visitor updates without changing login or formulas.
 - [x] Automatic ranking polling/retry and last update; live reorder verified in two independent visitors.
 - [x] In-ranking public profiles with per-game visibility and actual period summaries.
 - [x] Land Rents fourth selector and EM BREVE page; desktop/mobile/reload and return verified.
