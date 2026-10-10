@@ -15,3 +15,4 @@
 - Debounce changed calculator summaries globally, compare before writing, and poll cached public snapshots only while visible; preserve remote summaries on a device with no local game data.
 - Store each calculator's real daily, weekly and annual projection in public summaries; never derive Atlas annual income by multiplying its monthly estimate.
 - Land Rents is a separate placeholder mode and route, excluded from calculator engines and ranking game identifiers.
+- Bound public ranking requests with a timeout and progressive retry intervals, and log only sanitized failure codes; this prevents stalled requests and diagnoses outages without exposing profile payloads.

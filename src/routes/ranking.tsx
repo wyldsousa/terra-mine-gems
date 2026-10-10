@@ -1,5 +1,5 @@
 import { createFileRoute, Link, type SearchSchemaInput, useRouter } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,6 +9,7 @@ import { rankingQuery } from "@/lib/rankingQueries";
 import { orderedRanking } from "@/lib/publicRanking";
 import { PublicProfile } from "@/components/ranking/PublicProfile";
 import type { RankGame } from "@/lib/profile";
+import { rankingPollInterval } from "@/lib/rankingConnection";
 
 export const Route = createFileRoute("/ranking")({
   validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
@@ -40,11 +41,28 @@ const MEDAL = ["🥇", "🥈", "🥉"];
 
 function RankingError({ reset }: { reset: () => void }) {
   const router = useRouter();
+  const [attempt, setAttempt] = useState(0);
+  const [retrying, setRetrying] = useState(false);
+  const retry = useCallback(async () => {
+    if (retrying) return;
+    setRetrying(true);
+    try {
+      // Reset only after the loader has finished, rather than racing its pending request.
+      await router.invalidate();
+      reset();
+    } finally {
+      setRetrying(false);
+      setAttempt((n) => n + 1);
+    }
+  }, [router, reset, retrying]);
   useEffect(() => {
-    const timer = setInterval(() => { void router.invalidate(); reset(); }, 30_000);
-    return () => clearInterval(timer);
-  }, [router, reset]);
-  return <div className="space-y-3"><p>Não foi possível conectar ao ranking. Nova tentativa automática em instantes.</p><Button onClick={() => { void router.invalidate(); reset(); }}>Tentar novamente</Button></div>;
+    if (retrying) return;
+    const timer = setTimeout(() => { if (document.visibilityState === "visible") void retry(); else setAttempt((n) => n + 1); }, rankingPollInterval(attempt));
+    const online = () => { void retry(); };
+    window.addEventListener("online", online);
+    return () => { clearTimeout(timer); window.removeEventListener("online", online); };
+  }, [attempt, retry, retrying]);
+  return <div className="space-y-3"><p>Não foi possível conectar ao ranking. Nova tentativa automática em instantes.</p><Button disabled={retrying} onClick={() => void retry()}>{retrying ? "Conectando…" : "Tentar novamente"}</Button></div>;
 }
 
 function RankingPage() {
