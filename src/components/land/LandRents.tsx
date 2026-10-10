@@ -10,7 +10,7 @@ export function LandRents() {
     <section className="relative min-h-[440px] overflow-hidden rounded-lg bg-surface sm:min-h-[580px]">
       <img src={house} alt="Casa com jardim — Land Rents" width={1536} height={1024} className="absolute inset-0 h-full w-full object-cover" />
       <div className="relative z-10 flex items-start justify-between gap-4 p-6 sm:p-10">
-        <div className="bg-background/90 p-4 rounded-lg">
+        <div className="land-rents-heading">
           <House className="mb-3 h-7 w-7 text-primary" />
           <h1 className="font-display text-3xl font-bold sm:text-4xl">Land Rents</h1>
           <p className="mt-3 text-sm font-semibold tracking-wide text-primary">EM BREVE</p>
