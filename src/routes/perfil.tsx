@@ -3,6 +3,7 @@ import { useGameMode } from "@/hooks/useGameMode";
 import { useEurUsd } from "@/hooks/useEurUsd";
 import { fmtCur } from "@/components/land/LandPages";
 import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,7 @@ const FUTURE = ["Histórico de rendimento", "Conquistas", "Comparação entre jo
 
 function ProfilePage() {
   const { user, loading } = useAuth();
+  const queryClient = useQueryClient();
   const { mines, params } = useAppState();
   const [inc, setInc] = useState<ReturnType<typeof localIncomes> | null>(null);
   const [name, setName] = useState("");
@@ -94,12 +96,13 @@ function ProfilePage() {
     try {
       const { error } = await supabase.from("profiles").update({ display_name: name.trim().slice(0, 40) || "Jogador", avatar_url: avatar, ranking_opt_in: optIn, calculators: calcs, public_income_games: incomeGames, public_units_games: unitsGames, public_avatar: publicAvatar }).eq("id", user.id);
       if (error) throw error;
+      window.dispatchEvent(new Event("profile-sharing-changed"));
+      void queryClient.invalidateQueries({ queryKey: ["public-ranking"] });
       if (optIn) {
         const games = CALCS.filter((c) => inc[c.id].units > 0 || localStorage.getItem(`ranking-owned-${user.id}-${c.id}`) === "yes").map((c) => c.id);
         await syncPublicStats(user.id, inc, games);
         for (const game of games) localStorage.setItem(`ranking-owned-${user.id}-${game}`, "yes");
       }
-      window.dispatchEvent(new Event("profile-sharing-changed"));
       toast.success("Perfil e privacidade salvos");
     } catch { toast.error("Não foi possível salvar tudo. Seus dados locais foram preservados; tente novamente."); }
     finally { setSaving(false); }
@@ -187,10 +190,13 @@ function ProfilePage() {
           </div>
           <h2 className="pt-3 font-semibold">📊 Meu painel</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {([["Diária", 1 / 30], ["Semanal", 7 / 30], ["Mensal", 1], ["Anual", 365 / 30]] as const).map(([l, f]) => (
+            {([["Diária", "daily"], ["Semanal", "weekly"], ["Mensal", "monthly"], ["Anual", "yearly"]] as const).map(([l, key]) => (
               <div key={l} className="rounded-lg border border-border/70 p-3">
                 <p className="text-xs text-muted-foreground">{l} total</p>
-                <p className="num font-semibold">{total === null ? "—" : formatMoney(total * f)}</p>
+                <p className="num font-semibold">{(() => {
+                  const values = CALCS.filter((c) => calcs.includes(c.id) && inc[c.id].monthly !== null).map((c) => usd(c.id, inc[c.id][key])).filter((v): v is number => v !== null);
+                  return values.length ? formatMoney(values.reduce((a, b) => a + b, 0)) : "—";
+                })()}</p>
               </div>
             ))}
           </div>

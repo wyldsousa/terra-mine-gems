@@ -115,6 +115,10 @@
   --ring: oklch(0.78 0.13 180);
 }
 
+.land-rents-heading {
+  text-shadow: 0 2px 16px var(--background), 0 1px 4px var(--background);
+}
+
 @layer base {
   * {
     border-color: var(--color-border);

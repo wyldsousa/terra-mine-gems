@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, type SearchSchemaInput, useRouter } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -11,12 +11,12 @@ import { PublicProfile } from "@/components/ranking/PublicProfile";
 import type { RankGame } from "@/lib/profile";
 
 export const Route = createFileRoute("/ranking")({
-  validateSearch: (search: Record<string, unknown>) => ({
+  validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
     game: (["terramine", "fortune", "atlas"].includes(String(search["game"])) ? search["game"] : undefined) as RankGame | undefined,
     by: search["by"] === "units" ? "units" as const : "income" as const,
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(rankingQuery()),
-  errorComponent: ({ reset }) => <div className="space-y-3"><p>Não foi possível conectar ao ranking. Tente novamente.</p><Button onClick={reset}>Tentar novamente</Button></div>,
+  errorComponent: RankingError,
   notFoundComponent: () => <p>Ranking não encontrado.</p>,
   head: () => ({
     meta: [
@@ -37,6 +37,15 @@ const GAMES: { id: RankGame; label: string; unit: string }[] = [
   { id: "fortune", label: "🍀 Fortune World", unit: "parcelas" },
 ];
 const MEDAL = ["🥇", "🥈", "🥉"];
+
+function RankingError({ reset }: { reset: () => void }) {
+  const router = useRouter();
+  useEffect(() => {
+    const timer = setInterval(() => { void router.invalidate(); reset(); }, 30_000);
+    return () => clearInterval(timer);
+  }, [router, reset]);
+  return <div className="space-y-3"><p>Não foi possível conectar ao ranking. Nova tentativa automática em instantes.</p><Button onClick={() => { void router.invalidate(); reset(); }}>Tentar novamente</Button></div>;
+}
 
 function RankingPage() {
   const { user } = useAuth();
