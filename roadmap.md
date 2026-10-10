@@ -1,5 +1,6 @@
 # Roadmap
-- [ ] Diagnose and fix ranking connection; verify real public reads, privacy, retry recovery and multi-visitor updates without changing login or formulas.
+- [x] Verify ranking connection and permissions: live public and signed-in reads succeeded; 78 tests, real owner name update/restoration, visitor refresh, two public profiles, private-row denial and automatic outage recovery passed. Added bounded requests, safe diagnostics and progressive retries.
+- [ ] Identify original ranking outage cause if it recurs; current preview telemetry and published/local reads return success, so the original failure is not reproducible.
 - [x] Automatic ranking polling/retry and last update; live reorder verified in two independent visitors.
 - [x] In-ranking public profiles with per-game visibility and actual period summaries.
 - [x] Land Rents fourth selector and EM BREVE page; desktop/mobile/reload and return verified.
