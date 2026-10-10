@@ -1,13 +1,9 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { RANK_REQUEST_TIMEOUT_MS, rankingFetch, rankingPollInterval, rankingRetryDelay } from "./rankingConnection";
+import { RANK_REQUEST_TIMEOUT_MS, rankingFetch } from "./rankingConnection";
 
 afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
 
-describe("ranking connection recovery", () => {
-  it("spaces retries progressively and caps them", () => {
-    expect([0, 1, 2, 8].map(rankingRetryDelay)).toEqual([2000, 4000, 8000, 60000]);
-    expect([0, 1, 2, 8].map(rankingPollInterval)).toEqual([30000, 60000, 120000, 120000]);
-  });
+describe("ranking single-request connection", () => {
   it("aborts a stalled database request after twelve seconds", async () => {
     vi.useFakeTimers();
     vi.stubGlobal("fetch", vi.fn((_input, init: RequestInit) => new Promise((_resolve, reject) => {

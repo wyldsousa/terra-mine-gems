@@ -96,13 +96,12 @@ function ProfilePage() {
     try {
       const { error } = await supabase.from("profiles").update({ display_name: name.trim().slice(0, 40) || "Jogador", avatar_url: avatar, ranking_opt_in: optIn, calculators: calcs, public_income_games: incomeGames, public_units_games: unitsGames, public_avatar: publicAvatar }).eq("id", user.id);
       if (error) throw error;
-      window.dispatchEvent(new Event("profile-sharing-changed"));
-      void queryClient.invalidateQueries({ queryKey: ["public-ranking"] });
       if (optIn) {
         const games = CALCS.filter((c) => inc[c.id].units > 0 || localStorage.getItem(`ranking-owned-${user.id}-${c.id}`) === "yes").map((c) => c.id);
         await syncPublicStats(user.id, inc, games);
         for (const game of games) localStorage.setItem(`ranking-owned-${user.id}-${game}`, "yes");
       }
+      await queryClient.invalidateQueries({ queryKey: ["public-ranking"], refetchType: "none" });
       toast.success("Perfil e privacidade salvos");
     } catch { toast.error("Não foi possível salvar tudo. Seus dados locais foram preservados; tente novamente."); }
     finally { setSaving(false); }

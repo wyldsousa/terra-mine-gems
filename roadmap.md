@@ -1,11 +1,12 @@
 # Roadmap
+- [ ] Simplify ranking to page-entry/manual loading only; remove global automatic sync and retries; verify visitor/authenticated reads, manual refresh, profiles, privacy and calculator regressions.
 - [x] Verify ranking connection and permissions: live public and signed-in reads succeeded; 78 tests, real owner name update/restoration, visitor refresh, two public profiles, private-row denial and automatic outage recovery passed. Added bounded requests, safe diagnostics and progressive retries.
 - [ ] Identify original ranking outage cause if it recurs; current preview telemetry and published/local reads return success, so the original failure is not reproducible.
-- [x] Automatic ranking polling/retry and last update; live reorder verified in two independent visitors.
+- [x] Automatic ranking polling/retry superseded by user's manual-only ranking requirement.
 - [x] In-ranking public profiles with per-game visibility and actual period summaries.
 - [x] Land Rents fourth selector and EM BREVE page; desktop/mobile/reload and return verified.
 - [x] Test ranking reorder/privacy/profile/selectors and existing formulas: 74 tests passed.
-- [ ] Verify calculator auto-publication and privacy saving through a signed-in owner account; blocked awaiting user's account choice after self-session mint failed.
+- [x] Calculator auto-publication removed at user's request; explicit profile saving is retained.
 - [x] Correct Atlas rates, migrate saved Atlas rates only, validate 481 actual lands and non-overlapping monthly/yearly SRB projections (66 tests and browser reference/reload checks passed).
 - [ ] Number inputs accept 10,50 / 10.50, empty stays empty
 - [ ] Mines: multi-select delete + reset wallet (confirm)
