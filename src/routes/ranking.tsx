@@ -1,5 +1,6 @@
 import { createFileRoute, Link, type SearchSchemaInput, useRouter } from "@tanstack/react-router";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { RefreshCw } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -9,14 +10,13 @@ import { rankingQuery } from "@/lib/rankingQueries";
 import { orderedRanking } from "@/lib/publicRanking";
 import { PublicProfile } from "@/components/ranking/PublicProfile";
 import type { RankGame } from "@/lib/profile";
-import { rankingPollInterval } from "@/lib/rankingConnection";
 
 export const Route = createFileRoute("/ranking")({
   validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
     game: (["terramine", "fortune", "atlas"].includes(String(search["game"])) ? search["game"] : undefined) as RankGame | undefined,
     by: search["by"] === "units" ? "units" as const : "income" as const,
   }),
-  loader: ({ context }) => context.queryClient.ensureQueryData(rankingQuery()),
+  loader: ({ context }) => context.queryClient.fetchQuery({ ...rankingQuery(), staleTime: 0 }),
   errorComponent: RankingError,
   notFoundComponent: () => <p>Ranking não encontrado.</p>,
   head: () => ({
@@ -41,9 +41,8 @@ const MEDAL = ["🥇", "🥈", "🥉"];
 
 function RankingError({ reset }: { reset: () => void }) {
   const router = useRouter();
-  const [attempt, setAttempt] = useState(0);
   const [retrying, setRetrying] = useState(false);
-  const retry = useCallback(async () => {
+  const retry = async () => {
     if (retrying) return;
     setRetrying(true);
     try {
@@ -52,17 +51,9 @@ function RankingError({ reset }: { reset: () => void }) {
       reset();
     } finally {
       setRetrying(false);
-      setAttempt((n) => n + 1);
     }
-  }, [router, reset, retrying]);
-  useEffect(() => {
-    if (retrying) return;
-    const timer = setTimeout(() => { if (document.visibilityState === "visible") void retry(); else setAttempt((n) => n + 1); }, rankingPollInterval(attempt));
-    const online = () => { void retry(); };
-    window.addEventListener("online", online);
-    return () => { clearTimeout(timer); window.removeEventListener("online", online); };
-  }, [attempt, retry, retrying]);
-  return <div className="space-y-3"><p>Não foi possível conectar ao ranking. Nova tentativa automática em instantes.</p><Button disabled={retrying} onClick={() => void retry()}>{retrying ? "Conectando…" : "Tentar novamente"}</Button></div>;
+  };
+  return <div className="space-y-3"><p>Não foi possível conectar ao ranking.</p><Button disabled={retrying} onClick={() => void retry()}>{retrying ? "Conectando…" : "Tentar novamente"}</Button></div>;
 }
 
 function RankingPage() {
@@ -85,7 +76,13 @@ function RankingPage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="font-display text-2xl font-bold">🏆 Ranking</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-2xl font-bold">🏆 Ranking</h1>
+        <Button size="sm" variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()} aria-label={query.isRefetchError ? "Tentar novamente" : "Atualizar ranking"}>
+          <RefreshCw className={`h-4 w-4 ${query.isFetching ? "animate-spin motion-reduce:animate-none" : ""}`} />
+          {query.isFetching ? "Atualizando…" : query.isRefetchError ? "Tentar novamente" : "Atualizar"}
+        </Button>
+      </div>
       <p className="text-sm text-muted-foreground">Somente jogadores que ativaram "Participar do ranking" no perfil. Dados enviados pelos próprios usuários.</p>
       <div className="flex flex-wrap gap-2">
         {GAMES.map((g) => <Button key={g.id} size="sm" variant={game === g.id ? "default" : "outline"} onClick={() => navigate({ search: (prev) => ({ ...prev, game: g.id }) })}>{g.label}</Button>)}
@@ -103,7 +100,7 @@ function RankingPage() {
       )}
       {!user && <p className="text-sm"><Link to="/perfil" className="text-primary">Entre no perfil</Link> para participar.</p>}
 
-      <p className="text-xs text-muted-foreground">Última atualização: {new Date(query.data.fetchedAt).toLocaleTimeString("pt-BR")}{query.isRefetchError ? " · conexão indisponível; mantendo os últimos dados e tentando novamente" : " · atualização automática"}</p>
+      <p className="text-xs text-muted-foreground">Última atualização: {new Date(query.data.fetchedAt).toLocaleTimeString("pt-BR")}{query.isRefetchError ? " · conexão indisponível; mantendo os últimos dados" : ""}</p>
       <section className="panel divide-y divide-border">
         {sorted.length === 0 && <p className="p-4 text-sm text-muted-foreground">Ainda não há informações disponibilizadas neste ranking.</p>}
         {sorted.map((r, i) => (
