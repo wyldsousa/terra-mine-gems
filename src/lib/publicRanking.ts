@@ -1,8 +1,6 @@
 import type { RankGame } from "./profile";
 
 export const RANK_GAMES: RankGame[] = ["terramine", "fortune", "atlas"];
-export const RANK_REFRESH_MS = 30_000;
-export const SYNC_DEBOUNCE_MS = 1500;
 export interface PublicRow {
   user_id: string; display_name: string; avatar_url: string | null;
   profile_updated_at: string; game: string; units_count: number | null;
