@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Diagnose Vercel-only ranking failure, compare deployed code/configuration and fix compatible public loading; verify published visitor/authenticated behavior without changing calculators or privacy.
 - [x] Simplify ranking to page-entry/manual loading only; removed global automatic sync and retries. Verified 14 real participants as visitor and authenticated owner, no polling/focus/reconnect requests, manual refresh and failure recovery, profile clicks on name/photo, owner-only private reads, all calculator pages and Land Rents. 81 tests passed.
 - [x] Verify ranking connection and permissions: live public and signed-in reads succeeded; 78 tests, real owner name update/restoration, visitor refresh, two public profiles, private-row denial and automatic outage recovery passed. Added bounded requests, safe diagnostics and progressive retries.
 - [ ] Identify original ranking outage cause if it recurs; current preview telemetry and published/local reads return success, so the original failure is not reproducible.
