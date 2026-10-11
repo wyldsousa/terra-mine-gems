@@ -16,3 +16,4 @@
 - Store each calculator's real daily, weekly and annual projection in public summaries; never derive Atlas annual income by multiplying its monthly estimate.
 - Land Rents is a separate placeholder mode and route, excluded from calculator engines and ranking game identifiers.
 - Bound individual public ranking requests with a timeout and log only sanitized failure codes; expose manual retry without scheduled retry loops so stalled connections cannot trap the page.
+- Ranking public reads prefer a complete runtime URL/public-key pair and fall back to a complete bundled public pair for external hosts; never mix pairs or use privileged keys, so Vercel can use the same consent RPC without runtime-only configuration.
