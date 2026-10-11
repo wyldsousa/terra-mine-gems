@@ -110,13 +110,35 @@
 }
 
 [data-game="land-rents"] {
-  --primary: oklch(0.78 0.13 180);
-  --primary-foreground: oklch(0.18 0.03 180);
-  --ring: oklch(0.78 0.13 180);
+  --background: oklch(0.145 0.019 155);
+  --surface: oklch(0.19 0.026 155);
+  --secondary: oklch(0.24 0.029 155);
+  --border: oklch(0.32 0.028 155);
+  --primary: oklch(0.8 0.13 85);
+  --primary-foreground: oklch(0.19 0.025 85);
+  --ring: var(--primary);
+  --land-rent-gold: oklch(0.8 0.13 85);
+  --land-rent-green: oklch(0.48 0.12 155);
+  --land-rent-shade: linear-gradient(90deg, var(--background) 0%, oklch(0.145 0.019 155 / 0.82) 25%, transparent 65%);
+  --land-rent-mobile-shade: linear-gradient(180deg, oklch(0.145 0.019 155 / 0.15) 0%, var(--background) 58%);
 }
 
-.land-rents-heading {
-  text-shadow: 0 2px 16px var(--background), 0 1px 4px var(--background);
+.land-rent-icon {
+  --land-rent-gold: oklch(0.8 0.13 85);
+  --land-rent-green: oklch(0.48 0.12 155);
+}
+.land-rent-icon-lot, .land-rent-icon-center { fill: var(--land-rent-green); }
+.land-rent-icon-lot, .land-rent-icon-lines, .land-rent-icon-pin { stroke: var(--land-rent-gold); stroke-width: 2; stroke-linejoin: round; }
+.land-rent-icon-pin { fill: var(--land-rent-gold); }
+.land-rent-world { height: 580px; }
+.land-rent-intro { padding: 40px; }
+.land-rent-shade { background: var(--land-rent-shade); }
+.land-rent-page .font-display { letter-spacing: 0; }
+@media (max-width: 639px) {
+  .land-rent-world { height: 670px; }
+  .land-rent-terrain { height: 350px; object-position: 72% center; }
+  .land-rent-shade { background: var(--land-rent-mobile-shade); }
+  .land-rent-intro { justify-content: flex-end; padding: 26px 22px 32px; }
 }
 
 @layer base {
