@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { useAppState } from "@/hooks/useAppState";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LandRentIcon } from "@/components/land/LandRentIcon";
 
 const ICONS = { dashboard: Gauge, mines: Pickaxe, calculator: Calculator, stats: BarChart3, settings: Settings, profile: User, ranking: Trophy };
 
@@ -37,9 +38,9 @@ export function AppShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-2 px-4 py-3">
           <Link to="/" className="flex items-center gap-2">
-            <span className="ember-bg flex h-9 w-9 items-center justify-center rounded-xl text-lg">{GAME_INFO[mode].emoji}</span>
+            <span className={cn("flex h-9 w-9 items-center justify-center rounded-xl text-lg", mode === "land-rents" ? "bg-secondary" : "ember-bg")}>{mode === "land-rents" ? <LandRentIcon /> : GAME_INFO[mode].emoji}</span>
             <span className="hidden flex-col leading-tight sm:flex">
-              <span className="font-display text-sm font-semibold">{mode === "terramine" ? t.appName : `${GAME_INFO[mode].name} Calculator`}</span>
+              <span className="font-display text-sm font-semibold">{mode === "terramine" ? t.appName : mode === "land-rents" ? "Land Rent" : `${GAME_INFO[mode].name} Calculator`}</span>
               <span className="text-[11px] text-muted-foreground">{t.tagline}</span>
             </span>
           </Link>
@@ -56,7 +57,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 title={GAME_INFO[g].name}
                 className={cn("h-auto rounded-lg px-2 py-1 text-xs font-semibold transition-colors", mode === g ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
               >
-                {GAME_INFO[g].emoji}<span className="ml-1 hidden lg:inline">{GAME_INFO[g].name}</span>
+                {g === "land-rents" ? <LandRentIcon /> : GAME_INFO[g].emoji}<span className="ml-1 hidden lg:inline">{GAME_INFO[g].name}</span>
               </Button>
             ))}
           </div>

@@ -14,6 +14,7 @@
 - Public rankings use a narrowly projected SQL RPC that enforces opt-in and per-field consent; raw profile/stat rows are owner-readable only to prevent bypassing privacy in direct requests.
 - Load public ranking snapshots once on route entry or explicit manual refresh; disable background polling, focus/reconnect refresh and automatic retries to avoid competing requests. Publish calculator summaries only on explicit profile save, preserving remote summaries when this device has no local game data.
 - Store each calculator's real daily, weekly and annual projection in public summaries; never derive Atlas annual income by multiplying its monthly estimate.
-- Land Rents is a separate placeholder mode and route, excluded from calculator engines and ranking game identifiers.
+- Land Rent keeps its existing separate placeholder mode/route identifier, with future domain contracts isolated in a rule-free module and calculations/conversions disabled until official rules are verified; this prevents leakage into existing engines or ranking identifiers.
+- Persist the calculator selected before entering Land Rent and share its GPS mark across the selector and heading; this keeps return navigation and placeholder identity consistent without changing calculator data.
 - Bound individual public ranking requests with a timeout and log only sanitized failure codes; expose manual retry without scheduled retry loops so stalled connections cannot trap the page.
 - Ranking public reads prefer a complete runtime URL/public-key pair and fall back to a complete bundled public pair for external hosts; never mix pairs or use privileged keys, so Vercel can use the same consent RPC without runtime-only configuration.

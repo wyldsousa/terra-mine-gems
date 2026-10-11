@@ -55,7 +55,7 @@ export const GAME_INFO: Record<GameMode, { emoji: string; name: string; unit: st
   terramine: { emoji: "⛏️", name: "TerraMine", unit: "mina", units: "minas", unitsTitle: "Minhas Minas" },
   atlas: { emoji: "🌎", name: "Atlas Earth", unit: "terreno", units: "terrenos", unitsTitle: "Meus Terrenos" },
   fortune: { emoji: "🍀", name: "Fortune World", unit: "parcela", units: "parcelas", unitsTitle: "Minhas Parcelas" },
-  "land-rents": { emoji: "🏡", name: "Land Rents", unit: "", units: "", unitsTitle: "Land Rents" },
+  "land-rents": { emoji: "📍", name: "Land Rent", unit: "", units: "", unitsTitle: "Land Rent" },
 };
 
 export const PARAMS_VERSION = 3;
