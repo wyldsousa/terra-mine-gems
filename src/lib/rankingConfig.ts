@@ -1,4 +1,4 @@
-type PublicConfig = { url?: string; key?: string };
+type PublicConfig = { url?: string | undefined; key?: string | undefined };
 
 /** Never combine credentials from different deployment configurations. */
 export function rankingPublicConfig(runtime: PublicConfig, bundled: PublicConfig) {
