@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { PARAMS_VERSION, defaultLandState, type GameMode, type LandGameId, type LandState } from "@/data/landGames";
 import { migrateAtlasParams } from "@/calculations/atlasEvents";
-import { landRentReturnGame, type CalculatorGameMode } from "@/data/landRent";
+import { landRentReturnGame, defaultLandRentState, LAND_RENT_KEY, landRentStateSchema, type LandRentState, type CalculatorGameMode } from "@/data/landRent";
 
 const MODE_KEY = "active-game-mode";
 const PREVIOUS_GAME_KEY = "land-rent-previous-game";
@@ -33,6 +33,8 @@ function loadLand(g: LandGameId): LandState {
 interface Ctx {
   mode: GameMode;
   previousGame: CalculatorGameMode;
+  landRent: LandRentState;
+  setLandRent: (value: LandRentState) => void;
   setMode: (m: GameMode) => void;
   land: Record<LandGameId, LandState>;
   setLand: (g: LandGameId, fn: (s: LandState) => LandState) => void;
@@ -46,6 +48,7 @@ export function GameModeProvider({ children }: { children: ReactNode }) {
   const [previousGame, setPreviousGame] = useState<CalculatorGameMode>("terramine");
   const [land, setLandAll] = useState<Record<LandGameId, LandState>>({ atlas: defaultLandState("atlas"), fortune: defaultLandState("fortune") });
   const [hydrated, setHydrated] = useState(false);
+  const [landRent, setLandRentState] = useState<LandRentState>(defaultLandRentState);
 
   useEffect(() => {
     const m = localStorage.getItem(MODE_KEY);
@@ -55,6 +58,11 @@ export function GameModeProvider({ children }: { children: ReactNode }) {
     }
     setPreviousGame(landRentReturnGame(localStorage.getItem(PREVIOUS_GAME_KEY)));
     setLandAll({ atlas: loadLand("atlas"), fortune: loadLand("fortune") });
+    try {
+      const raw = localStorage.getItem(LAND_RENT_KEY);
+      const parsed = raw ? landRentStateSchema.safeParse(JSON.parse(raw)) : null;
+      if (parsed?.success) setLandRentState(parsed.data);
+    } catch { /* Preserve unreadable saves; use defaults without overwriting. */ }
     setHydrated(true);
   }, []);
 
@@ -77,7 +85,12 @@ export function GameModeProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const value = useMemo(() => ({ mode, previousGame, setMode, land, setLand, hydrated }), [mode, previousGame, setMode, land, setLand, hydrated]);
+  const setLandRent = useCallback((value: LandRentState) => {
+    const parsed = landRentStateSchema.parse(value);
+    localStorage.setItem(LAND_RENT_KEY, JSON.stringify(parsed));
+    setLandRentState(parsed);
+  }, []);
+  const value = useMemo(() => ({ mode, previousGame, setMode, land, setLand, hydrated, landRent, setLandRent }), [mode, previousGame, setMode, land, setLand, hydrated, landRent, setLandRent]);
   return (
     <GameCtx.Provider value={value}>
       <div data-game={mode}>{children}</div>
