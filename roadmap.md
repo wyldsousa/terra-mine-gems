@@ -1,4 +1,6 @@
 # Roadmap
+- [ ] Implement isolated Land Rent Brazil Group 4 engine, configurable supplied rules, local calculator and standalone events; test all anchors and tier boundaries.
+- [ ] Integrate Land Rent in profile and manual public ranking with explicit consent and simulations excluded from financial totals; verify signed-in save/public read and privacy.
 - [ ] Reformulate only Land Rent: GPS icon, green/gold virtual lots, development page, previous-game return and future rule-free structure; verify desktop/mobile navigation and calculator regressions.
 - [x] Isolated Vercel server-side ranking failure: public browser configuration matches Lovable; consent RPC succeeds with 42 rows/14 users, with and without a session. Vercel server returns serialized ranking error and SSR HTTP 500. Session recovery/reload and owner-only privacy passed. Added complete bundled public-config fallback for external hosts; manual ranking/profile verified locally; 85 tests passed.
 - [ ] Verify corrected ranking/profile on Vercel after redeploy; blocked by unavailable Vercel deployment access/runtime logs. Exact missing or incorrect runtime setting must be confirmed in Vercel logs/settings.
