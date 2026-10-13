@@ -42,9 +42,14 @@ describe("public ranking consent and summaries", () => {
   it("keeps unavailable annual summaries unavailable", () => {
     expect(publicTotal([row("a", "atlas", 13.38)], "a", "yearly_income", null).value).toBeNull();
   });
-  it("does not include Land Rents in rankings or totals", () => {
+  it("includes authorized Land Rent once in simulation summaries and its category", () => {
     const rents = row("a", "land-rents", 999);
-    expect(publicTotal([rents], "a", "monthly_income", null).value).toBeNull();
+    expect(publicTotal([rents], "a", "monthly_income", null).value).toBe(999);
+    expect(orderedRanking([rents], "land-rents", "income")).toEqual([rents]);
     expect(orderedRanking([rents], "atlas", "income")).toEqual([]);
+  });
+  it("does not leak hidden Land Rent or mix different owners in combined totals", () => {
+    expect(publicTotal([row("a", "land-rents", null), row("b", "land-rents", 10)], "a", "monthly_income", null).value).toBeNull();
+    expect(publicTotal([row("a", "atlas", 2), row("a", "land-rents", 3)], "a", "monthly_income", null).value).toBe(5);
   });
 });

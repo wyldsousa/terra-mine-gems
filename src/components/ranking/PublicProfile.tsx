@@ -22,22 +22,23 @@ export function PublicProfile({ rows, userId, position, onClose }: { rows: Publi
         </div>
       </div>
       {!profile ? <p className="text-muted-foreground">Este perfil não está mais disponível publicamente.</p> : <>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           {RANK_GAMES.map((game) => {
             const info = GAME_INFO[game];
             const r = personal.find((row) => row.game === game);
             return <div key={game} className="rounded-lg border border-border bg-card p-4">
               <p className="font-semibold">{info.emoji} {info.name}</p>
               <p className="num mt-3 break-words text-lg font-semibold">{r?.monthly_income != null ? fmtCur(Number(r.monthly_income), r.currency === "EUR" ? "EUR" : "USD") : "Não disponibilizado"}</p>
-              <p className="text-xs text-muted-foreground">Rendimento mensal estimado</p>
+              <p className="text-xs text-muted-foreground">{game === "land-rents" ? "Simulação mensal · não sacável" : "Rendimento mensal estimado"}</p>
               <p className="mt-3 text-sm text-muted-foreground">{r?.units_count != null ? `${r.units_count} ${info.units}` : "Quantidade: Não disponibilizado"}</p>
+              {game === "land-rents" && <div className="mt-3 space-y-2 text-xs text-muted-foreground"><p>Emblemas: {r?.badges ?? "Não disponibilizado"} · Boost: {r?.normal_multiplier == null ? "Não disponibilizado" : `${r.normal_multiplier}×`} · Bônus: {r?.badge_percent == null ? "Não disponibilizado" : `${r.badge_percent}%`}</p>{periods.map(([label,key]) => <p key={key}>{label}: {r?.[key] == null ? "Não disponibilizado" : fmtCur(Number(r[key]), "USD")}</p>)}<p>Rent Rush: {r?.event_enabled == null ? "Não disponibilizado" : r.event_enabled ? "Ativado" : "Desativado"}</p><p>Evento: {r?.event_total == null ? "Não disponibilizado" : fmtCur(r.event_total, "USD")} · Adicional: {r?.event_additional == null ? "Não disponibilizado" : fmtCur(r.event_additional, "USD")}</p></div>}
             </div>;
           })}
         </div>
         <div className="border-y border-border py-4">
-          <p className="text-xs uppercase text-muted-foreground">Total mensal público · USD</p>
+          <p className="text-xs uppercase text-muted-foreground">Total mensal estimado · USD · inclui simulações</p>
           <p className="num mt-1 text-3xl font-bold text-primary">{monthly.value === null ? "Não disponibilizado" : fmtCur(monthly.value, "USD")}</p>
-          {monthly.available < 3 && <p className="mt-2 text-xs text-muted-foreground">Total parcial: somente rendimentos disponibilizados{monthly.conversionMissing ? "; aguardando cotação EUR→USD" : ""}.</p>}
+          {monthly.available < 4 && <p className="mt-2 text-xs text-muted-foreground">Total parcial: somente rendimentos disponibilizados{monthly.conversionMissing ? "; aguardando cotação EUR→USD" : ""}.</p>}
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {periods.map(([label, key]) => {

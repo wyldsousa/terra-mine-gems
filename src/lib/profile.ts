@@ -3,10 +3,13 @@ import { calculatePortfolioIncome } from "@/calculations/terraMineCalculator";
 import { calculateLandIncome } from "@/calculations/landGameCalculator";
 import type { LandGameId, LandState } from "@/data/landGames";
 import type { Mine, Params } from "@/types";
+import { defaultLandRentState, type LandRentState } from "@/data/landRent";
+import { calculateLandRent } from "@/calculations/landRentCalculator";
 
-export type RankGame = "terramine" | "atlas" | "fortune";
+export type RankGame = "terramine" | "atlas" | "fortune" | "land-rents";
 
-export function localIncomes(mines: Mine[], params: Params, land: Record<LandGameId, LandState>) {
+export function localIncomes(mines: Mine[], params: Params, land: Record<LandGameId, LandState>, rent: LandRentState = defaultLandRentState()) {
+  const lr = calculateLandRent(rent);
   const li = (g: LandGameId) => {
     const r = calculateLandIncome(land[g]);
     return { monthly: r.units > 0 ? r.monthly : null, units: r.units, daily: r.avgDaily, weekly: r.weekly, yearly: r.yearly, currency: land[g].params.currency };
@@ -22,6 +25,7 @@ export function localIncomes(mines: Mine[], params: Params, land: Record<LandGam
     },
     atlas: li("atlas"),
     fortune: li("fortune"),
+    "land-rents": { monthly: rent.plots > 0 ? lr.monthly : null, units: rent.plots, daily: lr.daily, weekly: lr.weekly, yearly: lr.yearly, currency: "USD" as const },
   };
 }
 

@@ -13,7 +13,7 @@ import type { RankGame } from "@/lib/profile";
 
 export const Route = createFileRoute("/ranking")({
   validateSearch: (search: Record<string, unknown> & SearchSchemaInput) => ({
-    game: (["terramine", "fortune", "atlas"].includes(String(search["game"])) ? search["game"] : undefined) as RankGame | undefined,
+    game: (["terramine", "fortune", "atlas", "land-rents"].includes(String(search["game"])) ? search["game"] : undefined) as RankGame | undefined,
     by: search["by"] === "units" ? "units" as const : "income" as const,
   }),
   loader: ({ context }) => context.queryClient.fetchQuery({ ...rankingQuery(), staleTime: 0 }),
@@ -36,6 +36,7 @@ const GAMES: { id: RankGame; label: string; unit: string }[] = [
   { id: "terramine", label: "⛏️ TerraMine", unit: "minas" },
   { id: "atlas", label: "🌎 Atlas Earth", unit: "terrenos" },
   { id: "fortune", label: "🍀 Fortune World", unit: "parcelas" },
+  { id: "land-rents", label: "📍 Land Rent", unit: "terrenos" },
 ];
 const MEDAL = ["🥇", "🥈", "🥉"];
 
@@ -61,11 +62,11 @@ function RankingPage() {
   const { mode } = useGameMode();
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
-  const game = search.game ?? (mode === "land-rents" ? "terramine" : mode);
+  const game = search.game ?? mode;
   const by = search.by;
   const query = useSuspenseQuery(rankingQuery());
   const [selected, setSelected] = useState<string | null>(null);
-  useEffect(() => { if (mode !== "land-rents") void navigate({ search: (prev) => ({ ...prev, game: mode }), replace: true }); }, [mode]);
+  useEffect(() => { if (!search.game) void navigate({ search: (prev) => ({ ...prev, game: mode }), replace: true }); }, [mode]);
   const money = (v: number) => fmtCur(v, game === "fortune" ? "EUR" : "USD");
   const unit = GAMES.find((g) => g.id === game)?.unit ?? "unidades";
   const rows = query.data.rows;
@@ -87,7 +88,8 @@ function RankingPage() {
       <div className="flex flex-wrap gap-2">
         {GAMES.map((g) => <Button key={g.id} size="sm" variant={game === g.id ? "default" : "outline"} onClick={() => navigate({ search: (prev) => ({ ...prev, game: g.id }) })}>{g.label}</Button>)}
       </div>
-      <div className="flex gap-2">
+      {game === "land-rents" && <p className="text-sm text-muted-foreground">Land Rent · simulações em USD, incluindo Rent Rush se ativado pelo jogador. Não representam renda sacável.</p>}
+      <div className="flex flex-wrap gap-2">
         <Button size="sm" variant={by === "income" ? "secondary" : "ghost"} onClick={() => navigate({ search: (prev) => ({ ...prev, by: "income" }) })}>Maior rendimento mensal</Button>
         <Button size="sm" variant={by === "units" ? "secondary" : "ghost"} onClick={() => navigate({ search: (prev) => ({ ...prev, by: "units" }) })}>Maior quantidade de {unit}</Button>
       </div>

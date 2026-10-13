@@ -15,6 +15,13 @@
       "when": 1791776265289,
       "tag": "0001_land_rent_consent_ranking",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791889355692,
+      "tag": "0002_land_rent_owner_details",
+      "breakpoints": true
     }
   ]
 }

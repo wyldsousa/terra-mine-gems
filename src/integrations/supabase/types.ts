@@ -59,6 +59,7 @@ export type Database = {
           currency: string
           daily_income: number | null
           game: string
+          game_details: Json | null
           monthly_income: number
           units_count: number
           updated_at: string
@@ -71,6 +72,7 @@ export type Database = {
           currency?: string
           daily_income?: number | null
           game: string
+          game_details?: Json | null
           monthly_income?: number
           units_count?: number
           updated_at?: string
@@ -83,6 +85,7 @@ export type Database = {
           currency?: string
           daily_income?: number | null
           game?: string
+          game_details?: Json | null
           monthly_income?: number
           units_count?: number
           updated_at?: string
@@ -105,6 +108,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      public_ranking_land_rent_details: {
+        Args: never
+        Returns: {
+          badge_percent: number
+          badges: number
+          event_additional: number
+          event_enabled: boolean
+          event_total: number
+          normal_multiplier: number
+          user_id: string
+        }[]
+      }
       public_ranking_snapshot: {
         Args: never
         Returns: {

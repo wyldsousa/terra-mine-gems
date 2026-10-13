@@ -1,12 +1,14 @@
 import type { RankGame } from "./profile";
 
-export const RANK_GAMES: RankGame[] = ["terramine", "fortune", "atlas"];
+export const RANK_GAMES: RankGame[] = ["terramine", "fortune", "atlas", "land-rents"];
 export interface PublicRow {
   user_id: string; display_name: string; avatar_url: string | null;
   profile_updated_at: string; game: string; units_count: number | null;
   monthly_income: number | null; daily_income: number | null;
   weekly_income: number | null; yearly_income: number | null;
   currency: string; stats_updated_at: string;
+  badges?: number | null; normal_multiplier?: number | null; badge_percent?: number | null;
+  event_total?: number | null; event_additional?: number | null; event_enabled?: boolean | null;
 }
 export type PublicPeriod = "daily_income" | "weekly_income" | "monthly_income" | "yearly_income";
 
