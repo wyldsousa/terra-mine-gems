@@ -14,6 +14,9 @@ import { useAppState } from "@/hooks/useAppState";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatMoney } from "@/lib/format";
+import { saveLandRentSummary, loadLandRentSummary } from "@/lib/landRentProfile";
+import { calculateLandRent } from "@/calculations/landRentCalculator";
+import { LandRentIcon } from "@/components/land/LandRentIcon";
 import { localIncomes, resizeImage, syncPublicStats, type RankGame } from "@/lib/profile";
 
 export const Route = createFileRoute("/perfil")({
@@ -33,6 +36,7 @@ export const Route = createFileRoute("/perfil")({
 const CALCS: { id: RankGame; label: string; to: string }[] = [
   { id: "atlas", label: "🌎 Atlas Earth", to: "/atlas" },
   { id: "fortune", label: "🍀 Fortune World", to: "/fortune" },
+  { id: "land-rents", label: "📍 Land Rent", to: "/land-rents" },
   { id: "terramine", label: "⛏️ TerraMine", to: "/calculadora" },
 ];
 
@@ -53,11 +57,11 @@ function ProfilePage() {
   const [publicAvatar, setPublicAvatar] = useState(true);
   const [profileReady, setProfileReady] = useState(false);
 
-  const { land, mode, setMode } = useGameMode();
+  const { land, landRent, setLandRent, mode, setMode } = useGameMode();
   const navigate = useNavigate();
   const fx = useEurUsd();
   const eurUsd = fx.rate;
-  useEffect(() => setInc(localIncomes(mines, params, land)), [mines, params, land]);
+  useEffect(() => setInc(localIncomes(mines, params, land, landRent)), [mines, params, land, landRent]);
   const usd = (id: RankGame, v: number | null) => (v === null ? null : id === "fortune" ? (eurUsd ? v * eurUsd : null) : v);
   const show = (id: RankGame, v: number) => fmtCur(v, id === "fortune" ? "EUR" : "USD");
 
@@ -71,6 +75,7 @@ function ProfilePage() {
       if (error) { toast.error("Não foi possível carregar seu perfil. Tente novamente ao reconectar."); return; }
       if (data) {
         setName(data.display_name); setAvatar(data.avatar_url); setOptIn(data.ranking_opt_in); setCalcs(data.calculators);
+        if (landRent.plots === 0) { const saved = await loadLandRentSummary(user.id); if (active && saved) setLandRent(saved); }
         setIncomeGames(data.public_income_games); setUnitsGames(data.public_units_games); setPublicAvatar(data.public_avatar);
       } else {
         const display = (user.user_metadata?.["full_name"] as string | undefined)?.slice(0, 40) || "Jogador";
@@ -98,9 +103,10 @@ function ProfilePage() {
       if (error) throw error;
       if (optIn) {
         const games = CALCS.filter((c) => inc[c.id].units > 0 || localStorage.getItem(`ranking-owned-${user.id}-${c.id}`) === "yes").map((c) => c.id);
-        await syncPublicStats(user.id, inc, games);
+        await syncPublicStats(user.id, inc, games.filter((g) => g !== "land-rents"));
         for (const game of games) localStorage.setItem(`ranking-owned-${user.id}-${game}`, "yes");
       }
+      if (landRent.plots > 0) await saveLandRentSummary(user.id, landRent);
       await queryClient.invalidateQueries({ queryKey: ["public-ranking"], refetchType: "none" });
       toast.success("Perfil e privacidade salvos");
     } catch { toast.error("Não foi possível salvar tudo. Seus dados locais foram preservados; tente novamente."); }
@@ -157,7 +163,7 @@ function ProfilePage() {
                     <input type="checkbox" checked={calcs.includes(c.id)} onChange={(e) => setCalcs((p) => (e.target.checked ? [...p, c.id] : p.filter((x) => x !== c.id)))} />
                     {c.label}
                   </label>
-                  <button type="button" className="text-xs text-primary" onClick={() => { setMode(c.id); navigate({ to: "/" }); }}>{mode === c.id ? "Ativa" : "Usar"}</button>
+                  <button type="button" className="text-xs text-primary" onClick={() => { setMode(c.id); navigate({ to: c.id === "land-rents" ? "/land-rents" : "/" }); }}>{mode === c.id ? "Ativa" : "Usar"}</button>
                 </div>
               ))}
             </div>
@@ -176,7 +182,7 @@ function ProfilePage() {
           {CALCS.map((c) => (
             <div key={c.id} className="flex justify-between text-sm">
               <span>{c.label}</span>
-              <span className="num">{inc[c.id].monthly === null ? "Não configurada" : `${show(c.id, inc[c.id].monthly ?? 0)}/mês`}</span>
+              <span className="num">{inc[c.id].monthly === null ? "Não disponibilizado" : `${show(c.id, inc[c.id].monthly ?? 0)}/mês`}</span>
             </div>
           ))}
           <p className="text-xs text-muted-foreground" data-testid="fx">
@@ -185,7 +191,7 @@ function ProfilePage() {
             {fx.stale && !eurUsd && " Não foi possível obter a cotação agora; o Fortune World fica fora do total."}
           </p>
           <div className="flex justify-between border-t border-border pt-2 font-semibold">
-            <span>Total estimado</span><span className="num">{total === null ? "Não configurada" : `${formatMoney(total)}/mês`}</span>
+            <span>Total estimado · inclui simulações</span><span className="num">{total === null ? "Não configurada" : `${formatMoney(total)}/mês`}</span>
           </div>
           <h2 className="pt-3 font-semibold">📊 Meu painel</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -212,6 +218,7 @@ function ProfilePage() {
         </section>
       )}
 
+      <section className="space-y-3 border-t border-border pt-5"><h2 className="flex items-center gap-2 font-semibold"><LandRentIcon /> Land Rent · Brasil, Grupo 4</h2>{landRent.plots === 0 ? <p>Não disponibilizado</p> : <><p>{landRent.plots} terrenos · {landRent.badges} emblemas · {calculateLandRent(landRent).multiplier}× · bônus {calculateLandRent(landRent).badgePercent.toLocaleString("pt-BR")}%</p><div className="grid grid-cols-2 gap-3">{([['Diário','daily'],['Semanal','weekly'],['Mensal','monthly'],['Anual','yearly']] as const).map(([label,key]) => <div key={key}><p className="text-xs text-muted-foreground">{label} estimado</p><p className="num">{formatMoney(calculateLandRent(landRent)[key])}</p></div>)}</div><p className="text-sm">Rent Rush {landRent.eventEnabled ? "ativado" : "desativado"} · evento {formatMoney(calculateLandRent(landRent).event.total)} · adicional {formatMoney(calculateLandRent(landRent).event.additional)}</p><p className="text-xs text-muted-foreground">Contribuição incluída uma única vez no resumo. Simulações não representam renda real sacável.</p></>}</section>
       <section className="panel p-5">
         <h2 className="mb-2 font-semibold">🚀 Em breve</h2>
         <div className="flex flex-wrap gap-2">

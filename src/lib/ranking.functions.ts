@@ -30,5 +30,8 @@ export const getRankingSnapshot = createServerFn({ method: "GET" }).handler(asyn
     console.error("[ranking] Public snapshot request failed", { code: /^[A-Za-z0-9_]{1,32}$/.test(error.code) ? error.code : "RANKING_REQUEST_FAILED" });
     throw new Error("Ranking temporariamente indisponível.");
   }
-  return { rows: (data ?? []) as PublicRow[], fetchedAt: new Date().toISOString() };
+  const { data: details, error: detailsError } = await client.rpc("public_ranking_land_rent_details");
+  if (detailsError) console.error("[ranking] Land Rent details unavailable", { code: "RANKING_DETAILS_FAILED" });
+  const rows: PublicRow[] = (data ?? []).map((row) => row.game === "land-rents" ? { ...row, ...(details ?? []).find((d) => d.user_id === row.user_id) } : row);
+  return { rows, fetchedAt: new Date().toISOString() };
 });
