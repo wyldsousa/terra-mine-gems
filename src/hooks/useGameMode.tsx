@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { PARAMS_VERSION, defaultLandState, type GameMode, type LandGameId, type LandState } from "@/data/landGames";
+import { useAuth } from "@/hooks/useAuth";
 import { migrateAtlasParams } from "@/calculations/atlasEvents";
-import { landRentReturnGame, defaultLandRentState, LAND_RENT_KEY, landRentStateSchema, type LandRentState, type CalculatorGameMode } from "@/data/landRent";
+import { landRentReturnGame, defaultLandRentState, landRentStorageKey, landRentStateSchema, type LandRentState, type CalculatorGameMode } from "@/data/landRent";
 
 const MODE_KEY = "active-game-mode";
 const PREVIOUS_GAME_KEY = "land-rent-previous-game";
@@ -43,6 +44,9 @@ interface Ctx {
 const GameCtx = createContext<Ctx | null>(null);
 
 export function GameModeProvider({ children }: { children: ReactNode }) {
+  const { user, loading: authLoading } = useAuth();
+  const ownerKey = landRentStorageKey(user?.id ?? null);
+  const rentKeyRef = useRef("");
   const [mode, setModeState] = useState<GameMode>("terramine");
   const currentMode = useRef<GameMode>("terramine");
   const [previousGame, setPreviousGame] = useState<CalculatorGameMode>("terramine");
@@ -58,13 +62,15 @@ export function GameModeProvider({ children }: { children: ReactNode }) {
     }
     setPreviousGame(landRentReturnGame(localStorage.getItem(PREVIOUS_GAME_KEY)));
     setLandAll({ atlas: loadLand("atlas"), fortune: loadLand("fortune") });
-    try {
-      const raw = localStorage.getItem(LAND_RENT_KEY);
-      const parsed = raw ? landRentStateSchema.safeParse(JSON.parse(raw)) : null;
-      if (parsed?.success) setLandRentState(parsed.data);
-    } catch { /* Preserve unreadable saves; use defaults without overwriting. */ }
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (authLoading) return;
+    rentKeyRef.current = ownerKey;
+    try { const raw = localStorage.getItem(ownerKey); const parsed = raw ? landRentStateSchema.safeParse(JSON.parse(raw)) : null; setLandRentState(parsed?.success ? parsed.data : defaultLandRentState()); }
+    catch { setLandRentState(defaultLandRentState()); }
+  }, [ownerKey, authLoading]);
 
   const setMode = useCallback((m: GameMode) => {
     if (m === "land-rents" && currentMode.current !== "land-rents") {
@@ -87,9 +93,9 @@ export function GameModeProvider({ children }: { children: ReactNode }) {
 
   const setLandRent = useCallback((value: LandRentState) => {
     const parsed = landRentStateSchema.parse(value);
-    localStorage.setItem(LAND_RENT_KEY, JSON.stringify(parsed));
+    localStorage.setItem(landRentStorageKey, JSON.stringify(parsed));
     setLandRentState(parsed);
-  }, []);
+  }, [authLoading, ownerKey]);
   const value = useMemo(() => ({ mode, previousGame, setMode, land, setLand, hydrated, landRent, setLandRent }), [mode, previousGame, setMode, land, setLand, hydrated, landRent, setLandRent]);
   return (
     <GameCtx.Provider value={value}>
