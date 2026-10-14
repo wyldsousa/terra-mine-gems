@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Complete all Land Rent tabs, weighted boost hours, goals, reports, owner isolation and consent integration; verify UI and regression tests.
 - [ ] Correct automatic Land Rent tiers/validations, weekly replacement Rent Rush and inputs; complete owner persistence, consent-controlled profile/ranking and regression/browser verification.
 - [ ] Implement isolated Land Rent Brazil Group 4 engine, configurable supplied rules, local calculator and standalone events; test all anchors and tier boundaries.
 - [ ] Integrate Land Rent in profile and manual public ranking with explicit consent and simulations excluded from financial totals; verify signed-in save/public read and privacy.
