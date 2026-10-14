@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import { useGameMode } from "@/hooks/useGameMode";
 import { LandCalculator, LandDashboard, LandSettings, LandStats, LandUnits } from "./LandPages";
-import { LandRents } from "./LandRents";
+import { LandRentView } from "./LandRentPages";
 
 const PAGES = { dashboard: LandDashboard, units: LandUnits, calculator: LandCalculator, stats: LandStats, settings: LandSettings };
 
@@ -9,7 +9,7 @@ const PAGES = { dashboard: LandDashboard, units: LandUnits, calculator: LandCalc
 export function ModeSwitch({ page, terramine: T }: { page: keyof typeof PAGES; terramine: ComponentType }) {
   const { mode } = useGameMode();
   if (mode === "terramine") return <T />;
-  if (mode === "land-rents") return <LandRents />;
+  if (mode === "land-rents") return <LandRentView page={page} />;
   const P = PAGES[page];
   return <P key={mode} game={mode} />;
 }

@@ -65,7 +65,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <nav className="ml-auto hidden items-center gap-1 md:flex md:flex-wrap">
             {NAV.map((item) => {
               const Icon = ICONS[item.key];
-              const active = pathname === item.to;
+              const active = pathname === item.to || (mode === "land-rents" && pathname === "/land-rents" && item.key === "dashboard");
               return (
                 <Link
                   key={item.to}
@@ -98,7 +98,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-lg items-stretch">
           {NAV.map((item) => {
             const Icon = ICONS[item.key];
-            const active = pathname === item.to;
+            const active = pathname === item.to || (mode === "land-rents" && pathname === "/land-rents" && item.key === "dashboard");
             return (
               <Link
                 key={item.to}
