@@ -11,22 +11,25 @@ export function landRentReferenceAnnual(plots: number, multiplier: number, param
 }
 export function calculateLandRent(input: LandRentState) {
   const s = landRentStateSchema.parse(input), p = s.params;
-  const basePerSecond = p.annualAtReference / p.referenceMultiplier / (p.daysPerYear * 86400);
+  const basePerSecond = p.basePerSecond ?? p.annualAtReference / p.referenceMultiplier / (p.daysPerYear * 86400);
   const badgePercent = landRentBadgePercent(s.badges, p) ?? 0;
   const tier = landRentTier(s.plots, p);
   const multiplier = tier?.value ?? 1;
   const parcelRate = s.plots * basePerSecond * (1 + badgePercent / 100);
   const perSecond = parcelRate * multiplier;
-  const normal = { daily: perSecond * 86400, weekly: perSecond * 7 * 86400, monthly: perSecond * p.daysPerYear * 86400 / 12, yearly: perSecond * p.daysPerYear * 86400 };
+  const effectiveMultiplier = (s.boostHours * multiplier + (24 - s.boostHours)) / 24;
+  const normalDaily = parcelRate * 3600 * (s.boostHours * multiplier + 24 - s.boostHours);
+  const normal = { daily: normalDaily, weekly: normalDaily * 7, monthly: normalDaily * p.daysPerYear / 12, yearly: normalDaily * p.daysPerYear };
+  const unboosted = { daily: parcelRate * 86400, weekly: parcelRate * 86400 * 7, monthly: parcelRate * 86400 * p.daysPerYear / 12, yearly: parcelRate * 86400 * p.daysPerYear };
   const eventPerSecond = parcelRate * p.eventMultiplier;
-  const eventNormal = perSecond * p.eventHours * 3600;
+  const eventNormal = parcelRate * effectiveMultiplier * p.eventHours * 3600;
   const eventTotal = eventPerSecond * p.eventHours * 3600;
   const eventAdditional = eventTotal - eventNormal;
   // Average recurring projection: one occurrence / configured interval. Add only incremental rent.
   // A supplied start is the phase of the recurring schedule; average periods are phase-independent.
   const annualOccurrences = p.daysPerYear / p.eventEveryDays;
   const extraYear = s.eventEnabled ? eventAdditional * annualOccurrences : 0;
-  return { basePerSecond, badgePercent, tier, multiplier, perSecond, perHour: perSecond * 3600, normal,
+  return { effectiveMultiplier, unboosted, basePerSecond, badgePercent, tier, multiplier, perSecond, perHour: perSecond * 3600, normal,
     daily: normal.daily + extraYear / p.daysPerYear,
     weekly: normal.weekly + (s.eventEnabled ? eventAdditional * 7 / p.eventEveryDays : 0),
     monthly: normal.monthly + extraYear / 12, yearly: normal.yearly + extraYear,

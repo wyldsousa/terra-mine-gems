@@ -1,2 +1,2 @@
-import { LandRentCalculator } from "./LandRentCalculator";
-export function LandRents() { return <LandRentCalculator />; }
+import { LandRentView } from "./LandRentPages";
+export function LandRents() { return <LandRentView page="dashboard" />; }

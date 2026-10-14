@@ -75,7 +75,7 @@ function ProfilePage() {
       if (error) { toast.error("Não foi possível carregar seu perfil. Tente novamente ao reconectar."); return; }
       if (data) {
         setName(data.display_name); setAvatar(data.avatar_url); setOptIn(data.ranking_opt_in); setCalcs(data.calculators);
-        if (landRent.plots === 0) { const saved = await loadLandRentSummary(user.id); if (active && saved) setLandRent(saved); }
+        if (!localStorage.getItem(`land-rent-brazil-group4-v1:owner:${user.id}`)) { try { const saved = await loadLandRentSummary(user.id); if (active && saved) setLandRent(saved); } catch { toast.error("Não foi possível recuperar Land Rent. Seus outros dados foram preservados."); } }
         setIncomeGames(data.public_income_games); setUnitsGames(data.public_units_games); setPublicAvatar(data.public_avatar);
       } else {
         const display = (user.user_metadata?.["full_name"] as string | undefined)?.slice(0, 40) || "Jogador";
@@ -106,7 +106,7 @@ function ProfilePage() {
         await syncPublicStats(user.id, inc, games.filter((g) => g !== "land-rents"));
         for (const game of games) localStorage.setItem(`ranking-owned-${user.id}-${game}`, "yes");
       }
-      if (landRent.plots > 0) await saveLandRentSummary(user.id, landRent);
+      if (localStorage.getItem(`land-rent-brazil-group4-v1:owner:${user.id}`)) await saveLandRentSummary(user.id, landRent);
       await queryClient.invalidateQueries({ queryKey: ["public-ranking"], refetchType: "none" });
       toast.success("Perfil e privacidade salvos");
     } catch { toast.error("Não foi possível salvar tudo. Seus dados locais foram preservados; tente novamente."); }
@@ -218,7 +218,7 @@ function ProfilePage() {
         </section>
       )}
 
-      <section className="space-y-3 border-t border-border pt-5"><h2 className="flex items-center gap-2 font-semibold"><LandRentIcon /> Land Rent · Brasil, Grupo 4</h2>{landRent.plots === 0 ? <p>Não disponibilizado</p> : <><p>{landRent.plots} terrenos · {landRent.badges} emblemas · {calculateLandRent(landRent).multiplier}× · bônus {calculateLandRent(landRent).badgePercent.toLocaleString("pt-BR")}%</p><div className="grid grid-cols-2 gap-3">{([['Diário','daily'],['Semanal','weekly'],['Mensal','monthly'],['Anual','yearly']] as const).map(([label,key]) => <div key={key}><p className="text-xs text-muted-foreground">{label} estimado</p><p className="num">{formatMoney(calculateLandRent(landRent)[key])}</p></div>)}</div><p className="text-sm">Rent Rush {landRent.eventEnabled ? "ativado" : "desativado"} · evento {formatMoney(calculateLandRent(landRent).event.total)} · adicional {formatMoney(calculateLandRent(landRent).event.additional)}</p><p className="text-xs text-muted-foreground">Contribuição incluída uma única vez no resumo. Simulações não representam renda real sacável.</p></>}</section>
+      <section className="space-y-3 border-t border-border pt-5"><h2 className="flex items-center gap-2 font-semibold"><LandRentIcon /> Land Rent · Brasil, Grupo 4</h2>{landRent.plots === 0 ? <p>Não disponibilizado</p> : <><p>{landRent.plots} terrenos · {landRent.badges} emblemas · {landRent.boostHours}h com boost/dia · {calculateLandRent(landRent).multiplier}× · bônus {calculateLandRent(landRent).badgePercent.toLocaleString("pt-BR")}%</p><div className="grid grid-cols-2 gap-3">{([['Diário','daily'],['Semanal','weekly'],['Mensal','monthly'],['Anual','yearly']] as const).map(([label,key]) => <div key={key}><p className="text-xs text-muted-foreground">{label} estimado</p><p className="num">{formatMoney(calculateLandRent(landRent)[key])}</p></div>)}</div><p className="text-sm">Rent Rush {landRent.eventEnabled ? "ativado" : "desativado"} · evento {formatMoney(calculateLandRent(landRent).event.total)} · adicional {formatMoney(calculateLandRent(landRent).event.additional)}</p><p className="text-xs text-muted-foreground">Contribuição incluída uma única vez no resumo. Simulações não representam renda real sacável.</p></>}</section>
       <section className="panel p-5">
         <h2 className="mb-2 font-semibold">🚀 Em breve</h2>
         <div className="flex flex-wrap gap-2">

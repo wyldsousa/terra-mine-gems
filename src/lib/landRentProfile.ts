@@ -5,7 +5,7 @@ export async function saveLandRentSummary(userId: string, value: LandRentState) 
   const s = landRentStateSchema.parse(value), r = calculateLandRent(s);
   const { error } = await supabase.from("public_stats").upsert({ user_id: userId, game: "land-rents", configured: s.plots > 0,
     units_count: s.plots, monthly_income: r.monthly, daily_income: r.daily, weekly_income: r.weekly, yearly_income: r.yearly, currency: "USD",
-    game_details: { state: s, badges: s.badges, normal_multiplier: r.multiplier, badge_percent: r.badgePercent, event_total: r.event.total, event_additional: r.event.additional, event_enabled: s.eventEnabled },
+    game_details: { state: s, boost_hours: s.boostHours, badges: s.badges, normal_multiplier: r.multiplier, badge_percent: r.badgePercent, event_total: r.event.total, event_additional: r.event.additional, event_enabled: s.eventEnabled },
   }, { onConflict: "user_id,game" });
   if (error) throw error;
 }
