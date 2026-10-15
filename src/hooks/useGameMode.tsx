@@ -93,7 +93,7 @@ export function GameModeProvider({ children }: { children: ReactNode }) {
 
   const setLandRent = useCallback((value: LandRentState) => {
     const parsed = landRentStateSchema.parse(value);
-    localStorage.setItem(landRentStorageKey, JSON.stringify(parsed));
+    localStorage.setItem(ownerKey, JSON.stringify(parsed));
     setLandRentState(parsed);
   }, [authLoading, ownerKey]);
   const value = useMemo(() => ({ mode, previousGame, setMode, land, setLand, hydrated, landRent, setLandRent }), [mode, previousGame, setMode, land, setLand, hydrated, landRent, setLandRent]);
