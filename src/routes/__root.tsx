@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import { AppShell } from "@/components/layout/AppShell";
 import { Toaster } from "@/components/ui/sonner";
 import { AppStateProvider } from "@/hooks/useAppState";
+import { ThemeProvider } from "@/hooks/useTheme";
 import { GameModeProvider } from "@/hooks/useGameMode";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -137,12 +138,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AppStateProvider>
-        <GameModeProvider>
+        <ThemeProvider><GameModeProvider>
           <AppShell>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />
           </AppShell>
-        </GameModeProvider>
+        </GameModeProvider></ThemeProvider>
         <Toaster position="top-center" richColors />
       </AppStateProvider>
     </QueryClientProvider>
