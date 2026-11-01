@@ -169,25 +169,22 @@ export interface WithdrawalResult {
 }
 
 /**
- * Deductions are sequential and always shown separately:
- *   1. platform fee on the gross amount
- *   2. additional tax on what is left after the fee
+ * Only the game's platform fee applies. Legacy additionalTax is ignored.
  */
 export function calculateWithdrawal(gross: number, params: Params): WithdrawalResult {
   const g = Math.max(gross || 0, 0);
   const platformFee = g * params.withdrawalFee;
   const afterFee = g - platformFee;
-  const additionalTax = afterFee * params.additionalTax;
-  return { gross: g, platformFee, afterFee, additionalTax, net: afterFee - additionalTax };
+  return { gross: g, platformFee, afterFee, additionalTax: 0, net: afterFee };
 }
 
 export function calculateNetWithdrawal(gross: number, params: Params): number {
   return calculateWithdrawal(gross, params).net;
 }
 
-/** Gross balance required to receive `net` after fee + tax. */
+/** Gross balance required to receive `net` after the game fee. */
 export function calculateGrossForNet(net: number, params: Params): number {
-  const retained = (1 - params.withdrawalFee) * (1 - params.additionalTax);
+  const retained = 1 - params.withdrawalFee;
   if (retained <= 0) return Infinity;
   return net / retained;
 }

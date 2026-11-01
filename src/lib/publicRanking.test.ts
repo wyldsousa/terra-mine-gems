@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { orderedRanking, publicTotal, type PublicRow } from "./publicRanking";
+import { orderedRanking, publicTotal, rankingPage, type PublicRow } from "./publicRanking";
 
 const row = (user_id: string, game: string, monthly_income: number | null, currency = "USD"): PublicRow => ({
   user_id, game, monthly_income, currency, units_count: 481, daily_income: null,
@@ -8,6 +8,13 @@ const row = (user_id: string, game: string, monthly_income: number | null, curre
 });
 
 describe("public ranking consent and summaries", () => {
+  it('shows 10 initially and adds the next 10 without repeats or changing order', () => {
+    const all = Array.from({length: 25}, (_, i) => row(String(i), 'atlas', 25-i));
+    expect(rankingPage(all, 1)).toEqual(all.slice(0,10));
+    expect(rankingPage(all, 2)).toEqual(all.slice(0,20));
+    expect(rankingPage(all, 3)).toEqual(all);
+    expect(new Set(rankingPage(all, 3).map(r => r.user_id)).size).toBe(25);
+  });
   it("excludes hidden income from income ranking, but permits authorized counts", () => {
     const rows = [row("a", "atlas", null), row("b", "atlas", 13.38)];
     expect(orderedRanking(rows, "atlas", "income").map((r) => r.user_id)).toEqual(["b"]);

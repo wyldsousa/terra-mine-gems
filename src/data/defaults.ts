@@ -21,7 +21,7 @@ export const DEFAULT_PARAMS: Params = {
   boostMultiplier: 20,
   boostHoursPerDay: 0,
   withdrawalFee: 0.17,
-  additionalTax: 0.101,
+  additionalTax: 0,
   maxLevel: 100,
   daysPerMonth: 30,
   daysPerYear: 365,

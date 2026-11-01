@@ -1,0 +1,2 @@
+ALTER TABLE public.profiles ADD COLUMN theme_preference text DEFAULT NULL CHECK (theme_preference IN ('light', 'dark'));
+COMMENT ON COLUMN public.profiles.theme_preference IS 'Owner-only global appearance preference; not included in public ranking RPCs.';

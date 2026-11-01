@@ -10,6 +10,7 @@ import { ConfirmDialog } from "@/components/mines/MineBulkTools";
 import { calculateLandIncome, daysToGoal, nextEventStart, rarityShares, totalUnits } from "@/calculations/landGameCalculator";
 import { DEFAULT_LAND_PARAMS, GAME_INFO, type LandGameId, type LandState, type Tier } from "@/data/landGames";
 import { useGameMode } from "@/hooks/useGameMode";
+import { StatCard } from "@/components/common/StatCard";
 import { formatMoney, formatNumber } from "@/lib/format";
 
 /** Currency format that preserves meaningful tiny per-second values. */
@@ -44,13 +45,7 @@ function Header({ game, title }: { game: LandGameId; title: string }) {
   );
 }
 function Card({ label, value, sub }: { label: string; value: string; sub?: string }) {
-  return (
-    <div className="panel p-4">
-      <p className="text-[11px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="num mt-1 text-lg font-semibold">{value}</p>
-      {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
-    </div>
-  );
+  return <StatCard label={label} value={value} sub={sub} />;
 }
 const fmtDate = (t: number) => new Date(t).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 
@@ -82,8 +77,8 @@ export function LandDashboard({ game }: { game: LandGameId }) {
         <Card label={`Emblemas (${s.badges})`} value={`+${inc.bonusPercent}%`} />
         <Card label={s.params.eventName} value={nextEvents[0] ? fmtDate(nextEvents[0]) : "Data não definida"} sub={`${s.params.eventMultiplier}× · ${s.events.length} por mês`} />
       </section>
-      <section className="panel space-y-2 p-5 text-sm">
-        <p className="font-semibold">🧮 Como chegamos ao valor mensal</p>
+      <details className="space-y-2 text-sm">
+        <summary className="cursor-pointer font-semibold">Detalhes do cálculo mensal</summary>
         <div className="flex justify-between"><span>Base (soma dos {info.units}, por segundo)</span><span className="num">{m(inc.basePerSecond)}</span></div>
         {game === "atlas" && <div className="flex justify-between"><span>Base mensal (sem emblemas, boost ou SRB)</span><span className="num">{m(inc.baseMonthly)}</span></div>}
         <div className="flex justify-between"><span>+ Emblemas (+{inc.bonusPercent}%) = sem boost/s</span><span className="num">{m(inc.perSecond.noBoost)}</span></div>
@@ -91,7 +86,7 @@ export function LandDashboard({ game }: { game: LandGameId }) {
         <div className="flex justify-between"><span>Boost: {formatNumber(inc.breakdown.boost.hours, 1)}h × {inc.multiplier}×</span><span className="num">{m(inc.breakdown.boost.income)}</span></div>
         {game === "atlas" ? inc.breakdown.events.map((e, i) => <div key={e.id} className="flex justify-between gap-3"><span>SRB {i + 1}: {formatNumber(e.hours, 1)}h × {s.params.eventMultiplier}×{e.estimated ? " (estimativa sem data)" : ""}</span><span className="num">{m(e.income)}</span></div>) : <div className="flex justify-between"><span>{s.params.eventName}: {formatNumber(inc.breakdown.event.hours, 1)}h × {s.params.eventMultiplier}× (substitui o boost)</span><span className="num">{m(inc.breakdown.event.income)}</span></div>}
         <div className="flex justify-between border-t border-border pt-2 font-semibold"><span>Total do mês</span><span className="num">{m(inc.monthly)}</span></div>
-      </section>
+      </details>
       <section className="panel p-5">
         <p className="font-semibold">🎯 Próxima meta: {m(nextGoal)}</p>
         <Progress className="mt-3" value={Math.min(100, (s.balance / nextGoal) * 100)} />
@@ -254,7 +249,7 @@ export function LandCalculator({ game }: { game: LandGameId }) {
             </div>
           </div>
         ))}
-        <p className="text-xs text-muted-foreground">{game === "atlas" ? "Eventos com data: horas reais dentro da projeção, sem contar sobreposições duas vezes. Sem data: estimativa de 1 ocorrência mensal por evento, 12 por ano. A referência considera boost normal ativo 24h por dia; menos horas reduzem a renda fora do SRB." : "Os eventos se repetem mensalmente a partir da data escolhida. Sem data, contam como 1 ocorrência por mês (estimativa)."}</p>
+        <details className="text-xs text-muted-foreground"><summary className="cursor-pointer">Detalhes dos eventos</summary><p>{game === "atlas" ? "Eventos com data: horas reais dentro da projeção, sem contar sobreposições duas vezes. Sem data: estimativa de 1 ocorrência mensal por evento, 12 por ano. A referência considera boost normal ativo 24h por dia; menos horas reduzem a renda fora do SRB." : "Os eventos se repetem mensalmente a partir da data escolhida. Sem data, contam como 1 ocorrência por mês (estimativa)."}</p></details>
       </section>
 
       <section className="panel space-y-2 p-4">
@@ -269,7 +264,7 @@ export function LandCalculator({ game }: { game: LandGameId }) {
           );
         })}
       </section>
-      <p className="text-xs text-muted-foreground">Estimativa: base/s × multiplicador × (1 + bônus%). Durante eventos o {p.eventMultiplier}× substitui o multiplicador normal. Valores editáveis em Configurações.</p>
+      <p className="text-xs text-muted-foreground">Projeções estimadas, não pagamentos garantidos.</p>
     </div>
   );
 }

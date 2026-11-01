@@ -15,8 +15,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { formatMoney } from "@/lib/format";
 import { saveLandRentSummary, loadLandRentSummary } from "@/lib/landRentProfile";
-import { calculateLandRent } from "@/calculations/landRentCalculator";
-import { LandRentIcon } from "@/components/land/LandRentIcon";
 import { localIncomes, resizeImage, syncPublicStats, type RankGame } from "@/lib/profile";
 
 export const Route = createFileRoute("/perfil")({
@@ -218,7 +216,7 @@ function ProfilePage() {
         </section>
       )}
 
-      <section className="space-y-3 border-t border-border pt-5"><h2 className="flex items-center gap-2 font-semibold"><LandRentIcon /> Land Rent · Brasil, Grupo 4</h2>{landRent.plots === 0 ? <p>Não disponibilizado</p> : <><p>{landRent.plots} terrenos · {landRent.badges} emblemas · {landRent.boostHours}h com boost/dia · {calculateLandRent(landRent).multiplier}× · bônus {calculateLandRent(landRent).badgePercent.toLocaleString("pt-BR")}%</p><div className="grid grid-cols-2 gap-3">{([['Diário','daily'],['Semanal','weekly'],['Mensal','monthly'],['Anual','yearly']] as const).map(([label,key]) => <div key={key}><p className="text-xs text-muted-foreground">{label} estimado</p><p className="num">{formatMoney(calculateLandRent(landRent)[key])}</p></div>)}</div><p className="text-sm">Rent Rush {landRent.eventEnabled ? "ativado" : "desativado"} · evento {formatMoney(calculateLandRent(landRent).event.total)} · adicional {formatMoney(calculateLandRent(landRent).event.additional)}</p><p className="text-xs text-muted-foreground">Contribuição incluída uma única vez no resumo. Simulações não representam renda real sacável.</p></>}</section>
+
       <section className="panel p-5">
         <h2 className="mb-2 font-semibold">🚀 Em breve</h2>
         <div className="flex flex-wrap gap-2">

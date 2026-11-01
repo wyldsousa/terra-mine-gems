@@ -17,12 +17,12 @@ export function StatCard({
   className?: string;
 }) {
   return (
-    <div className={cn("panel p-4", accent && "panel-glow", className)}>
+    <div className={cn("rounded-lg border border-border bg-card p-4", accent && "border-primary/40", className)}>
       <div className="flex items-start justify-between gap-2">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
         {icon}
       </div>
-      <p className={cn("num mt-2 text-xl font-semibold", accent && "ember-text")}>{value}</p>
+      <p className={cn("num mt-2 break-words text-lg font-semibold", accent && "text-primary")}>{value}</p>
       {sub ? <p className="mt-1 text-xs text-muted-foreground">{sub}</p> : null}
     </div>
   );

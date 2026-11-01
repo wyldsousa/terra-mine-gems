@@ -18,3 +18,5 @@
 - Persist the calculator selected before entering Land Rent and share its GPS mark across the selector and heading; this keeps return navigation and placeholder identity consistent without changing calculator data.
 - Bound individual public ranking requests with a timeout and log only sanitized failure codes; expose manual retry without scheduled retry loops so stalled connections cannot trap the page.
 - Ranking public reads prefer a complete runtime URL/public-key pair and fall back to a complete bundled public pair for external hosts; never mix pairs or use privileged keys, so Vercel can use the same consent RPC without runtime-only configuration.
+- Global appearance is controlled by one root ThemeProvider using semantic tokens, guest/owner local keys and an owner-only profile preference; it never writes calculator state or public ranking summaries.
+- Ranking expansion slices the existing consent snapshot in stable batches without changing its RPC/manual loading policy; each public game detail is independently expandable.

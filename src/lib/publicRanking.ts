@@ -11,6 +11,10 @@ export interface PublicRow {
   event_total?: number | null; event_additional?: number | null; event_enabled?: boolean | null;
 }
 export type PublicPeriod = "daily_income" | "weekly_income" | "monthly_income" | "yearly_income";
+export const RANKING_PAGE_SIZE = 10;
+export function rankingPage(rows: PublicRow[], pages: number) {
+  return rows.slice(0, Math.max(1, Math.floor(pages)) * RANKING_PAGE_SIZE);
+}
 
 export function orderedRanking(rows: PublicRow[], game: RankGame, by: "units" | "income") {
   const key = by === "units" ? "units_count" : "monthly_income";

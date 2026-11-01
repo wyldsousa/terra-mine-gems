@@ -1,11 +1,12 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { BarChart3, Calculator, Gauge, Pickaxe, Settings, Trophy, User } from "lucide-react";
+import { BarChart3, Calculator, Gauge, Pickaxe, Settings, Trophy, User, MessageCircle } from "lucide-react";
 import { GAME_INFO, type GameMode } from "@/data/landGames";
 import { useGameMode } from "@/hooks/useGameMode";
 import type { ReactNode } from "react";
 import { useAppState } from "@/hooks/useAppState";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { LandRentIcon } from "@/components/land/LandRentIcon";
 
 const ICONS = { dashboard: Gauge, mines: Pickaxe, calculator: Calculator, stats: BarChart3, settings: Settings, profile: User, ranking: Trophy };
@@ -41,7 +42,6 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className={cn("flex h-9 w-9 items-center justify-center rounded-xl text-lg", mode === "land-rents" ? "bg-secondary" : "ember-bg")}>{mode === "land-rents" ? <LandRentIcon /> : GAME_INFO[mode].emoji}</span>
             <span className="hidden flex-col leading-tight sm:flex">
               <span className="font-display text-sm font-semibold">{mode === "terramine" ? t.appName : mode === "land-rents" ? "Land Rent" : `${GAME_INFO[mode].name} Calculator`}</span>
-              <span className="text-[11px] text-muted-foreground">{t.tagline}</span>
             </span>
           </Link>
 
@@ -82,13 +82,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          <button
+          <Button variant="ghost" size="sm" className="gap-1 text-xs" onClick={() => toast.info("Chat IA em breve!")}><MessageCircle className="h-4 w-4"/> Chat IA <span className="text-[10px] text-muted-foreground">Em breve</span></Button>
+          <Button variant="outline" size="sm"
             onClick={() => setLanguage(state.language === "pt" ? "en" : "pt")}
             className="ml-auto rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold uppercase text-muted-foreground transition-colors hover:text-foreground md:ml-2"
             aria-label="Language"
           >
             {state.language === "pt" ? "PT" : "EN"}
-          </button>
+          </Button>
         </div>
       </header>
 
