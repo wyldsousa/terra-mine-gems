@@ -97,7 +97,7 @@ function CalculatorPage() {
             sub={formatPercent(income.boostGainPercent)}
           />
         </div>
-        <p className="mt-3 text-xs text-muted-foreground">{t.boost.formula}</p>
+        <details className="mt-3 text-xs text-muted-foreground"><summary>Detalhes do cálculo</summary><p className="mt-2">{t.boost.formula}</p></details>
       </section>
 
       {/* WITHDRAWAL */}
@@ -149,11 +149,6 @@ function WithdrawSection({ balance, onBalance }: { balance: number; onBalance: (
         <Row
           label={tx(t.withdraw.fee, { value: formatPercent(params.withdrawalFee * 100) })}
           value={`−${formatMoney(result.platformFee)}`}
-        />
-        <Row label={t.withdraw.afterFee} value={formatMoney(result.afterFee)} />
-        <Row
-          label={tx(t.withdraw.tax, { value: formatPercent(params.additionalTax * 100) })}
-          value={`−${formatMoney(result.additionalTax)}`}
         />
         <div className="mt-2 rounded-xl border border-border bg-background/40 p-3">
           <p className="text-xs uppercase text-muted-foreground">{t.withdraw.net}</p>

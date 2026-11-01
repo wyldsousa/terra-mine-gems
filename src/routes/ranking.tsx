@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { RefreshCw } from "lucide-react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { useGameMode } from "@/hooks/useGameMode";
 import { fmtCur } from "@/components/land/LandPages";
 import { rankingQuery } from "@/lib/rankingQueries";
-import { orderedRanking } from "@/lib/publicRanking";
+import { orderedRanking, rankingPage } from "@/lib/publicRanking";
 import { PublicProfile } from "@/components/ranking/PublicProfile";
 import type { RankGame } from "@/lib/profile";
 
@@ -65,6 +66,8 @@ function RankingPage() {
   const game = search.game ?? mode;
   const by = search.by;
   const query = useSuspenseQuery(rankingQuery());
+  const [pages, setPages] = useState(1);
+  useEffect(() => { setPages(1); }, [game, by]);
   const [selected, setSelected] = useState<string | null>(null);
   useEffect(() => { if (!search.game) void navigate({ search: (prev) => ({ ...prev, game: mode }), replace: true }); }, [mode]);
   const money = (v: number) => fmtCur(v, game === "fortune" ? "EUR" : "USD");
@@ -77,6 +80,9 @@ function RankingPage() {
 
   return (
     <div className="space-y-5">
+      <Tabs defaultValue="ranking"><TabsList aria-label="Ranking e sorteios"><TabsTrigger value="ranking">Ranking</TabsTrigger><TabsTrigger value="giveaways">Sorteios</TabsTrigger></TabsList>
+      <TabsContent value="giveaways" className="space-y-3 py-5"><h1 className="font-display text-2xl font-bold">Sorteios</h1><p className="text-sm text-muted-foreground">Em breve</p></TabsContent>
+      <TabsContent value="ranking" className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="font-display text-2xl font-bold">🏆 Ranking</h1>
         <Button size="sm" variant="outline" disabled={query.isFetching} onClick={() => void query.refetch()} aria-label={query.isRefetchError ? "Tentar novamente" : "Atualizar ranking"}>
@@ -84,7 +90,7 @@ function RankingPage() {
           {query.isFetching ? "Atualizando…" : query.isRefetchError ? "Tentar novamente" : "Atualizar"}
         </Button>
       </div>
-      <p className="text-sm text-muted-foreground">Somente jogadores que ativaram "Participar do ranking" no perfil. Dados enviados pelos próprios usuários.</p>
+      <p className="text-sm text-muted-foreground">Participantes e dados autorizados pelos jogadores.</p>
       <div className="flex flex-wrap gap-2">
         {GAMES.map((g) => <Button key={g.id} size="sm" variant={game === g.id ? "default" : "outline"} onClick={() => navigate({ search: (prev) => ({ ...prev, game: g.id }) })}>{g.label}</Button>)}
       </div>
@@ -105,7 +111,7 @@ function RankingPage() {
       <p className="text-xs text-muted-foreground">Última atualização: {new Date(query.data.fetchedAt).toLocaleTimeString("pt-BR")}{query.isRefetchError ? " · conexão indisponível; mantendo os últimos dados" : ""}</p>
       <section className="panel divide-y divide-border">
         {sorted.length === 0 && <p className="p-4 text-sm text-muted-foreground">Ainda não há informações disponibilizadas neste ranking.</p>}
-        {sorted.map((r, i) => (
+        {rankingPage(sorted, pages).map((r, i) => (
           <div key={r.user_id} className={`flex items-center gap-3 p-3 ${r.user_id === user?.id ? "bg-secondary" : ""}`}>
             <span className="w-8 text-center font-semibold">{MEDAL[i] ?? `#${i + 1}`}</span>
             <Button variant="ghost" className="h-auto min-w-0 flex-1 justify-start gap-3 px-0 text-left" aria-label={`Ver perfil de ${r.display_name}`} onClick={() => setSelected(r.user_id)}>
@@ -116,6 +122,8 @@ function RankingPage() {
           </div>
         ))}
       </section>
+      {sorted.length > pages * 10 && <Button variant="outline" onClick={() => setPages(p => p + 1)}>Ver mais</Button>}
+      </TabsContent></Tabs>
       {selected && <PublicProfile rows={rows} userId={selected} position={selectedPosition < 0 ? null : selectedPosition + 1} onClose={() => setSelected(null)} />}
     </div>
   );

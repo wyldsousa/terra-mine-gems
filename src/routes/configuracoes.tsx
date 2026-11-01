@@ -22,7 +22,7 @@ export const Route = createFileRoute("/configuracoes")({
       {
         name: "description",
         content:
-          "Ajuste rendimentos base, boost, taxa de saque, impostos, limites e idioma. Exporte, importe ou apague seus dados.",
+          "Ajuste rendimentos base, boost, taxa de saque, limites e idioma. Exporte, importe ou apague seus dados.",
       },
       { property: "og:title", content: "Configurações e parâmetros — TerraMine Calculator" },
       {
@@ -98,9 +98,7 @@ function SettingsPage() {
     <div className="space-y-6">
       <h1 className="font-display text-2xl font-bold">{t.settings.title}</h1>
 
-      <p className="rounded-xl border border-primary/25 bg-primary/5 p-3 text-xs text-muted-foreground">
-        {t.settings.warning}
-      </p>
+      <p className="text-xs text-muted-foreground">{t.disclaimer.estimates}</p>
 
       <section className="panel p-4">
         <SectionTitle
@@ -174,12 +172,6 @@ function SettingsPage() {
             onChange={(v) => setParams({ withdrawalFee: v / 100 })}
             hint={`${t.settings.referenceValue}: 17%`}
           />
-          <NumberField
-            label={t.settings.tax}
-            value={params.additionalTax * 100}
-            onChange={(v) => setParams({ additionalTax: v / 100 })}
-            hint={`${t.settings.referenceValue}: 0%`}
-          />
         </div>
       </section>
 
@@ -252,8 +244,8 @@ function SettingsPage() {
         </div>
       </section>
 
-      <section className="panel p-4 text-sm">
-        <SectionTitle>{t.settings.dataOrigin}</SectionTitle>
+      <details className="text-sm">
+        <summary className="cursor-pointer font-semibold">{t.settings.dataOrigin}</summary>
         <ul className="space-y-3 text-muted-foreground">
           <li>
             <p className="font-medium text-foreground">{t.settings.officialData}</p>
@@ -268,7 +260,7 @@ function SettingsPage() {
             <p className="text-xs">{t.settings.userDataDesc}</p>
           </li>
         </ul>
-      </section>
+      </details>
 
       <p className="text-xs text-muted-foreground">
         {t.disclaimer.estimates} {t.disclaimer.fees} {t.disclaimer.check}
