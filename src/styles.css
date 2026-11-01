@@ -57,7 +57,7 @@
 
 :root,
 .dark {
-  --radius: 0.9rem;
+  --radius: 0.5rem;
   --background: oklch(0.16 0.017 264);
   --foreground: oklch(0.95 0.008 90);
   --surface: oklch(0.205 0.019 264);
@@ -123,6 +123,57 @@
   --land-rent-mobile-shade: linear-gradient(180deg, oklch(0.145 0.019 155 / 0.15) 0%, var(--background) 58%);
 }
 
+html.light {
+  --background: oklch(0.985 0.002 180);
+  --foreground: oklch(0.22 0.014 260);
+  --surface: oklch(0.96 0.004 180);
+  --surface-2: oklch(0.93 0.005 180);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --primary: oklch(0.48 0.12 65);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.935 0.006 180);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--secondary);
+  --muted-foreground: oklch(0.46 0.017 260);
+  --accent: oklch(0.88 0.045 180);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.5 0.18 25);
+  --success: oklch(0.43 0.12 155);
+  --border: oklch(0.82 0.009 180);
+  --input: var(--border);
+  --ring: var(--primary);
+  --ore-rock: oklch(0.5 0.02 250);
+  --ore-coal: oklch(0.38 0.03 285);
+  --ore-gold: oklch(0.5 0.11 88);
+  --ore-diamond: oklch(0.48 0.1 200);
+  --chart-1: var(--ore-rock);
+  --chart-2: var(--ore-coal);
+  --chart-3: var(--ore-gold);
+  --chart-4: var(--ore-diamond);
+  --chart-5: var(--primary);
+  --gradient-surface: linear-gradient(var(--card), var(--card));
+  --gradient-ember: linear-gradient(var(--primary), var(--primary));
+  --gradient-vein: linear-gradient(120deg, oklch(0.72 0.13 195 / 0.04), transparent 60%);
+  --shadow-deep: 0 4px 16px -12px oklch(0.2 0.01 260 / 0.2);
+}
+html.light[data-game="atlas"] { --primary: oklch(0.46 0.12 230); }
+html.light[data-game="fortune"] { --primary: oklch(0.43 0.13 150); }
+html.light[data-game="land-rents"] {
+  --background: oklch(0.98 0.007 155);
+  --surface: oklch(0.95 0.012 155);
+  --primary: oklch(0.46 0.1 85);
+  --secondary: oklch(0.93 0.012 155);
+  --border: oklch(0.8 0.022 155);
+}
+.recharts-default-tooltip {
+  background: var(--popover) !important;
+  color: var(--popover-foreground) !important;
+  border-color: var(--border) !important;
+}
+
 .land-rent-icon {
   --land-rent-gold: oklch(0.8 0.13 85);
   --land-rent-green: oklch(0.48 0.12 155);
@@ -162,7 +213,7 @@
   h3,
   .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
   }
 
   input[type="number"]::-webkit-outer-spin-button,
@@ -175,7 +226,7 @@
 @utility panel {
   background-image: var(--gradient-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-deep);
 }
 
@@ -183,7 +234,7 @@
   position: relative;
   background-image: var(--gradient-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-deep);
   overflow: hidden;
 
