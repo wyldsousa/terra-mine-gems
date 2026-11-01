@@ -25,6 +25,7 @@ export type Database = {
           public_income_games: string[]
           public_units_games: string[]
           ranking_opt_in: boolean
+          theme_preference: string | null
           updated_at: string
         }
         Insert: {
@@ -37,6 +38,7 @@ export type Database = {
           public_income_games?: string[]
           public_units_games?: string[]
           ranking_opt_in?: boolean
+          theme_preference?: string | null
           updated_at?: string
         }
         Update: {
@@ -49,6 +51,7 @@ export type Database = {
           public_income_games?: string[]
           public_units_games?: string[]
           ranking_opt_in?: boolean
+          theme_preference?: string | null
           updated_at?: string
         }
         Relationships: []
