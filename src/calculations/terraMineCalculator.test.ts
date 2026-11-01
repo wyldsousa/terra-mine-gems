@@ -57,13 +57,17 @@ describe("boost", () => {
 });
 
 describe("withdrawal", () => {
-  it("applies fee first, then tax on the remainder", () => {
+  it("ignores the obsolete PayPal tax even in saved parameters", () => {
     const p = { ...params, withdrawalFee: 0.17, additionalTax: 0.101 };
     const r = calculateWithdrawal(100, p);
     expect(r.platformFee).toBeCloseTo(17, 10);
     expect(r.afterFee).toBeCloseTo(83, 10);
-    expect(r.additionalTax).toBeCloseTo(8.383, 10);
-    expect(r.net).toBeCloseTo(74.617, 10);
+    expect(r.additionalTax).toBe(0);
+    expect(r.net).toBeCloseTo(83, 10);
+  });
+  it("USD 10 gross yields USD 8.30 net with only the 17% fee", () => {
+    expect(calculateWithdrawal(10, params).net).toBeCloseTo(8.30, 10);
+    expect(calculateGrossForNet(8.30, params)).toBeCloseTo(10, 10);
   });
   it("gross for net round-trips", () => {
     const gross = calculateGrossForNet(83, params);

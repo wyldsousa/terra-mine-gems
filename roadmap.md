@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Current request: remove obsolete TerraMine PayPal tax; align calculator presentation; compact public profile/details; ranking batches of 10/Sorteios; Chat IA placeholder; global persisted themes; verify tests and mobile/desktop flows.
 - [ ] Complete all Land Rent tabs, weighted boost hours, goals, reports, owner isolation and consent integration; verify UI and regression tests.
 - [ ] Correct automatic Land Rent tiers/validations, weekly replacement Rent Rush and inputs; complete owner persistence, consent-controlled profile/ranking and regression/browser verification.
 - [ ] Implement isolated Land Rent Brazil Group 4 engine, configurable supplied rules, local calculator and standalone events; test all anchors and tier boundaries.

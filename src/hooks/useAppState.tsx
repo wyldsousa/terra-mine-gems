@@ -18,6 +18,7 @@ function sanitize(raw: unknown): AppState {
   const params: Params = {
     ...DEFAULT_PARAMS,
     ...(data.params ?? {}),
+    additionalTax: 0,
     baseMonthly: { ...DEFAULT_PARAMS.baseMonthly, ...(data.params?.baseMonthly ?? {}) },
     typeMultiplier: { ...DEFAULT_PARAMS.typeMultiplier, ...(data.params?.typeMultiplier ?? {}) },
   };
