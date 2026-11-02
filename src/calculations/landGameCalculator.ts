@@ -64,7 +64,7 @@ export function resolvedEvents(s: Pick<LandState, "events" | "params">, now = Da
   if (s.params.gameId !== "fortune") return s.events;
   const d = new Date(now);
   return s.events.map((e, i) => {
-    const day = FORTUNE_EVENT_DAYS[i % FORTUNE_EVENT_DAYS.length];
+    const day = FORTUNE_EVENT_DAYS[i % FORTUNE_EVENT_DAYS.length] ?? 1;
     const start = new Date(d.getFullYear(), d.getMonth(), day, 0, 0, 0, 0);
     const pad = (n: number) => String(n).padStart(2, "0");
     return { ...e, start: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(day)}T00:00` };
