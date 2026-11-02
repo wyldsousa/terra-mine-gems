@@ -13,7 +13,7 @@ describe("Land Rent Brazil Group 4", () => {
   });
   it("rejects 10001 plots, negatives, fractional counts and >200 badges", () => {
     for (const patch of [{plots:10001},{plots:-1},{plots:1.5},{badges:201},{badges:-1},{badges:1.1}]) expect(landRentStateSchema.safeParse({...defaultLandRentState(),...patch}).success).toBe(false);
-    expect(calculateLandRent({...defaultLandRentState(),plots:10000}).yearly).toBeCloseTo(1000,10);
+    expect(calculateLandRent({...defaultLandRentState(),plots:10000,boostHours:24}).yearly).toBeCloseTo(1000,10);
   });
   it("has no gaps/overlaps and never permits 30x/18x/10x normal tiers", () => {
     expect(p.plotBands).toHaveLength(14);
@@ -21,19 +21,19 @@ describe("Land Rent Brazil Group 4", () => {
     for (const value of [30,18,10]) expect(landRentParamsSchema.safeParse({...p,plotBands:[{min:1,max:10000,value}]}).success).toBe(false);
   });
   it("event replaces normal boost at 30x for 18h and keeps badges once", () => {
-    const r=calculateLandRent({...defaultLandRentState(),plots:200,badges:3,eventEnabled:true});
+    const r=calculateLandRent({...defaultLandRentState(),plots:200,badges:3,boostHours:24,eventEnabled:true});
     const base=200*(0.05/31536000)*1.048;
     expect(r.event.total).toBeCloseTo(base*30*18*3600,12);
     expect(r.event.normal).toBeCloseTo(base*6*18*3600,12);
     expect(r.event.additional).toBeCloseTo(base*24*18*3600,12);
   });
   it("weekly/monthly/yearly use only incremental event rent once", () => {
-    const r=calculateLandRent({...defaultLandRentState(),plots:426,eventEnabled:true,eventStart:"2026-10-17T09:00"});
+    const r=calculateLandRent({...defaultLandRentState(),plots:426,boostHours:24,eventEnabled:true,eventStart:"2026-10-17T09:00"});
     expect(r.weekly).toBeCloseTo(r.normal.weekly+r.event.additional,12);
     expect(r.yearly).toBeCloseTo(r.normal.yearly+r.event.additional*365/7,12);
     expect(r.monthly).toBeCloseTo(r.yearly/12,12);
     expect(r.weekly).toBeCloseTo(r.perSecond*(168-18)*3600+r.event.total,12);
-    expect(calculateLandRent({...defaultLandRentState(),plots:426,eventEnabled:false}).yearly).toBeCloseTo(42.6,12);
+    expect(calculateLandRent({...defaultLandRentState(),plots:426,boostHours:24,eventEnabled:false}).yearly).toBeCloseTo(42.6,12);
   });
   it("ads excluded even with a configured pending multiplier",()=>{ const s={...defaultLandRentState(),plots:200}; expect(calculateLandRent({...s,adMultiplier:99}).yearly).toBe(calculateLandRent(s).yearly); });
 });
