@@ -30,8 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const selectGame = (g: GameMode) => {
     setMode(g);
-    if (g === "land-rents") navigate({ to: "/land-rents" });
-    else if (pathname === "/land-rents") navigate({ to: "/" });
+    if (pathname === "/land-rents") navigate({ to: "/" });
   };
 
   return (
