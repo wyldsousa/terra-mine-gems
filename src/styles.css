@@ -159,14 +159,24 @@ html.light {
   --gradient-vein: linear-gradient(120deg, oklch(0.72 0.13 195 / 0.04), transparent 60%);
   --shadow-deep: 0 4px 16px -12px oklch(0.2 0.01 260 / 0.2);
 }
-html.light[data-game="atlas"] { --primary: oklch(0.46 0.12 230); }
-html.light[data-game="fortune"] { --primary: oklch(0.43 0.13 150); }
-html.light[data-game="land-rents"] {
-  --background: oklch(0.98 0.007 155);
-  --surface: oklch(0.95 0.012 155);
-  --primary: oklch(0.46 0.1 85);
-  --secondary: oklch(0.93 0.012 155);
-  --border: oklch(0.8 0.022 155);
+html.light [data-game="atlas"], html.light[data-game="atlas"] { --primary: oklch(0.46 0.12 230); }
+html.light [data-game="fortune"], html.light[data-game="fortune"] { --primary: oklch(0.43 0.13 150); }
+html.light [data-game="land-rents"], html.light[data-game="land-rents"] {
+  --background: oklch(0.985 0.012 90);
+  --foreground: oklch(0.25 0.03 75);
+  --surface: oklch(0.96 0.03 88);
+  --surface-2: oklch(0.93 0.04 86);
+  --card: oklch(1 0.006 90);
+  --secondary: oklch(0.94 0.04 88);
+  --muted-foreground: oklch(0.47 0.04 75);
+  --border: oklch(0.84 0.06 85);
+  --primary: oklch(0.55 0.12 75);
+  --primary-foreground: oklch(0.99 0.01 90);
+  --ring: var(--primary);
+  --gradient-ember: linear-gradient(135deg, oklch(0.55 0.12 75) 0%, oklch(0.68 0.14 85) 100%);
+  --gradient-vein: linear-gradient(120deg, oklch(0.85 0.1 85 / 0.18), transparent 60%);
+  --land-rent-shade: linear-gradient(90deg, var(--background) 0%, oklch(0.985 0.012 90 / 0.82) 25%, transparent 65%);
+  --land-rent-mobile-shade: linear-gradient(180deg, oklch(0.985 0.012 90 / 0.15) 0%, var(--background) 58%);
 }
 .recharts-default-tooltip {
   background: var(--popover) !important;
