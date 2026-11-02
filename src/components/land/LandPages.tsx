@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { NumericInput, parseDecimal } from "@/components/common/NumericInput";
 import { ConfirmDialog } from "@/components/mines/MineBulkTools";
-import { calculateLandIncome, daysToGoal, nextEventStart, rarityShares, totalUnits } from "@/calculations/landGameCalculator";
+import { calculateLandIncome, daysToGoal, nextEventStart, rarityShares, resolvedEvents, totalUnits } from "@/calculations/landGameCalculator";
 import { DEFAULT_LAND_PARAMS, GAME_INFO, type LandGameId, type LandState, type Tier } from "@/data/landGames";
 import { useGameMode } from "@/hooks/useGameMode";
 import { StatCard } from "@/components/common/StatCard";
@@ -56,7 +56,7 @@ export function LandDashboard({ game }: { game: LandGameId }) {
   const chart = useMemo(() => Array.from({ length: 31 }, (_, d) => ({ d, v: s.balance + inc.windowIncome(d) })), [inc, s.balance]);
   const nextGoal = s.goals.find((g) => g > s.balance) ?? s.goals[s.goals.length - 1] ?? 1;
   const eta = daysToGoal(nextGoal, s.balance, inc.avgDaily);
-  const nextEvents = s.events.map((e) => nextEventStart(e, now)).filter((x): x is number => x !== null).sort((a, b) => a - b);
+  const nextEvents = resolvedEvents(s, now).map((e) => nextEventStart(e, now)).filter((x): x is number => x !== null).sort((a, b) => a - b);
   return (
     <div className="space-y-5">
       <Header game={game} title="Painel" />
@@ -239,6 +239,15 @@ export function LandCalculator({ game }: { game: LandGameId }) {
         <p className="font-semibold">📅 {p.eventName} — {p.eventMultiplier}× (substitui o boost normal)</p>
         {s.events.map((e, i) => (
           <div key={e.id} className="grid gap-3 sm:grid-cols-2">
+            {game === "fortune" ? (
+              <div className="space-y-1">
+                <Label htmlFor={`evd-${i}`}>Evento {i + 1} — todo dia {i === 0 ? 1 : 15} do mês</Label>
+                <Select value={String(e.durationHours === 32 ? 32 : 24)} onValueChange={(v) => update((x) => ({ ...x, events: x.events.map((y) => (y.id === e.id ? { ...y, durationHours: Number(v) } : y)) }))}>
+                  <SelectTrigger id={`evd-${i}`}><SelectValue /></SelectTrigger>
+                  <SelectContent><SelectItem value="24">24 horas (normal)</SelectItem><SelectItem value="32">32 horas (evento especial)</SelectItem></SelectContent>
+                </Select>
+              </div>
+            ) : <>
             <div className="space-y-1">
               <Label htmlFor={`ev-${i}`}>Evento {i + 1} — data e hora de início</Label>
               <Input id={`ev-${i}`} type="datetime-local" value={e.start} onChange={(ev) => update((x) => ({ ...x, events: x.events.map((y) => (y.id === e.id ? { ...y, start: ev.target.value } : y)) }))} />
@@ -247,9 +256,10 @@ export function LandCalculator({ game }: { game: LandGameId }) {
               <Label htmlFor={`evd-${i}`}>Duração (horas)</Label>
               <NumericInput id={`evd-${i}`} value={e.durationHours} onChange={(ev) => update((x) => ({ ...x, events: x.events.map((y) => (y.id === e.id ? { ...y, durationHours: Math.max(0, parseDecimal(ev.target.value)) } : y)) }))} />
             </div>
+            </>}
           </div>
         ))}
-        <details className="text-xs text-muted-foreground"><summary className="cursor-pointer">Detalhes dos eventos</summary><p>{game === "atlas" ? "Eventos com data: horas reais dentro da projeção, sem contar sobreposições duas vezes. Sem data: estimativa de 1 ocorrência mensal por evento, 12 por ano. A referência considera boost normal ativo 24h por dia; menos horas reduzem a renda fora do SRB." : "Os eventos se repetem mensalmente a partir da data escolhida. Sem data, contam como 1 ocorrência por mês (estimativa)."}</p></details>
+        <details className="text-xs text-muted-foreground"><summary className="cursor-pointer">Detalhes dos eventos</summary><p>{game === "atlas" ? "Eventos com data: horas reais dentro da projeção, sem contar sobreposições duas vezes. Sem data: estimativa de 1 ocorrência mensal por evento, 12 por ano. A referência considera boost normal ativo 24h por dia; menos horas reduzem a renda fora do SRB." : "Os eventos acontecem automaticamente nos dias 1 e 15 de cada mês, a partir de 00:00. Escolha 32 horas quando houver evento especial."}</p></details>
       </section>
 
       <section className="panel space-y-2 p-4">

@@ -58,7 +58,21 @@ export function nextEventStart(e: LandEvent, now = Date.now()): number | null {
   return null;
 }
 
-export function calculateLandIncome(s: LandState, now = Date.now()) {
+/** Fortune World special events always start on day 1 and day 15 (00:00 local); only duration is chosen. */
+export const FORTUNE_EVENT_DAYS = [1, 15];
+export function resolvedEvents(s: Pick<LandState, "events" | "params">, now = Date.now()): LandEvent[] {
+  if (s.params.gameId !== "fortune") return s.events;
+  const d = new Date(now);
+  return s.events.map((e, i) => {
+    const day = FORTUNE_EVENT_DAYS[i % FORTUNE_EVENT_DAYS.length];
+    const start = new Date(d.getFullYear(), d.getMonth(), day, 0, 0, 0, 0);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return { ...e, start: `${start.getFullYear()}-${pad(start.getMonth() + 1)}-${pad(day)}T00:00` };
+  });
+}
+
+export function calculateLandIncome(state: LandState, now = Date.now()) {
+  const s = { ...state, events: resolvedEvents(state, now) };
   const p = s.params;
   const units = totalUnits(s);
   const basePS = p.rarities.reduce((sum, r) => sum + (Number(s.counts[r.id]) || 0) * r.perSecond, 0);
