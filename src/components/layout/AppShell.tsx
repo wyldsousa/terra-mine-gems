@@ -1,3 +1,4 @@
+import { ChatAI } from "@/components/chat/ChatAI";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { BarChart3, Calculator, Gauge, Pickaxe, Settings, Trophy, User, MessageCircle } from "lucide-react";
 import { GAME_INFO, type GameMode } from "@/data/landGames";
@@ -81,7 +82,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          <Button variant="ghost" size="sm" className="gap-1 text-xs" onClick={() => toast.info("Chat IA em breve!")}><MessageCircle className="h-4 w-4"/> Chat IA <span className="text-[10px] text-muted-foreground">Em breve</span></Button>
+          <ChatAI />
           <Button variant="outline" size="sm"
             onClick={() => setLanguage(state.language === "pt" ? "en" : "pt")}
             className="ml-auto rounded-lg border border-border px-2.5 py-1.5 text-xs font-semibold uppercase text-muted-foreground transition-colors hover:text-foreground md:ml-2"
