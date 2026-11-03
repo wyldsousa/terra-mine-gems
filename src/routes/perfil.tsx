@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Settings } from "lucide-react";
+import { MonthlyEarnings } from "@/components/chat/MonthlyEarnings";
 import { useAppState } from "@/hooks/useAppState";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,6 +57,7 @@ function ProfilePage() {
   const [unitsGames, setUnitsGames] = useState<string[]>([]);
   const [publicAvatar, setPublicAvatar] = useState(true);
   const [profileReady, setProfileReady] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
 
   const { land, landRent, setLandRent, mode, setMode } = useGameMode();
   const navigate = useNavigate();
@@ -113,7 +117,10 @@ function ProfilePage() {
 
   return (
     <div className="space-y-5">
-      <h1 className="font-display text-2xl font-bold">👤 Meu Perfil</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-2xl font-bold">👤 Meu Perfil</h1>
+        {user && <Button variant="ghost" size="icon" aria-label="Configurações de privacidade" onClick={() => setPrivacyOpen(true)}><Settings className="h-5 w-5" /></Button>}
+      </div>
 
       {!loading && !user && (
         <section className="panel space-y-3 p-5">
@@ -142,8 +149,10 @@ function ProfilePage() {
             </div>
             <Switch checked={optIn} onCheckedChange={setOptIn} />
           </div>
-          <div className="space-y-3 border-t border-border pt-4">
-            <h2 className="font-semibold">Privacidade do perfil público</h2>
+          <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
+            <DialogContent className="max-h-[85vh] overflow-y-auto">
+              <DialogHeader><DialogTitle>Privacidade do perfil público</DialogTitle></DialogHeader>
+          <div className="space-y-3">
             <div className="flex items-center justify-between gap-3"><Label htmlFor="public-photo">Compartilhar foto</Label><Switch id="public-photo" checked={publicAvatar} onCheckedChange={setPublicAvatar} /></div>
             {CALCS.map((c) => <div key={c.id} className="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-border py-2">
               <span className="text-sm">{c.label}</span>
@@ -152,6 +161,9 @@ function ProfilePage() {
             </div>)}
             <p className="text-xs text-muted-foreground">E-mail, saldo, minas individuais e detalhes da carteira nunca são divulgados. Valores ocultos aparecem como “Não disponibilizado”.</p>
           </div>
+              <Button disabled={saving || !profileReady} onClick={async () => { await save(); setPrivacyOpen(false); }}>{saving ? "Salvando..." : "Salvar privacidade"}</Button>
+            </DialogContent>
+          </Dialog>
           <div>
             <p className="mb-2 font-medium">Minhas Calculadoras</p>
             <div className="grid gap-2 sm:grid-cols-3">
@@ -216,6 +228,8 @@ function ProfilePage() {
         </section>
       )}
 
+
+      {user && <MonthlyEarnings userId={user.id} />}
 
       <section className="panel p-5">
         <h2 className="mb-2 font-semibold">🚀 Em breve</h2>

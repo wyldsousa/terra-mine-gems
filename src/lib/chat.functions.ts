@@ -20,7 +20,7 @@ export const interpretChat = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => input.parse(d))
   .handler(async ({ data }) => {
-    const { generateChatCompletion, GatewayError } = await import("@lovable.dev/ai-gateway");
+    const { generateChatCompletion, GatewayError, PaymentRequiredError, RateLimitError } = await import("@lovable.dev/ai-gateway");
     try {
       const res = await generateChatCompletion({
         model: "openai/gpt-6-astra",
@@ -34,8 +34,8 @@ export const interpretChat = createServerFn({ method: "POST" })
     } catch (e) {
       if (e instanceof GatewayError) {
         console.error("chat gateway", e.code);
-        if (e.code === "payment_required" || e.httpStatus === 402) return { ok: false as const, error: "Créditos de IA esgotados no workspace." };
-        if (e.httpStatus === 429) return { ok: false as const, error: "Muitas mensagens agora. Aguarde um pouco." };
+        if (e instanceof PaymentRequiredError) return { ok: false as const, error: "Créditos de IA esgotados no workspace." };
+        if (e instanceof RateLimitError) return { ok: false as const, error: "Muitas mensagens agora. Aguarde um pouco." };
       } else console.error("chat error");
       return { ok: false as const, error: "A IA não respondeu. Tente novamente." };
     }
