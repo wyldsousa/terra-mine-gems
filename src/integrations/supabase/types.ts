@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      coin_earnings: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          dedupe_key: string
+          earned_at: string
+          game: string
+          id: string
+          source: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          currency: string
+          dedupe_key: string
+          earned_at?: string
+          game: string
+          id?: string
+          source?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          dedupe_key?: string
+          earned_at?: string
+          game?: string
+          id?: string
+          source?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
