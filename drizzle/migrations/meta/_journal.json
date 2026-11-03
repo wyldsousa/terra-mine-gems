@@ -29,6 +29,13 @@
       "when": 1793507062553,
       "tag": "0003_owner_theme_preference",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793726761855,
+      "tag": "0004_coin_earnings",
+      "breakpoints": true
     }
   ]
 }

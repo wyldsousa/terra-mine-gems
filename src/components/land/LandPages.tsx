@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, Bar, BarChart, Cell, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { NumericInput, parseDecimal } from "@/components/common/NumericInput";
 import { ConfirmDialog } from "@/components/mines/MineBulkTools";
 import { calculateLandIncome, daysToGoal, nextEventStart, rarityShares, resolvedEvents, totalUnits } from "@/calculations/landGameCalculator";
-import { DEFAULT_LAND_PARAMS, GAME_INFO, type LandGameId, type LandState, type Tier } from "@/data/landGames";
+import { DEFAULT_LAND_PARAMS, GAME_INFO, rarEmoji, rarColor, type LandGameId, type LandState, type Tier } from "@/data/landGames";
 import { useGameMode } from "@/hooks/useGameMode";
 import { StatCard } from "@/components/common/StatCard";
 import { formatMoney, formatNumber } from "@/lib/format";
@@ -131,7 +131,7 @@ export function LandUnits({ game }: { game: LandGameId }) {
             <Label>Raridade</Label>
             <Select value={rarity} onValueChange={setRarity}>
               <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{s.params.rarities.map((r) => <SelectItem key={r.id} value={r.id}>{r.emoji} {r.label}</SelectItem>)}</SelectContent>
+              <SelectContent>{s.params.rarities.map((r) => <SelectItem key={r.id} value={r.id}>{rarEmoji(game, r)} {r.label}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           <div className="space-y-1"><Label htmlFor="land-qty">Quantidade</Label><NumericInput id="land-qty" inputMode="numeric" value={qty} onChange={(e) => setQty(e.target.value)} /></div>
@@ -141,7 +141,7 @@ export function LandUnits({ game }: { game: LandGameId }) {
       <section className="panel divide-y divide-border">
         {shares.map((r) => (
           <div key={r.id} className="flex flex-wrap items-center gap-3 p-3">
-            <span className="text-xl">{r.emoji}</span>
+            <span className="text-xl">{rarEmoji(game, r)}</span>
             <div className="min-w-0 flex-1">
               <p className="font-semibold">{r.label}</p>
               <p className="text-xs text-muted-foreground">{m(r.perSecond)}/s por {info.unit} · {m(r.monthly)}/mês</p>
@@ -160,7 +160,7 @@ export function LandUnits({ game }: { game: LandGameId }) {
         open={!!pending}
         onOpenChange={(v) => !v && setPending(null)}
         title="Confirmar adição"
-        description={pending ? `${label(pending.id)?.emoji} ${label(pending.id)?.label} — quantidade: ${pending.n}. Deseja realmente adicionar?` : ""}
+        description={pending ? `${rarEmoji(game, label(pending.id))} ${label(pending.id)?.label} — quantidade: ${pending.n}. Deseja realmente adicionar?` : ""}
         confirmLabel="Confirmar"
         onConfirm={() => { if (pending) { apply(pending.id, pending.n); setQty(""); } }}
       />
@@ -189,7 +189,7 @@ export function LandCalculator({ game }: { game: LandGameId }) {
         <p className="font-semibold">Distribuição real dos terrenos</p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {p.rarities.map((r) => <div key={r.id} className="space-y-1">
-            <Label htmlFor={`actual-${r.id}`}>{r.emoji} {r.label}</Label>
+            <Label htmlFor={`actual-${r.id}`}>{rarEmoji(game, r)} {r.label}</Label>
             <NumericInput id={`actual-${r.id}`} inputMode="numeric" value={s.counts[r.id] ?? 0} onChange={(e) => update((x) => ({ ...x, counts: { ...x.counts, [r.id]: Math.max(0, Math.floor(parseDecimal(e.target.value))) } }))} />
           </div>)}
         </div>
@@ -291,11 +291,11 @@ export function LandStats({ game }: { game: LandGameId }) {
         <p className="mb-3 font-semibold">Renda mensal por raridade (sem eventos)</p>
         <div className="h-56">
           <ResponsiveContainer>
-            <BarChart data={shares.map((r) => ({ name: r.label, v: r.monthly }))}>
+            <BarChart data={shares.map((r) => ({ id: r.id, name: r.label, v: r.monthly }))}>
               <XAxis dataKey="name" fontSize={11} stroke="currentColor" />
               <YAxis fontSize={11} stroke="currentColor" width={70} tickFormatter={(v) => m(v)} />
               <Tooltip formatter={(v: number) => m(v)} />
-              <Bar dataKey="v" fill="var(--primary)" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="v" fill="var(--primary)" radius={[6, 6, 0, 0]}>{shares.map((r) => <Cell key={r.id} fill={rarColor(game, r.id)} />)}</Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -306,7 +306,7 @@ export function LandStats({ game }: { game: LandGameId }) {
           <tbody>
             {shares.map((r) => (
               <tr key={r.id} className="border-t border-border/60">
-                <td className="py-1.5">{r.emoji} {r.label}</td>
+                <td className="py-1.5">{rarEmoji(game, r)} {r.label}</td>
                 <td className="num">{r.count}</td>
                 <td className="num">{total ? formatNumber((r.count / total) * 100, 1) + "%" : "—"}</td>
                 <td className="num">{r.probability === null ? "—" : r.probability + "%"}</td>
@@ -352,7 +352,7 @@ export function LandSettings({ game }: { game: LandGameId }) {
         <p className="font-semibold">Rendimento base por segundo ({p.currency === "EUR" ? "€" : "US$"})</p>
         {p.rarities.map((r, i) => (
           <div key={r.id} className="grid grid-cols-[7rem_1fr_1fr] items-center gap-2">
-            <span className="text-sm">{r.emoji} {r.label}</span>
+            <span className="text-sm">{rarEmoji(game, r)} {r.label}</span>
             <NumericInput aria-label={`${r.label} por segundo`} value={r.perSecond} onChange={(e) => setP({ rarities: p.rarities.map((x, j) => (j === i ? { ...x, perSecond: parseDecimal(e.target.value) } : x)) })} />
             <NumericInput aria-label={`${r.label} probabilidade`} placeholder="prob. %" value={r.probability ?? ""} onChange={(e) => setP({ rarities: p.rarities.map((x, j) => (j === i ? { ...x, probability: e.target.value === "" ? null : parseDecimal(e.target.value) } : x)) })} />
           </div>

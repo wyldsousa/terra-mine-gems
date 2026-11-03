@@ -102,11 +102,11 @@ export const DEFAULT_LAND_PARAMS: Record<LandGameId, LandParams> = {
     version: 2,
     currency: "EUR",
     rarities: [
-      { id: "common", label: "Common", emoji: "⚪", perSecond: 0.000000001, probability: null },
-      { id: "uncommon", label: "Uncommon", emoji: "🟢", perSecond: 0.000000002, probability: null },
-      { id: "rare", label: "Rare", emoji: "🔵", perSecond: 0.000000003, probability: null },
-      { id: "epic", label: "Epic", emoji: "🟣", perSecond: 0.000000004, probability: null },
-      { id: "legendary", label: "Legendary", emoji: "🟡", perSecond: 0.000000005, probability: null },
+      { id: "common", label: "Common", emoji: "🩶", perSecond: 0.000000001, probability: null },
+      { id: "uncommon", label: "Uncommon", emoji: "💙", perSecond: 0.000000002, probability: null },
+      { id: "rare", label: "Rare", emoji: "💚", perSecond: 0.000000003, probability: null },
+      { id: "epic", label: "Epic", emoji: "💜", perSecond: 0.000000004, probability: null },
+      { id: "legendary", label: "Legendary", emoji: "🧡", perSecond: 0.000000005, probability: null },
     ],
     boostTiers: [
       { min: 0, value: 20 },
@@ -139,4 +139,20 @@ export function defaultLandState(g: LandGameId): LandState {
     balance: 0,
     params: structuredClone(DEFAULT_LAND_PARAMS[g]),
   };
+}
+
+/** Display-only Fortune World rarity colors (gray, blue, green, purple, orange/gold), keyed by rarity id so old saved emojis are overridden. */
+export const FORTUNE_RARITY_STYLE: Record<string, { emoji: string; color: string }> = {
+  common: { emoji: "🩶", color: "var(--rarity-common)" },
+  uncommon: { emoji: "💙", color: "var(--rarity-uncommon)" },
+  rare: { emoji: "💚", color: "var(--rarity-rare)" },
+  epic: { emoji: "💜", color: "var(--rarity-epic)" },
+  legendary: { emoji: "🧡", color: "var(--rarity-legendary)" },
+};
+export function rarEmoji(game: LandGameId, r: { id: string; emoji: string } | undefined): string {
+  if (!r) return "";
+  return game === "fortune" ? FORTUNE_RARITY_STYLE[r.id]?.emoji ?? r.emoji : r.emoji;
+}
+export function rarColor(game: LandGameId, id: string): string {
+  return game === "fortune" ? FORTUNE_RARITY_STYLE[id]?.color ?? "var(--primary)" : "var(--primary)";
 }
