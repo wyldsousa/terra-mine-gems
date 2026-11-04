@@ -130,7 +130,25 @@ function ProfilePage() {
       )}
 
       {user && (
-        <section className="panel space-y-4 p-5">
+        <>
+        <section className="panel space-y-3 p-5">
+          <div className="flex items-center gap-3">
+            {avatar ? <img src={avatar} alt="Foto" className="h-12 w-12 rounded-lg object-cover" /> : <span className="text-3xl">👤</span>}
+            <p className="font-semibold">{name || "Jogador"}</p>
+          </div>
+          <h2 className="font-medium">Minhas Calculadoras</h2>
+          <div className="flex flex-wrap gap-2">
+            {CALCS.filter((c) => calcs.includes(c.id)).map((c) => <Button key={c.id} variant="outline" size="sm" onClick={() => { setMode(c.id); navigate({ to: c.id === "land-rents" ? "/land-rents" : "/" }); }}>{c.label}{mode === c.id ? " · Ativa" : ""}</Button>)}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" asChild><Link to="/ranking">🏆 Analisar Ranking</Link></Button>
+            <Button variant="ghost" onClick={() => supabase.auth.signOut()}>Sair</Button>
+          </div>
+        </section>
+        <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
+          <DialogContent className="max-h-[85vh] overflow-y-auto">
+            <DialogHeader><DialogTitle>Ranking e privacidade do perfil</DialogTitle></DialogHeader>
+          <div className="space-y-4">
           <div className="flex items-center gap-4">
             <label className="cursor-pointer">
               {avatar ? <img src={avatar} alt="Foto" className="h-20 w-20 rounded-full object-cover" /> : <span className="flex h-20 w-20 items-center justify-center rounded-full bg-secondary text-3xl">👤</span>}
@@ -147,11 +165,8 @@ function ProfilePage() {
               <p className="font-medium">Participar do ranking</p>
               <p className="text-xs text-muted-foreground">Seu nome e somente as informações autorizadas abaixo.</p>
             </div>
-            <Switch checked={optIn} onCheckedChange={setOptIn} />
+            <Switch aria-label="Participar do ranking" checked={optIn} onCheckedChange={setOptIn} />
           </div>
-          <Dialog open={privacyOpen} onOpenChange={setPrivacyOpen}>
-            <DialogContent className="max-h-[85vh] overflow-y-auto">
-              <DialogHeader><DialogTitle>Privacidade do perfil público</DialogTitle></DialogHeader>
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3"><Label htmlFor="public-photo">Compartilhar foto</Label><Switch id="public-photo" checked={publicAvatar} onCheckedChange={setPublicAvatar} /></div>
             {CALCS.map((c) => <div key={c.id} className="grid grid-cols-[1fr_auto_auto] items-center gap-3 border-b border-border py-2">
@@ -161,9 +176,6 @@ function ProfilePage() {
             </div>)}
             <p className="text-xs text-muted-foreground">E-mail, saldo, minas individuais e detalhes da carteira nunca são divulgados. Valores ocultos aparecem como “Não disponibilizado”.</p>
           </div>
-              <Button disabled={saving || !profileReady} onClick={async () => { await save(); setPrivacyOpen(false); }}>{saving ? "Salvando..." : "Salvar privacidade"}</Button>
-            </DialogContent>
-          </Dialog>
           <div>
             <p className="mb-2 font-medium">Minhas Calculadoras</p>
             <div className="grid gap-2 sm:grid-cols-3">
@@ -173,17 +185,17 @@ function ProfilePage() {
                     <input type="checkbox" checked={calcs.includes(c.id)} onChange={(e) => setCalcs((p) => (e.target.checked ? [...p, c.id] : p.filter((x) => x !== c.id)))} />
                     {c.label}
                   </label>
-                  <button type="button" className="text-xs text-primary" onClick={() => { setMode(c.id); navigate({ to: c.id === "land-rents" ? "/land-rents" : "/" }); }}>{mode === c.id ? "Ativa" : "Usar"}</button>
                 </div>
               ))}
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button disabled={saving || !profileReady} onClick={save}>{saving ? "Salvando..." : "Salvar perfil e privacidade"}</Button>
-            <Button variant="outline" asChild><Link to="/ranking">🏆 Analisar Ranking</Link></Button>
-            <Button variant="ghost" onClick={() => supabase.auth.signOut()}>Sair</Button>
           </div>
-        </section>
+          </div>
+          </DialogContent>
+        </Dialog>
+        </>
       )}
 
       {inc && (
