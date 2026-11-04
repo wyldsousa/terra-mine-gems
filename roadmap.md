@@ -1,4 +1,5 @@
 # Roadmap
+- [ ] Current profile/chat corrections: move all public/ranking settings to gear; diagnose real AI calls; connect private data queries and reliable confirmed mutations; verify authenticated flows and regressions.
 - [ ] Current request: remove obsolete TerraMine PayPal tax; align calculator presentation; compact public profile/details; ranking batches of 10/Sorteios; Chat IA placeholder; global persisted themes; verify tests and mobile/desktop flows.
 - [ ] Complete all Land Rent tabs, weighted boost hours, goals, reports, owner isolation and consent integration; verify UI and regression tests.
 - [ ] Correct automatic Land Rent tiers/validations, weekly replacement Rent Rush and inputs; complete owner persistence, consent-controlled profile/ranking and regression/browser verification.
