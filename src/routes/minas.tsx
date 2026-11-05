@@ -70,6 +70,8 @@ function MinesPage() {
   const [editing, setEditing] = useState<Mine | null>(null);
   const [filter, setFilter] = useState<MineType | "all">("all");
   const [sort, setSort] = useState<SortKey>("incomeDesc");
+  const [pages, setPages] = useState(1);
+  useEffect(() => { setPages(1); }, [filter, sort]);
 
   const list = useMemo(() => {
     const filtered = filter === "all" ? mines : mines.filter((m) => m.type === filter);
@@ -188,7 +190,7 @@ function MinesPage() {
         <p className="panel p-6 text-center text-sm text-muted-foreground">{t.mines.empty}</p>
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
-          {list.map((mine) => (
+          {visibleSlice(list, pages).map((mine) => (
             <article
               key={mine.id}
               className={cn("panel p-4", selectMode && selected.has(mine.id) && "ring-2 ring-primary")}
