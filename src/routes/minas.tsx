@@ -4,7 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { NumericInput } from "@/components/common/NumericInput";
 import { CheckSquare, Copy, Pencil, Plus, RotateCcw, Trash2, Zap } from "lucide-react";
 import { ConfirmDialog, LevelManager } from "@/components/mines/MineBulkTools";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { MineDialog, MineTypePicker } from "@/components/mines/MineDialog";
 import { SectionTitle } from "@/components/common/StatCard";
