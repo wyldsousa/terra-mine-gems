@@ -142,6 +142,27 @@ export type Database = {
           },
         ]
       }
+      user_calculator_data: {
+        Row: {
+          data: Json
+          game: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          data: Json
+          game: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          data?: Json
+          game?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

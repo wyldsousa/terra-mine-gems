@@ -11,6 +11,7 @@ import {
 import { useEffect, type ReactNode } from "react";
 
 import { AppShell } from "@/components/layout/AppShell";
+import { CloudSync } from "@/components/common/CloudSync";
 import { Toaster } from "@/components/ui/sonner";
 import { AppStateProvider } from "@/hooks/useAppState";
 import { ThemeProvider } from "@/hooks/useTheme";
@@ -139,6 +140,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AppStateProvider>
         <ThemeProvider><GameModeProvider>
+          <CloudSync />
           <AppShell>
             {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
             <Outlet />

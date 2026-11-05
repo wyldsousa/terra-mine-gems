@@ -1,9 +1,10 @@
+import { visibleSlice, LIST_PAGE_SIZE } from "@/lib/cloudSync";
 import { ModeSwitch } from "@/components/land/ModeSwitch";
 import { createFileRoute } from "@tanstack/react-router";
 import { NumericInput } from "@/components/common/NumericInput";
 import { CheckSquare, Copy, Pencil, Plus, RotateCcw, Trash2, Zap } from "lucide-react";
 import { ConfirmDialog, LevelManager } from "@/components/mines/MineBulkTools";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { MineDialog, MineTypePicker } from "@/components/mines/MineDialog";
 import { SectionTitle } from "@/components/common/StatCard";
@@ -70,6 +71,8 @@ function MinesPage() {
   const [editing, setEditing] = useState<Mine | null>(null);
   const [filter, setFilter] = useState<MineType | "all">("all");
   const [sort, setSort] = useState<SortKey>("incomeDesc");
+  const [pages, setPages] = useState(1);
+  useEffect(() => { setPages(1); }, [filter, sort]);
 
   const list = useMemo(() => {
     const filtered = filter === "all" ? mines : mines.filter((m) => m.type === filter);
@@ -188,7 +191,7 @@ function MinesPage() {
         <p className="panel p-6 text-center text-sm text-muted-foreground">{t.mines.empty}</p>
       ) : (
         <div className="grid gap-3 md:grid-cols-2">
-          {list.map((mine) => (
+          {visibleSlice(list, pages).map((mine) => (
             <article
               key={mine.id}
               className={cn("panel p-4", selectMode && selected.has(mine.id) && "ring-2 ring-primary")}
@@ -251,6 +254,7 @@ function MinesPage() {
           ))}
         </div>
       )}
+      {list.length > pages * LIST_PAGE_SIZE && <Button variant="outline" className="w-full" onClick={() => setPages((p) => p + 1)}>Ver mais</Button>}
 
       <MineDialog open={open} onOpenChange={setOpen} editing={editing} />
       <LevelManager open={levelsOpen} onOpenChange={setLevelsOpen} />
