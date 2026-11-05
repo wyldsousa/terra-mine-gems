@@ -1,3 +1,4 @@
+import { visibleSlice, LIST_PAGE_SIZE } from "@/lib/cloudSync";
 import { ModeSwitch } from "@/components/land/ModeSwitch";
 import { createFileRoute } from "@tanstack/react-router";
 import { NumericInput } from "@/components/common/NumericInput";
@@ -253,6 +254,7 @@ function MinesPage() {
           ))}
         </div>
       )}
+      {list.length > pages * LIST_PAGE_SIZE && <Button variant="outline" className="w-full" onClick={() => setPages((p) => p + 1)}>Ver mais</Button>}
 
       <MineDialog open={open} onOpenChange={setOpen} editing={editing} />
       <LevelManager open={levelsOpen} onOpenChange={setLevelsOpen} />
