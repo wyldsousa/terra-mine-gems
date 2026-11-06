@@ -1,31 +1,27 @@
+import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { monthlyEarnings, type EarningRow } from "@/lib/chatActions";
+import { Button } from "@/components/ui/button";
+import { coinBalances } from "@/lib/chatActions";
 
-const LABELS = [["AB", "🌎 Atlas Bucks"], ["FC", "🍀 Fortune Coins"], ["TB", "⛏️ Terra Bucks"]] as const;
+export const COIN_LABELS = [["AB", "🌎 Atlas Bucks"], ["FC", "🍀 Fortune Coins"], ["TB", "⛏️ Terra Bucks"]] as const;
 
-/** Private monthly report of coins logged via Chat IA (never public, not a wallet balance). */
+/** Private coin balances summary with a link to the full movements page. */
 export function MonthlyEarnings({ userId }: { userId: string }) {
-  const { data, isError } = useQuery({
-    queryKey: ["coin-earnings", userId],
+  const { data } = useQuery({
+    queryKey: ["coin-earnings", userId, "all"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("coin_earnings").select("game,currency,amount,source,earned_at").eq("user_id", userId).order("earned_at", { ascending: false }).limit(1000);
+      const { data, error } = await supabase.from("coin_earnings").select("currency,amount,kind").eq("user_id", userId).limit(10000);
       if (error) throw error;
-      return data as EarningRow[];
+      return data;
     },
   });
-  const m = monthlyEarnings(data ?? []);
+  const b = coinBalances(data ?? []);
   return (
     <section className="panel space-y-2 p-5">
-      <h2 className="font-semibold">🪙 Ganhos do mês</h2>
-      {isError && <p className="text-xs text-muted-foreground">Não foi possível carregar os ganhos.</p>}
-      {LABELS.map(([c, l]) => (
-        <details key={c} className="text-sm">
-          <summary className="flex cursor-pointer justify-between"><span>{l}</span><span className="num">{m.totals[c]} {c}</span></summary>
-          {Object.entries(m.sources[c] ?? {}).map(([s, v]) => <p key={s} className="flex justify-between pl-4 text-xs text-muted-foreground"><span>{s}</span><span>{v} {c}</span></p>)}
-        </details>
-      ))}
-      <p className="text-xs text-muted-foreground">Registros feitos pelo Chat IA. Privado — não é o saldo das carteiras.</p>
+      <h2 className="font-semibold">🏦 Minhas moedas</h2>
+      {COIN_LABELS.map(([c, l]) => <p key={c} className="flex justify-between text-sm"><span>{l}</span><span className="num">{b[c]} {c}</span></p>)}
+      <Button asChild size="sm" className="w-full"><Link to="/moedas">Abrir movimentações</Link></Button>
     </section>
   );
 }
