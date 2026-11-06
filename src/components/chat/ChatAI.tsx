@@ -46,7 +46,7 @@ export function ChatAI() {
       const r = await ask({ data: { messages: history } });
       if (!r.ok) push({ role: "assistant", content: r.error });
       else push({ role: "assistant", content: r.question || r.reply, actions: r.question ? [] : r.actions });
-    } catch { push({ role: "assistant", content: "Falha de conexão. Nada foi alterado." }); }
+    } catch (e) { console.error("chat request", e); push({ role: "assistant", content: `Falha ao contatar o servidor (${e instanceof Error ? e.message.slice(0, 120) : "erro desconhecido"}). Nada foi alterado.` }); }
     finally { setBusy(false); }
   };
 

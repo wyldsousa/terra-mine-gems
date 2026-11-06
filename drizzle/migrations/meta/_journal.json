@@ -50,6 +50,13 @@
       "when": 1793873712502,
       "tag": "0006_ranking_anonymous_name",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793969209841,
+      "tag": "0007_coin_movement_kind",
+      "breakpoints": true
     }
   ]
 }

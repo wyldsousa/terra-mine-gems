@@ -18,6 +18,7 @@ import { Route as EstatisticasRouteImport } from './routes/estatisticas'
 import { Route as FortuneRouteImport } from './routes/fortune'
 import { Route as LandRentsRouteImport } from './routes/land-rents'
 import { Route as MinasRouteImport } from './routes/minas'
+import { Route as MoedasRouteImport } from './routes/moedas'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as RankingRouteImport } from './routes/ranking'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -67,6 +68,11 @@ const MinasRoute = MinasRouteImport.update({
   path: '/minas',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MoedasRoute = MoedasRouteImport.update({
+  id: '/moedas',
+  path: '/moedas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PerfilRoute = PerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/fortune': typeof FortuneRoute
   '/land-rents': typeof LandRentsRoute
   '/minas': typeof MinasRoute
+  '/moedas': typeof MoedasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -107,6 +114,7 @@ export interface FileRoutesByTo {
   '/fortune': typeof FortuneRoute
   '/land-rents': typeof LandRentsRoute
   '/minas': typeof MinasRoute
+  '/moedas': typeof MoedasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -122,6 +130,7 @@ export interface FileRoutesById {
   '/fortune': typeof FortuneRoute
   '/land-rents': typeof LandRentsRoute
   '/minas': typeof MinasRoute
+  '/moedas': typeof MoedasRoute
   '/perfil': typeof PerfilRoute
   '/ranking': typeof RankingRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/fortune'
     | '/land-rents'
     | '/minas'
+    | '/moedas'
     | '/perfil'
     | '/ranking'
     | '/reset-password'
@@ -152,6 +162,7 @@ export interface FileRouteTypes {
     | '/fortune'
     | '/land-rents'
     | '/minas'
+    | '/moedas'
     | '/perfil'
     | '/ranking'
     | '/reset-password'
@@ -166,6 +177,7 @@ export interface FileRouteTypes {
     | '/fortune'
     | '/land-rents'
     | '/minas'
+    | '/moedas'
     | '/perfil'
     | '/ranking'
     | '/reset-password'
@@ -181,6 +193,7 @@ export interface RootRouteChildren {
   FortuneRoute: typeof FortuneRoute
   LandRentsRoute: typeof LandRentsRoute
   MinasRoute: typeof MinasRoute
+  MoedasRoute: typeof MoedasRoute
   PerfilRoute: typeof PerfilRoute
   RankingRoute: typeof RankingRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MinasRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/moedas': {
+      id: '/moedas'
+      path: '/moedas'
+      fullPath: '/moedas'
+      preLoaderRoute: typeof MoedasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/perfil': {
       id: '/perfil'
       path: '/perfil'
@@ -285,6 +305,7 @@ const rootRouteChildren: RootRouteChildren = {
   FortuneRoute: FortuneRoute,
   LandRentsRoute: LandRentsRoute,
   MinasRoute: MinasRoute,
+  MoedasRoute: MoedasRoute,
   PerfilRoute: PerfilRoute,
   RankingRoute: RankingRoute,
   ResetPasswordRoute: ResetPasswordRoute,

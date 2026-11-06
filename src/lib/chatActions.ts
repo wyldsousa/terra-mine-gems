@@ -50,7 +50,14 @@ export function validateActions(raw: unknown[]): ChatAction[] {
   return out;
 }
 
-export interface EarningRow { game: string; currency: string; amount: number; source: string; earned_at: string }
+export interface EarningRow { game: string; currency: string; amount: number; source: string; earned_at: string; kind?: string }
+
+/** Balance per currency: entries add, withdrawals ("saida") subtract. */
+export function coinBalances(rows: Pick<EarningRow, "currency" | "amount" | "kind">[]) {
+  const b: Record<string, number> = { AB: 0, FC: 0, TB: 0 };
+  for (const r of rows) if (r.currency in b) b[r.currency] = (b[r.currency] ?? 0) + (r.kind === "saida" ? -1 : 1) * Number(r.amount);
+  return b;
+}
 
 /** Sums earnings of the given calendar month (local time), per currency and per source. */
 export function monthlyEarnings(rows: EarningRow[], now = new Date()) {
@@ -60,7 +67,7 @@ export function monthlyEarnings(rows: EarningRow[], now = new Date()) {
     const d = new Date(r.earned_at);
     if (d.getFullYear() !== now.getFullYear() || d.getMonth() !== now.getMonth()) continue;
     const c = r.currency;
-    if (!(c in totals)) continue;
+    if (!(c in totals) || r.kind === "saida") continue;
     totals[c] = (totals[c] ?? 0) + Number(r.amount);
     const src = sources[c]!;
     src[r.source] = (src[r.source] ?? 0) + Number(r.amount);
