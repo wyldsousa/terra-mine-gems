@@ -1,5 +1,5 @@
 # Roadmap
-- [ ] Align TerraMine mine-addition and management buttons on mobile; disable accidental interface text selection while preserving input editing; verify responsive behavior and regressions.
+- [x] Align TerraMine mine-addition and management buttons on mobile; disable accidental interface text selection while preserving input editing; verified at 390px and 124 regression tests passed.
 - [ ] Current profile/chat corrections: move all public/ranking settings to gear; diagnose real AI calls; connect private data queries and reliable confirmed mutations; verify authenticated flows and regressions.
 - [ ] Current request: remove obsolete TerraMine PayPal tax; align calculator presentation; compact public profile/details; ranking batches of 10/Sorteios; Chat IA placeholder; global persisted themes; verify tests and mobile/desktop flows.
 - [ ] Complete all Land Rent tabs, weighted boost hours, goals, reports, owner isolation and consent integration; verify UI and regression tests.
