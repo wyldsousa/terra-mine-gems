@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { NumericInput } from "@/components/common/NumericInput";
+import { NumericInput, parseDecimal } from "@/components/common/NumericInput";
 import { COIN_LABELS } from "@/components/chat/MonthlyEarnings";
 import { CURRENCY_BY_GAME, coinBalances, monthlyEarnings, type CoinGame } from "@/lib/chatActions";
 
@@ -35,7 +35,7 @@ function CoinsPage() {
 function Wallet({ userId }: { userId: string }) {
   const qc = useQueryClient();
   const [game, setGame] = useState<CoinGame>("atlas");
-  const [amount, setAmount] = useState<number | null>(null);
+  const [amountText, setAmount] = useState("");
   const [source, setSource] = useState("");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
@@ -66,14 +66,15 @@ function Wallet({ userId }: { userId: string }) {
   for (const r of rows) { const d = new Date(r.earned_at); if (r.kind === "saida" && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) monthOut[r.currency] = (monthOut[r.currency] ?? 0) + Number(r.amount); }
 
   const move = async (kind: "entrada" | "saida") => {
-    if (busy || !amount || amount <= 0) { setMsg("Informe uma quantidade maior que zero."); return; }
+    const amount = parseDecimal(amountText);
+    if (busy || !(amount > 0)) { setMsg("Informe uma quantidade maior que zero."); return; }
     const cur = CURRENCY_BY_GAME[game];
     if (kind === "saida" && amount > (bal[cur] ?? 0)) { setMsg("Saldo insuficiente."); return; }
     setBusy(true); setMsg("");
     const { error } = await supabase.from("coin_earnings").insert({ user_id: userId, game, currency: cur, amount, kind, source: source.trim().toLowerCase() || "manual", dedupe_key: crypto.randomUUID() });
     setBusy(false);
     if (error) { setMsg("Não foi possível salvar. Tente novamente."); return; }
-    setAmount(null); setSource("");
+    setAmount(""); setSource("");
     await qc.invalidateQueries({ queryKey: ["coin-earnings"] });
   };
 
@@ -95,7 +96,7 @@ function Wallet({ userId }: { userId: string }) {
         <select className="w-full rounded-md border border-border bg-background p-2 text-sm" value={game} onChange={(e) => setGame(e.target.value as CoinGame)} aria-label="Jogo">
           {GAMES.map((g) => <option key={g.id} value={g.id}>{g.label}</option>)}
         </select>
-        <NumericInput value={amount} onChange={(v) => setAmount(v)} placeholder="Quantidade" aria-label="Quantidade" />
+        <NumericInput value={amountText} onChange={(e) => setAmount(e.target.value)} placeholder="Quantidade" aria-label="Quantidade" />
         <Input value={source} maxLength={60} onChange={(e) => setSource(e.target.value)} placeholder="Origem / motivo (opcional)" aria-label="Origem" />
         <div className="grid grid-cols-2 gap-2">
           <Button disabled={busy} onClick={() => move("entrada")}>+ Adicionar</Button>
