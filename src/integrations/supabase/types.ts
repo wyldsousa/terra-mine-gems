@@ -23,6 +23,7 @@ export type Database = {
           earned_at: string
           game: string
           id: string
+          kind: string
           source: string
           user_id: string
         }
@@ -34,6 +35,7 @@ export type Database = {
           earned_at?: string
           game: string
           id?: string
+          kind?: string
           source?: string
           user_id: string
         }
@@ -45,6 +47,7 @@ export type Database = {
           earned_at?: string
           game?: string
           id?: string
+          kind?: string
           source?: string
           user_id?: string
         }
