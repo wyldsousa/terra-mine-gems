@@ -357,7 +357,6 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
       <p className="mb-3 text-xs text-muted-foreground">{t.mines.quickAddDesc}</p>
       <MineTypePicker value={type} onChange={setType} />
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
-        {/* On narrow screens the action gets its own row instead of squeezing beside a field. */}
         <div className="space-y-1">
           <Label htmlFor="qa-qty">{t.common.quantity}</Label>
           <NumericInput
