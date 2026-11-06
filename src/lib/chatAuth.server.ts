@@ -6,8 +6,8 @@ import { rankingPublicConfig } from "./rankingConfig";
 /** Verifies the caller's bearer token; falls back to bundled public config so hosts without server env vars still work. */
 export async function chatUser() {
   const { url, key } = rankingPublicConfig(
-    { url: process.env.SUPABASE_URL, key: process.env.SUPABASE_PUBLISHABLE_KEY },
-    { url: import.meta.env.VITE_SUPABASE_URL, key: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+    { url: process.env['SUPABASE_URL'], key: process.env['SUPABASE_PUBLISHABLE_KEY'] },
+    { url: import.meta.env['VITE_SUPABASE_URL'], key: import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] },
   );
   const token = getRequest()?.headers.get("authorization")?.replace(/^Bearer /, "");
   if (!token || token.split(".").length !== 3) return null;
