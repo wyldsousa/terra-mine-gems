@@ -1,10 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { CURRENCY_BY_GAME, chatResultSchema, validateActions } from "./chatActions";
 
 const SYSTEM = `Você é o assistente do app de calculadoras (TerraMine, Atlas Earth, Fortune World, Land Rent). Entenda português informal, abreviações e erros de digitação.
-Responda SOMENTE JSON: {"reply": string, "question": string|null, "actions": Action[]}.
+Converse naturalmente em português do Brasil: responda saudações, agradecimentos e perguntas sobre o app sem criar ações. Responda SOMENTE JSON: {"reply": string, "question": string|null, "actions": Action[]}.
 Action de itens: {"kind":"items","game":"atlas"|"fortune"|"terramine"|"land-rents","op":"add"|"remove"|"set","quantity":int,"rarity":string|null,"mineType":"rock"|"coal"|"gold"|"diamond"|null,"level":int|null}
 - Atlas raridades: common, rare, epic, legendary. Fortune: common, uncommon, rare, epic, legendary. "set" = definir total.
 - TerraMine exige mineType (rock/pedra, coal/carvão, gold/ouro, diamond/diamante); level padrão 1 se não informado.
@@ -17,9 +16,10 @@ const input = z.object({
 });
 
 export const interpretChat = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => input.parse(d))
   .handler(async ({ data }) => {
+    const { chatUser } = await import("./chatAuth.server");
+    if (!(await chatUser().catch(() => null))) return { ok: false as const, error: "Sessão expirada. Entre novamente na sua conta." };
     const { generateChatCompletion, GatewayError, PaymentRequiredError, RateLimitError } = await import("@lovable.dev/ai-gateway");
     try {
       const res = await generateChatCompletion({
@@ -28,13 +28,16 @@ export const interpretChat = createServerFn({ method: "POST" })
         messages: [{ role: "system", content: SYSTEM }, ...data.messages],
       });
       const text = res.choices?.[0]?.message?.content;
-      const parsed = chatResultSchema.safeParse(JSON.parse(typeof text === "string" ? text : "{}"));
+      let json: unknown = {};
+      try { json = JSON.parse(typeof text === "string" ? text.replace(/^```(json)?|```$/g, "").trim() : "{}"); } catch { json = { reply: typeof text === "string" ? text : "", actions: [] }; }
+      const parsed = chatResultSchema.safeParse(json);
       if (!parsed.success) return { ok: false as const, error: "Não entendi a resposta da IA. Tente reformular." };
       return { ok: true as const, reply: parsed.data.reply, question: parsed.data.question ?? null, actions: validateActions(parsed.data.actions) };
     } catch (e) {
       if (e instanceof GatewayError) {
         console.error("chat gateway", e.code);
         if (e instanceof PaymentRequiredError) return { ok: false as const, error: "Créditos de IA esgotados no workspace." };
+        if (e.code === "configuration_error" || e.constructor.name === "ConfigurationError" || e.constructor.name === "AuthenticationError") return { ok: false as const, error: "Servidor sem a chave LOVABLE_API_KEY configurada." };
         if (e instanceof RateLimitError) return { ok: false as const, error: "Muitas mensagens agora. Aguarde um pouco." };
       } else console.error("chat error");
       return { ok: false as const, error: "A IA não respondeu. Tente novamente." };
@@ -50,9 +53,11 @@ const earningInput = z.object({
 
 /** Records one coin earning for the signed-in user; resending the same key never duplicates. */
 export const recordEarning = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => earningInput.parse(d))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
+    const { chatUser } = await import("./chatAuth.server");
+    const context = await chatUser().catch(() => null);
+    if (!context) return { ok: false as const };
     const { error } = await context.supabase.from("coin_earnings").upsert(
       { user_id: context.userId, dedupe_key: data.dedupeKey, game: data.game, currency: CURRENCY_BY_GAME[data.game], amount: data.amount, source: data.source.toLowerCase() },
       { onConflict: "user_id,dedupe_key", ignoreDuplicates: true },
