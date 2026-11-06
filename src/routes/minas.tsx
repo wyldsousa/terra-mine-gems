@@ -95,9 +95,9 @@ function MinesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="font-display text-2xl font-bold">{t.mines.title}</h1>
-        <Button
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:justify-between">
+        <h1 className="min-w-0 truncate font-display text-2xl font-bold">{t.mines.title}</h1>
+        <Button className="shrink-0"
           onClick={() => {
             setEditing(null);
             setOpen(true);
