@@ -95,9 +95,9 @@ function MinesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="font-display text-2xl font-bold">{t.mines.title}</h1>
-        <Button
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:justify-between">
+        <h1 className="min-w-0 truncate font-display text-2xl font-bold">{t.mines.title}</h1>
+        <Button className="shrink-0"
           onClick={() => {
             setEditing(null);
             setOpen(true);
@@ -115,12 +115,13 @@ function MinesPage() {
         }}
       />
 
-      <div className="flex flex-wrap gap-2">
-        <Button size="sm" variant="outline" onClick={() => setLevelsOpen(true)} disabled={mines.length === 0}>
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+        <Button className="w-full justify-center sm:w-auto" size="sm" variant="outline" onClick={() => setLevelsOpen(true)} disabled={mines.length === 0}>
           <Zap className="mr-1 h-4 w-4" />
           {pt ? "Gerenciar níveis" : "Manage levels"}
         </Button>
         <Button
+          className="w-full justify-center sm:w-auto"
           size="sm"
           variant={selectMode ? "default" : "outline"}
           disabled={mines.length === 0}
@@ -134,16 +135,16 @@ function MinesPage() {
         </Button>
         {selectMode && (
           <>
-            <Button size="sm" variant="outline" onClick={() => setSelected(new Set(list.map((m) => m.id)))}>
+            <Button className="col-span-2 w-full justify-center sm:col-span-1 sm:w-auto" size="sm" variant="outline" onClick={() => setSelected(new Set(list.map((m) => m.id)))}>
               {pt ? "Selecionar todas" : "Select all"} ({list.length})
             </Button>
-            <Button size="sm" variant="destructive" disabled={selected.size === 0} onClick={() => setConfirmDelete(true)}>
+            <Button className="col-span-2 w-full justify-center sm:col-span-1 sm:w-auto" size="sm" variant="destructive" disabled={selected.size === 0} onClick={() => setConfirmDelete(true)}>
               <Trash2 className="mr-1 h-4 w-4" />
               {pt ? "Excluir selecionadas" : "Delete selected"} ({selected.size})
             </Button>
           </>
         )}
-        <Button size="sm" variant="outline" className="ml-auto" disabled={mines.length === 0} onClick={() => setConfirmReset(true)}>
+        <Button size="sm" variant="outline" className="col-span-2 w-full justify-center sm:col-span-1 sm:ml-auto sm:w-auto" disabled={mines.length === 0} onClick={() => setConfirmReset(true)}>
           <RotateCcw className="mr-1 h-4 w-4" />
           {pt ? "Resetar carteira" : "Reset wallet"}
         </Button>
@@ -377,8 +378,8 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
             onChange={(e) => setLevel(Number(e.target.value))}
           />
         </div>
-        <div className="flex items-end">
-          <Button className="w-full" onClick={() => setConfirming(true)}>
+        <div className="col-span-2 flex items-end sm:col-span-1">
+          <Button className="w-full justify-center" onClick={() => setConfirming(true)}>
             {t.common.add}
           </Button>
         </div>
