@@ -115,8 +115,8 @@ function MinesPage() {
         }}
       />
 
-      <div className="flex flex-wrap gap-2">
-        <Button size="sm" variant="outline" onClick={() => setLevelsOpen(true)} disabled={mines.length === 0}>
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+        <Button className="w-full justify-center sm:w-auto" size="sm" variant="outline" onClick={() => setLevelsOpen(true)} disabled={mines.length === 0}>
           <Zap className="mr-1 h-4 w-4" />
           {pt ? "Gerenciar níveis" : "Manage levels"}
         </Button>
