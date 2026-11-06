@@ -41,7 +41,6 @@ const CALCS: { id: RankGame; label: string; to: string }[] = [
   { id: "terramine", label: "⛏️ TerraMine", to: "/calculadora" },
 ];
 
-const FUTURE = ["Histórico de rendimento", "Conquistas", "Comparação entre jogos", "Registro de ganhos reais", "Alertas de metas", "Conversão USD/BRL", "Compartilhar perfil / link público", "Evolução do ranking", "Recordes pessoais"];
 
 function ProfilePage() {
   const { user, loading } = useAuth();
@@ -243,12 +242,6 @@ function ProfilePage() {
 
       {user && <MonthlyEarnings userId={user.id} />}
 
-      <section className="panel p-5">
-        <h2 className="mb-2 font-semibold">🚀 Em breve</h2>
-        <div className="flex flex-wrap gap-2">
-          {FUTURE.map((f) => <span key={f} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">{f}</span>)}
-        </div>
-      </section>
     </div>
   );
 }
