@@ -121,6 +121,7 @@ function MinesPage() {
           {pt ? "Gerenciar níveis" : "Manage levels"}
         </Button>
         <Button
+          className="w-full justify-center sm:w-auto"
           size="sm"
           variant={selectMode ? "default" : "outline"}
           disabled={mines.length === 0}
@@ -134,16 +135,16 @@ function MinesPage() {
         </Button>
         {selectMode && (
           <>
-            <Button size="sm" variant="outline" onClick={() => setSelected(new Set(list.map((m) => m.id)))}>
+            <Button className="col-span-2 w-full justify-center sm:col-span-1 sm:w-auto" size="sm" variant="outline" onClick={() => setSelected(new Set(list.map((m) => m.id)))}>
               {pt ? "Selecionar todas" : "Select all"} ({list.length})
             </Button>
-            <Button size="sm" variant="destructive" disabled={selected.size === 0} onClick={() => setConfirmDelete(true)}>
+            <Button className="col-span-2 w-full justify-center sm:col-span-1 sm:w-auto" size="sm" variant="destructive" disabled={selected.size === 0} onClick={() => setConfirmDelete(true)}>
               <Trash2 className="mr-1 h-4 w-4" />
               {pt ? "Excluir selecionadas" : "Delete selected"} ({selected.size})
             </Button>
           </>
         )}
-        <Button size="sm" variant="outline" className="ml-auto" disabled={mines.length === 0} onClick={() => setConfirmReset(true)}>
+        <Button size="sm" variant="outline" className="col-span-2 w-full justify-center sm:col-span-1 sm:ml-auto sm:w-auto" disabled={mines.length === 0} onClick={() => setConfirmReset(true)}>
           <RotateCcw className="mr-1 h-4 w-4" />
           {pt ? "Resetar carteira" : "Reset wallet"}
         </Button>
@@ -356,6 +357,7 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
       <p className="mb-3 text-xs text-muted-foreground">{t.mines.quickAddDesc}</p>
       <MineTypePicker value={type} onChange={setType} />
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {/* On narrow screens the action gets its own row instead of squeezing beside a field. */}
         <div className="space-y-1">
           <Label htmlFor="qa-qty">{t.common.quantity}</Label>
           <NumericInput
@@ -377,8 +379,8 @@ function QuickAdd({ onAdd }: { onAdd: (type: MineType, quantity: number, level: 
             onChange={(e) => setLevel(Number(e.target.value))}
           />
         </div>
-        <div className="flex items-end">
-          <Button className="w-full" onClick={() => setConfirming(true)}>
+        <div className="col-span-2 flex items-end sm:col-span-1">
+          <Button className="w-full justify-center" onClick={() => setConfirming(true)}>
             {t.common.add}
           </Button>
         </div>
